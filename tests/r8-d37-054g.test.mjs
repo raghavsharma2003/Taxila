@@ -267,3 +267,20 @@ describe("item 5 (and pr6's widening): the reply's slot never takes a person wor
     assert.equal(A.replyWordOf(["papa", "chauka"], "papa ne chauka maara"), "chauka");
   });
 });
+
+describe("item 6: a side-topic the child TELLS, said again where its park comes due, is answered as told (the told return)", async () => {
+  const S = await import("../server/brain/say.js");
+  const TOLD = "kal maine cricket khela, sixer maara";
+  const ret = { topic: "cricket", share: true, said: "mujhe cricket pasand hai" };
+  const st = (again) => ({ seed: 7, turn: 31, recent: [], later: [], lastMove: { returned: ret, ...(again ? { asideAgain: { topic: "cricket" } } : {}) } });
+  test("close/dry1 offtopic c6-ch07-t03 32: the return reads the line just told — it keeps \"sixer\" and asks nothing told (not what they like, not when)", () => {
+    assert.equal(S.toldNowOf(ret, st(true), TOLD), TOLD);
+    const q = S.returnQuestion("cricket", "hinglish", st(true), { said: S.toldNowOf(ret, st(true), TOLD) });
+    assert.match(q, /sixer/i, q); assert.ok(!/pasand|achha lag|kab ki baat|batao/i.test(q), q);
+  });
+  test("the other side: no aside said again on the turn (or a line that tells nothing, or another topic) — the park's own words, as built", () => {
+    assert.equal(S.toldNowOf(ret, st(false), TOLD), ret.said);
+    assert.equal(S.toldNowOf(ret, st(true), "cricket cricket"), ret.said);
+    assert.equal(S.toldNowOf({ ...ret, topic: "football" }, st(true), TOLD), ret.said);
+  });
+});

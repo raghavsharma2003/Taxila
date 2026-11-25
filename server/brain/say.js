@@ -203,6 +203,16 @@ const ASKS_LIKE_Q = /(?:pasand|achha lag|achhi lag|sabse achha|sabse achhi|favou
  *  a return form that opens on a back-to word — "Ab", "Chalo", "Jaisa kaha tha" (after an "Achha," at most) or "… ki baari" in its first
  *  clause. Read by the evals' returnColdAfterVerdict too. */
 export const BACK_TO_LEAD = /^(?:(?:achha|accha|theek hai|haan),\s+)?(?:ab|chalo|jaisa\s+kaha\s+tha|now|so|as\s+promised)(?![\p{L}])|^[^,:;.?!]{0,40}?(?<![\p{L}])ki\s+baari(?![\p{L}])/iu;
+/** d37 RULING-G item 6 (close/dry1 offtopic c6-ch07-t03 32: "kal maine cricket khela, sixer maara", said again at the boundary where its
+ *  park comes due, got "Cricket wali baat batao na, tumhe uski kaunsi baat pasand hai?" — the return read the PARK's words, "mujhe cricket
+ *  pasand hai", and asked for what was just told): where the child says the parked topic again on the turn its return is said (the walk's
+ *  asideAgain, the same topic) and that line tells something (toldOf), the return reads that line — the told return, as for a park of a
+ *  told line; else the park's own words, as built. */
+export const toldNowOf = (ret, state, childText) => {
+  const again = state?.lastMove?.asideAgain?.topic;
+  const now = String(childText ?? "").replace(/\s+/g, " ").trim();
+  return again && ret?.topic && String(again).toLowerCase() === String(ret.topic).toLowerCase() && now && toldOf(ret.topic, now) ? now : ret?.said ?? null;
+};
 export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null, lead = null } = {}) => {
   // (to-brain 054 D1: a return led by a verdict — `lead: "verdict"`, state.js returnApart — takes a form opening on a back-to word, by the
   // same filters as below; with none left, null: the verdict ends on the go-on line and the return is said alone on the next turn)
@@ -3234,8 +3244,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (R1 rule 3: a sad aside gets a sad line and no return question — the lesson goes on after it)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
       // (to-brain 054 D1: a return the walk put after a right verdict — state.js returnApart's returnLed — opens on a back-to word)
-      const led = state.lastMove?.returnLed ? returnQuestion(ret.topic, lang, state, { said: ret.said, kit, lead: "verdict" }) : null;
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state), false, !!tasteNamedIn(said0)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : led ?? returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const retSaid = toldNowOf(ret, state, childText);
+      const led = state.lastMove?.returnLed ? returnQuestion(ret.topic, lang, state, { said: retSaid, kit, lead: "verdict" }) : null;
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state), false, !!tasteNamedIn(said0)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : led ?? returnQuestion(ret.topic, lang, state, { said: retSaid, kit });
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       { const k = String(ret.topic ?? "").toLowerCase(); ss = ss.filter((x) => !k || !x.toLowerCase().includes(k)); }
       if (line && sad) { aside.push(line); guard.returnSaid = true; guard.returnSad = true; }
@@ -4150,7 +4161,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const said0 = ret.said ?? "";
       // (v6.7 A3: code's line, as on an assembled turn — the honest line or one question about their thing)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state), false, !!tasteNamedIn(said0)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state), false, !!tasteNamedIn(said0)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: toldNowOf(ret, state, childText), kit });
       if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; if (sad) guard.returnSad = true; else guard.returnLine = line; } else guard.returnMissed = true;
     }
   }
