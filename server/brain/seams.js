@@ -91,8 +91,6 @@ export const SEAM_TABLE = [
   // (dc-r8-director27 Brain 042 Q2: the lead-in, the problem and what follows it up to the first question are one turn — after a verdict whose
   // why left no room, the problem opens its own turn, and its lead-in with it)
   ["start", "workedProblem", "beforeWorked"],
-  // (main's second ruling fix 4: the card held apart from a right worked close (state.js closeApart "close") opens on the close's own joint)
-  ["closeApart", "card", "afterWorked"], ["closeApart", "point", "afterWorked"],
   // (to-brain 054 A: the no-other-drawing line at a key's check-in, then the go-on line the check-in would have taken)
   ["noPicture", "afterKeyGoOn", "afterKeyGoOn"],
 ];
@@ -367,9 +365,6 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // into the card with no second go-on joint — "back to work" is never said in two turns running. The seam's left is that reply said again,
     // replyAgain: the table has no row for it, so it takes no joint)
     if (info.noReplyJoint && ["asideReply", "aiReply", "park", "aside", "aiQuestion", "aiLine"].includes(prevKind) && i > 0) prevKind = recLeft = "replyAgain";
-    // (main's second ruling fix 4: the card held apart from a right worked close, said first in its turn — the turn starts after that close,
-    // closeApart — takes the close's own joint into it, as it did before the split)
-    if (info.afterWorkedLead && i === 0 && prevKind === "start" && ["card", "point"].includes(k)) prevKind = recLeft = "closeApart";
     // (no joint between a point and its own card, a verdict and its own why: those are not in the table)
     // (help's joint is said by help, not by this table: its seam is recorded, with its form, below)
     let j = HELP_JOINT_KINDS.has(k) ? null : seamJoint(prevKind, k);

@@ -131,17 +131,14 @@ describe("fix 3: after a go-on turn the next turn teaches; 'back to work' is nev
   });
 });
 
-describe("fix 4: a worked close split from its card keeps the own-turn joint", () => {
-  test("the card held apart from the close opens on afterWorked — the seam closeApart > card, in the table", async () => {
+describe("fix 4 undone with A(iii) (RULING-G item 3): no card is held apart from a worked close, so no closeApart seam", () => {
+  test("the table has no closeApart row; a card said first in its turn takes no afterWorked joint whatever the move says", async () => {
     const { SEAM_TABLE } = await import("../server/brain/seams.js");
-    assert.ok(SEAM_TABLE.some(([a, b, j]) => a === "closeApart" && b === "card" && j === "afterWorked"));
+    assert.ok(!SEAM_TABLE.some(([a]) => a === "closeApart"));
     const state = { turn: 9, ctx: { lang: "hinglish" }, lastMove: { afterWorkedLead: true } };
     const list = [{ part: "card", text: CARD.text }];
     const r = applySeams(CARD.text, list, { kit: KIT, state, lang: "hinglish", info: { afterWorkedLead: true } });
-    assert.deepEqual(r.seams.map((x) => [x.left, x.right, x.joint]), [["closeApart", "card", "afterWorked"]]);
-    assert.equal(r.list[0].text, "Ab ek sawaal tum akele karo.");
-    const r0 = applySeams(CARD.text, list, { kit: KIT, state: { ...state, lastMove: {} }, lang: "hinglish", info: {} });
-    assert.deepEqual(r0.seams.map((x) => [x.left, x.right, x.joint]), [["start", "card", null]]);
+    assert.deepEqual(r ? r.seams.map((x) => [x.left, x.right, x.joint]) : [["start", "card", null]], [["start", "card", null]]);
   });
 });
 
@@ -166,9 +163,10 @@ describe("fix 5 (evals only): the rule-based child hears a question in any of it
 });
 
 describe("main's third ruling: the checks restored", () => {
-  test("item 1: the skip after a go-on row — six predicates after noFit vpc or close; after her reply's go-on line only three", async () => {
+  test("item 1: the skip after a go-on row — six predicates after noFit vpc (\"close\" went with A(iii): RULING-G item 3); after her reply's go-on line only three", async () => {
     const { goOnSkipOf } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
-    for (const nf of ["vpc", "close"]) assert.deepEqual([...goOnSkipOf({ noFit: nf, noFitGoOn: true })].sort(), ["clarifyCard", "giveUpAnswered", "orderStays", "pictureCaption", "requestAnswered", "requestHelped"]);
+    assert.equal(goOnSkipOf({ noFit: "close", noFitGoOn: true }), null);
+    for (const nf of ["vpc"]) assert.deepEqual([...goOnSkipOf({ noFit: nf, noFitGoOn: true })].sort(), ["clarifyCard", "giveUpAnswered", "orderStays", "pictureCaption", "requestAnswered", "requestHelped"]);
     assert.deepEqual([...goOnSkipOf({ noFit: "aside", noFitGoOn: true })].sort(), ["clarifyCard", "giveUpAnswered", "orderStays"]);
     assert.equal(goOnSkipOf({ noFit: "card", noFitGoOn: true }), null);
     assert.equal(goOnSkipOf({ noFit: "point" }), null);
@@ -204,11 +202,6 @@ test("third ruling item 3: replyIntoPoint reads a first seam aside (strict since
   assert.equal(P.asideGoOnNext({}, goAgain, 4, { prevT: ai, prevPrevT: checkin }), null);
 });
 
-test("third ruling item 5: closeCardLong fires on a worked close and a card over 70 words whether or not afterWorked is said", () => {
-  const w = Array.from({ length: 72 }, (_, k) => `shabd${k}`).join(" ");
-  const row = { who: "teacher", text: w, seams: [{ right: "verdict" }, { right: "card" }], pageParts: [{ part: "close", beat: "worked" }, { part: "card", beat: "c1" }] };
-  assert.ok(P.closeCardLong({}, row));
-  assert.ok(P.closeCardLong({}, { ...row, pageParts: [], seams: [{ right: "verdict" }, { right: "card", joint: "afterWorked" }] }));
-  assert.equal(P.closeCardLong({}, { ...row, pageParts: [{ part: "close", beat: "c2" }, { part: "card", beat: "c3" }] }), null);
-  assert.equal(P.closeCardLong({}, { ...row, text: "chhota" }), null);
+test("third ruling item 5 undone (RULING-G item 3): closeCardLong is removed with A(iii)", () => {
+  assert.equal(P.closeCardLong, undefined);
 });

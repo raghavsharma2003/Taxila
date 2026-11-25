@@ -1,5 +1,5 @@
 // to-brain 054 A (docs/patches/to-brain/054-director36-the-turns-shape-walk-only.md, main's rulings: A(i) D1, A(ii) II-B, A(iii) as written):
-// a turn holds one new thing. Registered in dry-predicates.mjs after d35b; all four gated (tests/r8-d37-054a.test.mjs pins each on made rows).
+// a turn holds one new thing. Registered in dry-predicates.mjs after d35b; three gated (tests/r8-d37-054a.test.mjs pins each on made rows).
 //   replyIntoPoint  A(i): her reply to a side-topic — an aside's, the AI line's or a return's reply (seams asideReply, aiReply), or a park — and
 //                   then a new point and its card in the same turn. The turn straight after her reply's go-on line is the rule's one
 //                   exception (a side-topic said again there gets its line, then the held point and card: the lesson does not stall).
@@ -7,7 +7,7 @@
 //                   where the two do not fit, T1), whatever the child said — a stop, a safety turn, a wrap or a break excepted, and the AI
 //                   line, which ends on her question as built (O7).
 //   startIntoCard   A(ii): the start line (joints.startAnyway), the hook, the point and its card in one turn.
-//   closeCardLong   A(iii): a worked close (its afterWorked joint) and the next card said in one turn of more than 70 words.
+//   (closeCardLong, A(iii)'s, is removed: RULING-G item 3 took A(iii) out — a worked close and its card are one turn again)
 // Main's second ruling on cause A (fix 3, reader B1 and B2), both gated (tests/r8-d37-054a2.test.mjs):
 //   goOnNoTeach     two of her turns that end on a go-on line (noFit "vpc", or a split's go-on: noFitGoOn) with no teaching part between them
 //                   or in the second, or (main's fourth ruling item 2) three of her turns running with no teaching part, the first a go-on
@@ -163,11 +163,5 @@ export const D37A_PREDICATES = {
     const k = rightsOf(r);
     return k.includes("point") && cardIn(k) ? `the start line, the hook, the point and its card in one turn (${wordsOf(r.text)} words)` : null;
   },
-  closeCardLong(L, r) {
-    // (third ruling item 5: whether or not the afterWorked joint is said — a worked close is its joint, or its close part on the worked beat)
-    const worked = (r.seams ?? []).some((x) => x.joint === "afterWorked") || (r.pageParts ?? []).some((p) => p.part === "close" && /^worked/.test(String(p.beat ?? "")));
-    if (r.who !== "teacher" || !worked || !cardIn(rightsOf(r))) return null;
-    const n = wordsOf(r.text);
-    return n > VPC_MAX ? `a worked close and the next card in ${n} words > ${VPC_MAX}` : null;
-  },
+
 };

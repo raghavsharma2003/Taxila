@@ -1619,8 +1619,6 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     keyWhy: out.guard?.whyKey ?? null,
     // (to-brain 054 A(i) D2: the turn after her reply's point turn takes no second go-on joint)
     noReplyJoint: !!state?.lastMove?.noReplyJoint,
-    // (main's second ruling fix 4: the card held apart from a worked close opens on the close's own-turn joint)
-    afterWorkedLead: !!state?.lastMove?.afterWorkedLead,
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out.guard?.leadJoints?.length ? { ...out, guard: { ...out.guard, jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } } : out;

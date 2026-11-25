@@ -132,26 +132,29 @@ describe("A(ii), design II-B: after two requests at the greeting, the start line
   });
 });
 
-describe("A(iii): a right worked close and the next card over 70 words: the close whole, the go-on line, the card the next turn", () => {
-  // (the steady child's lines of the dry matrix, c5-t03: director36 steady 20 said the close and c1's card in 73 words)
+describe("A(iii) TAKEN OUT (RULING-G item 3): a right worked close and the next card are one turn again, as at a23e5c45d", () => {
+  // (the steady child's lines of the dry matrix, c5-t03: director36 steady 20 said the close and c1's card in 73 words; A(iii) split it on a
+  // go-on line — the dead turn the readers of the round's final walk faulted in every c5-ch02-t03 and c6-ch07-t03 lesson)
   const LINES = ["haan, samajh aaya", "1", "1", "pata nahi", "paanch hisse", "6 hisson mein", "6 gap chalne honge", "aath hisse", "picture dikhao", "chaar", "achha"];
-  test("c5-t03: the own step answered right — the close with its why ends on the go-on statement; whatever the child says, the card comes", () => {
+  test("c5-t03: the own step answered right — the close and c1's card in the same turn, no go-on line, nothing held", () => {
     const rs = walkLines("c5-maths-ch02-t03", LINES);
     const close = rs[9].state.lastMove;
-    assert.equal(close.noFit, "close"); assert.ok(close.splitClose && close.vpcGoOn && !/\?\s*$/.test(close.vpcGoOn), close.vpcGoOn);
-    assert.ok(close.workedDone?.why, "the close keeps its why: P5's short close is not taken");
-    assert.equal(rs[9].ui.ask, undefined);
-    assert.equal(rs[10].ui.ask?.itemId, "script:c5-maths-ch02-t03-s1:c1");
+    assert.notEqual(close.noFit, "close"); assert.ok(!close.vpcGoOn, close.vpcGoOn);
+    assert.ok(close.workedDone, "the close is said");
+    assert.equal(rs[9].ui.ask?.itemId, "script:c5-maths-ch02-t03-s1:c1");
+    assert.ok(!rs[9].state.splitHold, "no card held for the next turn");
+    assert.ok(!close.afterWorkedLead);
   });
 });
 
-describe("A.5: the four predicates, gated, each on a made row that trips it and one that does not", async () => {
+describe("A.5: the predicates, gated, each on a made row that trips it and one that does not (closeCardLong removed: RULING-G item 3)", async () => {
   const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
   const seams = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
   const T = (o) => ({ who: "teacher", text: "Ek do teen.", ...o });
   const goOn = T({ noFit: "aside", noFitGoOn: true, seams: seams("asideReply", "goOn") });
-  test("all four are registered and gated", () => {
-    for (const k of ["replyIntoPoint", "asideGoOnNext", "startIntoCard", "closeCardLong"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); }
+  test("three are registered and gated; closeCardLong is gone with A(iii)", () => {
+    for (const k of ["replyIntoPoint", "asideGoOnNext", "startIntoCard"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); }
+    assert.equal(PREDICATES.closeCardLong, undefined);
   });
   test("replyIntoPoint: a park, a point and its card trips it, after a go-on line too (strict, fifth ruling); D2's point on its check-in does not", () => {
     assert.ok(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("park", "point", "card") }), 0, {}));
@@ -172,12 +175,6 @@ describe("A.5: the four predicates, gated, each on a made row that trips it and 
     const st = (...k) => { const s = seams(...k); s[0] = { ...s[0], joint: "startAnyway" }; return s; };
     assert.ok(PREDICATES.startIntoCard({ rows: [] }, T({ seams: st("startAnyway", "hook", "point", "card") })));
     assert.equal(PREDICATES.startIntoCard({ rows: [] }, T({ seams: st("startAnyway", "hook", "point", "checkin") })), null);
-  });
-  test("closeCardLong: a worked close and its card over 70 words trips it; at 70 or as two turns it does not", () => {
-    const sm = [{ left: "start", right: "verdict", joint: null }, { left: "verdict", right: "card", joint: "afterWorked" }];
-    assert.ok(PREDICATES.closeCardLong({ rows: [] }, T({ seams: sm, text: Array(71).fill("shabd").join(" ") })));
-    assert.equal(PREDICATES.closeCardLong({ rows: [] }, T({ seams: sm, text: Array(70).fill("shabd").join(" ") })), null);
-    assert.equal(PREDICATES.closeCardLong({ rows: [] }, T({ seams: [{ left: "start", right: "verdict" }, { left: "verdict", right: "aside" }], text: Array(80).fill("shabd").join(" ") })), null);
   });
   test("keyOnce no longer reads the invitation's \"jawab do.\" as a key", () => {
     assert.equal(PREDICATES.keyOnce({ rows: [] }, T({ text: "Board wala sawaal abhi baaki hai, uska jawab do." }), 2, { prevT: T({ text: "Pehle is sawaal ka jawab do." }) }), null);

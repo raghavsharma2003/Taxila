@@ -1041,7 +1041,7 @@ import { D35A_PREDICATES } from "./d35a-predicates.mjs"; Object.assign(PREDICATE
 // (to-brain 053, builder B: the lead-in after a right verdict, the aside reply's kind, each named reason against its own answer — d35b-predicates.mjs)
 import { D35B_PREDICATES } from "./d35b-predicates.mjs";
 Object.assign(PREDICATES, D35B_PREDICATES);
-// (to-brain 054 A, round d37's builder A: a turn holds one new thing — d37a-predicates.mjs, all four gated)
+// (to-brain 054 A, round d37's builder A: a turn holds one new thing — d37a-predicates.mjs, gated; closeCardLong removed with A(iii), RULING-G item 3)
 import { D37A_PREDICATES } from "./d37a-predicates.mjs";
 Object.assign(PREDICATES, D37A_PREDICATES);
 // (to-brain 054 B, round d37's builder B: a wait says the question — d37b-predicates.mjs, both gated)
@@ -1151,11 +1151,12 @@ export const PENDING = new Set(["returnColdAfterVerdict", "thenHelpOtherBoard", 
  *  child says next — a request or a give-up there is answered by the new point, over its own board, never by help on the card just closed
  *  right. The laws that read a request as about her turn before's part do not read the turn after such a split. */
 const VPC_GOES_ON = new Set(["giveUpAnswered", "requestAnswered", "requestHelped", "clarifyCard", "pictureCaption", "orderStays"]);
-/** Main's third ruling on to-brain 054 A, item 1: the skip above is for a right verdict's or a worked close's go-on (noFit "vpc", "close"). After
+/** Main's third ruling on to-brain 054 A, item 1: the skip above is for a right verdict's go-on (noFit "vpc"; a worked close's, "close", went with
+ *  A(iii): RULING-G item 3). After
  *  her reply's go-on line (noFit "aside") only these are not read — a request there IS read: it is honoured (second ruling, fix 1). */
 const ASIDE_GOES_ON = new Set(["giveUpAnswered", "clarifyCard", "orderStays"]);
 /** The predicates not read on the turn after `p` (her teacher row before), or null. */
-export const goOnSkipOf = (p) => (["vpc", "close"].includes(String(p?.noFit ?? "")) ? VPC_GOES_ON : p?.noFit === "aside" && p?.noFitGoOn ? ASIDE_GOES_ON : null);
+export const goOnSkipOf = (p) => (String(p?.noFit ?? "") === "vpc" ? VPC_GOES_ON : p?.noFit === "aside" && p?.noFitGoOn ? ASIDE_GOES_ON : null);
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
   const heads = {};
