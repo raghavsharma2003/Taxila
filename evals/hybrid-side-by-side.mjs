@@ -27,6 +27,7 @@ import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
 import { saidMust, scriptOn, scriptWhyNot, scriptFor, fillFriend } from "../server/director/script.js";
 import { useStaged, snapshotStaged } from "./hybrid-side-by-side/staged.mjs";
+import { askedIn } from "./hybrid-side-by-side/asked-forms.mjs";
 import { endsOnYourTurn } from "../server/director/question-run.js";
 /** Brain 049 B6, the record: held.picture.line is the picture's line as she said it — her alt line where the turn said one (the staged
  *  c4-ch01-t02 steady 18, steering 14 recorded Studio's caption, which was not said), else Studio's line where the turn says it. */
@@ -284,6 +285,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (dc-r8-director20 harness: a card held by her aside question — no card on her row — was still answered, c6 offtopic 21 "126 cm"
       // after the AI line: a live card her last line did not say is not on the table)
       const liveP = live ? nrm(s.ctx?.lang === "english" ? live.prompt_en ?? live.prompt_hi : live.prompt_hi ?? live.prompt_en) : "";
+      const livePrompt = live ? String((s.ctx?.lang === "english" ? live.prompt_en ?? live.prompt_hi : live.prompt_hi ?? live.prompt_en) ?? "") : "";
       // (S1: a card re-asked by its question alone — its last sentence — is on the table too)
       const qOf = (c) => nrm(c).split(/(?<=[.!?।])\s+/).filter(Boolean).at(-1) ?? "";
       // (dc-r8-director22 W: a card asked by its question alone — the reask with its givens named — is on the table too)
@@ -292,7 +294,10 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
           // (d31 046 follow-up: the short ask — "Ab phir se socho, jawab kya hoga?" — asks for the card's answer: the card is on the table, and a
           // yes/no card is not answered "haan, samajh aaya" as if her line were a check-in — the re-ask rotation's dry steady c4-ch01-t02 19)
           || (lastT.seams ?? []).some((x) => x.right === "reaskShort")
-        : !lastT || !live || (!!liveP && nrm(lastT.text).includes(liveP.slice(0, 30)));
+          // (main's second ruling on 054 A, fix 5: a question asked in any of its authored forms — its reask, simpler, Hindi form or help
+          // wording, or again by the short ask or the invitation — is asked: hybrid-side-by-side/asked-forms.mjs)
+          || askedIn(scriptFor(kit)?.script ?? null, lastT.text, lastT.card) || (!!livePrompt && askedIn(scriptFor(kit)?.script ?? null, lastT.text, livePrompt))
+        : !lastT || !live || (!!liveP && nrm(lastT.text).includes(liveP.slice(0, 30))) || (!!livePrompt && askedIn(scriptFor(kit)?.script ?? null, lastT.text, livePrompt));
       const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
         beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, ...(quick && cardSaid ? { quick } : {}), boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)

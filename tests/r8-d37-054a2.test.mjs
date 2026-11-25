@@ -171,3 +171,22 @@ describe("fix 4: a worked close split from its card keeps the own-turn joint", (
   });
 });
 
+describe("fix 5 (evals only): the rule-based child hears a question in any of its authored forms", () => {
+  test("a step asked in its reask, its Hindi form, the short ask or the invitation is asked; a check-in or another question is not", async () => {
+    const { askedIn, questionForms } = await import("../evals/hybrid-side-by-side/asked-forms.mjs");
+    const script = live("c6-maths-ch07-t01");
+    const ask = script.skills[0].workedExample.steps[0].ask;
+    const P0 = ask.prompt.hi;
+    assert.ok(questionForms(script, P0).includes(ask.reask.hi) && questionForms(script, P0).includes(ask.hindi.hi));
+    // (dry steering c6-ch07-t01 34: the step asked in its reask after a park)
+    assert.ok(askedIn(script, ask.reask.hi, P0));
+    assert.ok(askedIn(script, `Har hissa 6 cm ka hai. ${ask.hindi.hi}`, P0));
+    assert.ok(askedIn(script, "Ab phir se socho, jawab kya hoga?", P0));
+    assert.ok(askedIn(script, `Theek hai. ${script.joints.yourTurn[0].hi}`, P0));
+    assert.equal(askedIn(script, "Yahan tak theek hai?", P0), false);
+    assert.equal(askedIn(script, "Cricket ki baat bhi hogi. Pehle is sawaal ka jawab do.", P0), false);
+    // (a step's help wording is written on the step beside its ask)
+    const st = script.skills.flatMap((k) => k.workedExample?.steps ?? []).find((x) => x.ask?.prompt && x.simpler);
+    if (st) assert.ok(askedIn(script, st.simpler.hi ?? st.simpler, st.ask.prompt.hi));
+  });
+});
