@@ -1,11 +1,10 @@
-// to-brain 054 A, builder A of round d37 (docs/patches/to-brain/054-director36-the-turns-shape-walk-only.md, main's rulings: A(i) design D1,
-// A(ii) design II-B, A(iii) as written): a turn holds one new thing. The walk's rules pinned in units; the four predicates of A.5 pinned on
+// to-brain 054 A, builder A of round d37 (docs/patches/to-brain/054-director36-the-turns-shape-walk-only.md, main's rulings: A(i) design D2
+// since the fifth ruling (D1's go-on turn was heard as dead), A(ii) design II-B, A(iii) as written): a turn holds one new thing. The walk's rules pinned in units; the four predicates of A.5 pinned on
 // made rows, one that trips each and one that does not.
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { _replyApartForTest as replyApart, REPLY_APART_JOINTS } from "../server/director/state.js";
 import { applySeams, SEAM_TABLE } from "../server/brain/seams.js";
-import { initLessonState, step } from "../server/director/state.js";
+import { initLessonState, step, _replyPointForTest as replyPoint } from "../server/director/state.js";
 import { classifyFast, targetFor } from "../server/director/classify.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
@@ -43,50 +42,75 @@ function turnOf({ lm = {}, later = [], turn = 9 } = {}) {
 }
 const INPUT = { event: "turn", kit: KIT, text: "batting", cls: { asideReply: true } };
 
-describe("A(i), design D1: her reply to a side-topic is its own turn, ending on its joint as a go-on line", () => {
-  test("an aside's reply with a new point and its card: the reply alone, noFit aside, the afterAside joint its statement end; point and card held whole", () => {
-    const out = replyApart({ turn: 8, lastMove: { kind: "repair" } }, INPUT, turnOf({ lm: { asideAck: true } }));
+describe("A(i), design D2 (main's fifth ruling item 1): her reply, its joint, the point whole and the point's check-in; the card the next turn", () => {
+  test("an aside's reply with a new point and its card: the point ends on its check-in (noFit point), the card held whole for the next turn", () => {
+    const out = replyPoint({ turn: 8, lastMove: { kind: "repair" } }, INPUT, turnOf({ lm: { asideAck: true } }));
     const m = out.state.lastMove;
-    assert.equal(m.noFit, "aside"); assert.equal(m.replyApart, "afterAside"); assert.equal(m.vpcGoOn, "Theek hai, ab phir se dhyaan idhar lagate hain.");
-    assert.ok(m.splitClose && m.asideAck && !m.point);
+    assert.equal(m.noFit, "point"); assert.equal(m.replyPoint, "afterAside");
+    assert.ok(m.asideAck && m.point === "Ab 1/3 wale 3 gap chalkar dekho: wahan 3/3 = 1.", "the reply and the point whole");
+    assert.ok(!m.vpcGoOn && !m.splitClose, "no go-on line");
     assert.equal(out.ui.ask, undefined);
     const h = out.state.splitHold;
-    assert.equal(h.move.point, "Ab 1/3 wale 3 gap chalkar dekho: wahan 3/3 = 1."); assert.equal(h.ui.ask.text, CARD.text);
-    assert.ok(!h.move.asideAck && !h.move.noFit && !h.teach);
+    assert.ok(h.teach); assert.equal(h.ui.ask.text, CARD.text); assert.ok(!h.move.point && !h.move.asideAck);
     // (the card is held, not posed: the next turn poses it fresh)
     assert.equal(out.state.posedAt[CARD.itemId], undefined);
-    assert.equal(out.state.activeItemId, undefined);
   });
-  test("a park said on this turn takes afterPark; her reply after the AI line takes afterAiLine", () => {
-    const park = replyApart({ turn: 8, lastMove: { kind: "repair" } }, { ...INPUT, cls: {} }, turnOf({ later: [{ id: 1, at: 9, share: true, topic: "cricket" }] }));
-    assert.equal(park.state.lastMove.replyApart, "afterPark"); assert.equal(park.state.lastMove.vpcGoOn, "Abhi apne kaam par wapas chalte hain.");
-    const ai = replyApart({ turn: 8, lastMove: { kind: "repair", tasteAsked: { topic: "Virat" } } }, INPUT, turnOf({ lm: { asideAck: true, heldSaid: ["Yeh do pattiyan ek jaisi hain."] } }));
-    assert.equal(ai.state.lastMove.replyApart, "afterAiLine");
-    assert.deepEqual(ai.state.splitHold.move.heldSaid, ["Yeh do pattiyan ek jaisi hain."]);
-    assert.deepEqual(REPLY_APART_JOINTS, ["afterAside", "afterPark", "afterAiLine"]);
+  test("a park said on this turn is afterPark's; her reply after the AI line is afterAiLine's; a point held behind the AI line is said here once", () => {
+    const park = replyPoint({ turn: 8, lastMove: { kind: "repair" } }, { ...INPUT, cls: {} }, turnOf({ later: [{ id: 1, at: 9, share: true, topic: "cricket" }] }));
+    assert.equal(park.state.lastMove.replyPoint, "afterPark"); assert.equal(park.state.lastMove.noFit, "point");
+    const held = turnOf({ lm: { asideAck: true, point: undefined, heldSaid: ["Yeh do pattiyan ek jaisi hain."], sayFirst: ["Yeh do pattiyan ek jaisi hain."] } });
+    held.state.bodyUnsaid = ["Yeh do pattiyan ek jaisi hain."];
+    const ai = replyPoint({ turn: 8, lastMove: { kind: "repair", tasteAsked: { topic: "Virat" } } }, INPUT, held);
+    assert.equal(ai.state.lastMove.replyPoint, "afterAiLine");
+    assert.deepEqual(ai.state.lastMove.sayFirst, ["Yeh do pattiyan ek jaisi hain."]); assert.equal(ai.state.lastMove.point, undefined);
+    assert.equal(ai.state.bodyUnsaid, undefined); assert.equal(ai.state.splitHold.ui.ask.text, CARD.text);
   });
-  test("not this rule's: the turn after the go-on line (whatever the child says), no new point, a worked example, a remediation, distress, no joint form", () => {
-    const same = (prev, input, t) => { const o = replyApart(prev, input, t); return o === t && !o.state.splitHold; };
-    assert.ok(same({ turn: 8, lastMove: { kind: "repair", noFit: "aside", vpcGoOn: "x" } }, INPUT, turnOf({ lm: { asideAck: true } })));
+  test("not this rule's: no reply, no new point, a worked example, a remediation, distress, her AI line itself, a return asked", () => {
+    const same = (prev, input, t) => { const o = replyPoint(prev, input, t); return o === t && !o.state.splitHold; };
+    assert.ok(same({ turn: 8, lastMove: {} }, INPUT, turnOf({ lm: {} })));
     assert.ok(same({ turn: 8, lastMove: {} }, INPUT, turnOf({ lm: { asideAck: true, point: undefined } })));
     assert.ok(same({ turn: 8, lastMove: {} }, INPUT, turnOf({ lm: { asideAck: true, kind: "worked_example" } })));
     assert.ok(same({ turn: 8, lastMove: {} }, INPUT, turnOf({ lm: { asideAck: true, scriptBeat: { kind: "remediation" } } })));
     assert.ok(same({ turn: 8, lastMove: {} }, { ...INPUT, cls: { asideReply: true, flags: { distress: true } } }, turnOf({ lm: { asideAck: true } })));
-    assert.ok(same({ turn: 8, lastMove: {} }, INPUT, turnOf({ lm: {} })));
-    assert.ok(same({ turn: 8, lastMove: {} }, { ...INPUT, kit: { topicId: "t", __joints: {} } }, turnOf({ lm: { asideAck: true } })));
-    // (her AI line itself ends on its question: the teaching waits behind it as built)
     assert.ok(same({ turn: 8, lastMove: {} }, INPUT, turnOf({ lm: { asideAck: true, tasteAsked: { topic: "Virat" } } })));
+    assert.ok(same({ turn: 8, lastMove: {} }, INPUT, turnOf({ lm: { asideAck: true, returned: { topic: "cricket" } } })));
   });
-  test("the seam pass ends the reply's turn on its joint — the table's go-on seam, one form, said once", () => {
-    for (const [a, j] of [["asideReply", "afterAside"], ["aiReply", "afterAiLine"], ["park", "afterPark"]]) assert.ok(SEAM_TABLE.some((r) => r[0] === a && r[1] === "goOn" && r[2] === j), a);
-    const list = [{ part: "aside", text: "Oho, batting! Isi mein tumhe maza aata hai." }, { part: "aside", text: "Theek hai, ab phir se dhyaan idhar lagate hain." }];
-    const r = applySeams(list.map((p) => p.text).join(" "), list, { kit: KIT, state: { turn: 9 }, lang: "hinglish", info: { asideAck: true, goOnAfterReply: true } });
-    assert.equal(r.reply, "Oho, batting! Isi mein tumhe maza aata hai. Theek hai, ab phir se dhyaan idhar lagate hain.");
-    assert.deepEqual(r.seams.map((x) => [x.left, x.right, x.joint]), [["start", "asideReply", null], ["asideReply", "goOn", "afterAside"]]);
-    assert.ok(r.jointsUsed.includes("afterAside"));
-    // (without the walk's mark nothing is added: a reply that leads into the lesson is joined as before)
-    const r0 = applySeams(list[0].text, [list[0]], { kit: KIT, state: { turn: 9 }, lang: "hinglish", info: { asideAck: true } });
-    assert.equal(r0.reply, "Oho, batting! Isi mein tumhe maza aata hai.");
+  // (the steady child's lines of the dry matrix, c5-t01: director36 steady 36 said the park, its joint, the s2 point and its card in 73 words)
+  const LINES = ["haan, samajh aaya", "3", "6 kilometre", "pata nahi", "one sixth", "1 upon 3", "eight", "1/8", "picture dikhao", "between 0 and 1/5 hai na", "1/10 wala", "chaar gap", "dhai sau metre", "pehle main try karun?", "1 upon 11", "1/12", "pehle mark par", "kal maine cricket khela, sixer maara"];
+  const CARD2 = "script:c5-maths-ch02-t01-s2:ask:e1";
+  test("c5-t01: a side-topic at the bridge's check-in — the park, the point whole, its check-in; the card held", () => {
+    const t = walkLines("c5-maths-ch02-t01", LINES).at(-1);
+    const m = t.state.lastMove;
+    assert.equal(m.replyPoint, "afterPark"); assert.equal(m.noFit, "point"); assert.ok(m.point);
+    assert.equal(t.ui.ask, undefined); assert.equal(t.state.splitHold?.ui?.ask?.itemId, CARD2);
+  });
+  test("each answer to that check-in, routed as A(ii): a yes or silence the card alone; a give-up or Hindi help on the point and the card; a clarify help, then the card", () => {
+    for (const yes of ["haan", ""]) {
+      const t = walkLines("c5-maths-ch02-t01", [...LINES, yes]).at(-1);
+      assert.equal(t.ui.ask?.itemId, CARD2, yes); assert.ok(!t.state.lastMove.point && !t.state.lastMove.help, yes);
+    }
+    for (const req of ["pata nahi", "hindi mein batao"]) {
+      const t = walkLines("c5-maths-ch02-t01", [...LINES, req]).at(-1);
+      assert.equal(t.state.lastMove.help?.rung, "pointAlt", req); assert.equal(t.ui.ask?.itemId, CARD2, req);
+    }
+    const [c1, c2] = walkLines("c5-maths-ch02-t01", [...LINES, "samajh nahi aaya", "haan"]).slice(-2);
+    assert.equal(c1.state.lastMove.help?.rung, "pointAlt"); assert.equal(c2.ui.ask?.itemId, CARD2);
+  });
+  test("a side-topic at that check-in: her line to it and the card — no new point, no return, and no second back-to-work joint", () => {
+    const t = walkLines("c5-maths-ch02-t01", [...LINES, "mujhe cricket pasand hai"]).at(-1);
+    const m = t.state.lastMove;
+    assert.ok(m.asideAgain && m.noReplyJoint && !m.point && !m.returned && !m.replyPoint);
+    assert.equal(t.ui.ask?.itemId, CARD2);
+  });
+  test("the seam pass: her reply, its joint and the point, as director36 joined them; on the turn after, her line to the side-topic takes none (replyAgain)", () => {
+    const list = [{ part: "aside", text: "Oho, batting! Isi mein tumhe maza aata hai." }, { part: "body", text: "Ab 1/3 wale 3 gap chalkar dekho." }, { part: "aside", text: "Yahan tak theek hai?" }];
+    const r = applySeams(list.map((p) => p.text).join(" "), list, { kit: KIT, state: { turn: 9, ctx: { lang: "hinglish" }, lastMove: {} }, lang: "hinglish", info: { asideAck: true } });
+    assert.equal(r.seams.find((x) => x.right === "point")?.joint, "afterAside");
+    assert.ok(r.reply.includes("Theek hai, ab phir se dhyaan idhar lagate hain. Ab 1/3"), r.reply);
+    const next = [{ part: "aside", text: "Cricket wali baat maine likh li hai." }, { part: "card", text: CARD.text }];
+    const r2 = applySeams(next.map((p) => p.text).join(" "), next, { kit: KIT, state: { turn: 11, ctx: { lang: "hinglish" }, lastMove: { noReplyJoint: true } }, lang: "hinglish", info: { asideAck: true, noReplyJoint: true } });
+    const c = r2.seams.find((x) => x.right === "card");
+    assert.equal(c?.left, "replyAgain"); assert.equal(c.joint, null); assert.ok(!r2.jointsUsed.includes("afterAside"));
   });
 });
 

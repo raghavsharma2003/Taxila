@@ -19,7 +19,6 @@
 // lines are the director's own next moves, never a second guess at them.
 import { heldBoard as studioHeldBoard, pictureTurn as studioPictureTurn } from "../stagecraft/board-first.js";
 import { unitBoardOf, firstUnitOf } from "../brain/propose.js";
-import { seamForm } from "../brain/seams.js";
 import { stopKind, signalsOf } from "../relational/signals.js";
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
@@ -41,7 +40,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, helpJoint, goOnPlain, helpPart, hindiFormOf, hindiPathOf, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
+import { pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -1129,19 +1128,19 @@ function parkGate(s, kit, input, e) {
   // (Brain 049 B5: a return is never placed inside a worked example — with a step asked, the aside said again gets the short line and its
   // return waits for the close: the staged c4-ch01-t02's dry offtopic 18, a return asked over an asked step whose answer then got no reply)
   const inWorked = !!s.lastMove?.stepAsk || String(s.lastMove?.kind ?? "") === "worked_example";
-  // (to-brain 054 A(i): said again on the turn after her reply's go-on line — the asideAgain line, then the point and card held for it: the
-  // lesson never waits a second turn on the side-topic)
-  const afterGoOn = s.lastMove?.noFit === "aside";
-  if (had && had.id != null && !had.servedAt && !inWorked && !afterGoOn && responseShape("aside_again", "*") === "return_once") {
+  // (to-brain 054 A(i), main's fifth ruling item 1 — D2: said again at the check-in of her reply's point turn, the side-topic gets its short line
+  // and the held card, never a return there: the lesson has not reached the card the point was for)
+  const afterReplyPoint = !!s.lastMove?.replyPoint;
+  if (had && had.id != null && !had.servedAt && !inWorked && !afterReplyPoint && responseShape("aside_again", "*") === "return_once") {
     // (said again after it was returned: one more return, on what they said now — then the short line from here on)
     s.servedNow = { topic: String(had.topic), share: !!had.share, said: String(input?.text ?? "") || had.said || null };
     return (s.later ?? []).map((x) => (x.id === had.id ? { ...x, servedAt: s.turn, ...(had.servedAt ? { again: true } : {}) } : x));
   }
   if (had) {
     s.asideAgain = { topic: String(had.topic), turn: s.turn, ...(had.servedAt != null ? { returned: true } : {}) };
-    // (to-brain 054 A(i): what they told on the turn after the go-on line is on the park's entry — its return asks nothing they told)
+    // (what they told at that check-in is on the park's entry — its return asks nothing they told)
     const now = String(input?.text ?? "").replace(/\s+/g, " ").trim();
-    if (afterGoOn && !had.servedAt && now && had.id != null) return (s.later ?? []).map((x) => (x.id === had.id ? { ...x, said: `${x.said ? `${x.said}, ` : ""}${now}`.slice(0, 160) } : x));
+    if (afterReplyPoint && !had.servedAt && now && had.id != null) return (s.later ?? []).map((x) => (x.id === had.id ? { ...x, said: `${x.said ? `${x.said}, ` : ""}${now}`.slice(0, 160) } : x));
     return s.later ?? [];
   }
   return pushLater(s.later ?? [], e);
@@ -3403,7 +3402,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["lineBeforeCard", "quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard", "heardCap", "noReplyJoint", "afterWorkedLead", "tasteNoAsk"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard", "heardCap", "afterWorkedLead", "replyPoint", "noReplyJoint"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -3800,7 +3799,7 @@ const pictureLineFields = (d) => {
   return { ...(t ? { sayFirst: [t], helpJoint: { kind: "noPicture", form: t, by: d.pictureLine.by ?? "authored" } } : {}), ...(d.keepUp ? { keepBoard: true } : {}) };
 };
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
-const HELP_STRIP = ["lineBeforeCard", "quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
+const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
   "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom", "stepBoards", "problemLines", "hookSaid",
   // (main's R4 on the merged H4 + L2 tree, steering c4, c5-t02, c6 16: a give-up after a picture turn said the picture's caption again —
   // the help move was built from the picture move and kept its picture marks, so brain/say.js read a picture asked and said the caption
@@ -4257,9 +4256,6 @@ export function step(prev, input) {
     out.state.lastMove = { ...lm0, ...add };
     if (out.move) out.move = { ...out.move, ...add };
   }
-  // (to-brain 054 A(i): her reply to a side-topic never runs into a new point and its card — the reply ends on its joint as a go-on line)
-  out = replyApart(prev, input, out);
-  out = afterGoOn(prev, input, out);
   // (dc-r8-director24 L: one new thing a turn — the held part said first after her reply, and the card with it, over 60 words: the held
   // part ends on its check-in and the card comes on the next turn, as a split's teaching half holds it)
   // (dc-r8-director25: and a split's held half said now — a point and its card after an aside or a return's reply — is held to it too)
@@ -4308,6 +4304,10 @@ export function step(prev, input) {
       }
     }
   }
+  // (to-brain 054 A(i), main's fifth ruling item 1 — design D2: her reply to a side-topic and a new point end on the point's check-in; the card
+  // is the next turn. After the held-part split above, which already ends such a turn on its check-in where the two run over 75)
+  out = replyPoint(prev, input, out);
+  out = afterReplyPoint(prev, input, out);
   // (dc-r8-director24 P, c5-t02 steering 38: a held part said once is said — the second half of a split turn returns early with the held
   // parts still on the state, and the turn after said them again)
   if (input?.event === "turn" && prev?.bodyUnsaid?.length && out?.state?.lastMove?.heldSaid?.length && out.state.bodyUnsaid === prev.bodyUnsaid) out.state.bodyUnsaid = undefined;
@@ -5914,140 +5914,81 @@ function closeGoesOn(out, input) {
   out.proposal = directorProposal(out.move, { ui: out.ui, guidance: s.guidance, purpose: s.purpose });
   return out;
 }
-/** to-brain 054 A(i), main's ruling D1 (director36: a reply, a park or her reply after the AI line run into a new point and its card, 28 turns
- *  of 53 to 73 words — c5-t01 offtopic 46, 50, steady 36, 42): a turn that opens with her reply to a side-topic — an aside's, the AI line's or
- *  a return's reply, or a park — never also carries a new point and its card. Her reply is the turn, ending on the reply's own joint
- *  (joints.afterAside, afterPark, afterAiLine) said as a go-on line: noFit "aside", the joint its statement tail (brain/say.js vpcGoOn,
- *  brain/seams.js places it after the reply). The point and its card are held whole for the next turn, whatever the child says (goesOnSplit),
- *  except a stop or a safety turn (heldTurn, as built) and the side-topic said again (the asideAgain line, then the point and card: parkGate).
- *  The turn after the go-on line is never split this way again, so the lesson cannot stall. A reply into a card with no new point, a worked
- *  example or a remediation is not this rule's. */
-export const REPLY_APART_JOINTS = ["afterAside", "afterPark", "afterAiLine"];
-function replyApart(prev, input, out) {
+/** to-brain 054 A(i), main's fifth ruling item 1 — design D2 (director36: a reply, a park or her reply after the AI line run into a new point
+ *  and its card, 28 turns of 53 to 73 words; D1's go-on turn, the reply alone ending on its joint, was heard as a dead turn by both judges of
+ *  the 2026-11-25 pair run): a turn that opens with her reply to a side-topic — an aside's, the AI line's or a return's reply, her said-again
+ *  line, or a park — and has a NEW point and its card to say is the reply, its own joint said inside the turn as director36 said it
+ *  (joints.afterAside, afterPark, afterAiLine: brain/seams.js places it), the point whole, and the point's check-in (splitTeach's noFit
+ *  "point" shape, BEAT_ASK). The card is the next turn (the teach hold, heldTurn), routed as A(ii) is: a yes or silence, the card alone; a
+ *  request, help on the point, then the card; a side-topic, the park line, its joint and the card. The turn is said whole whatever its length
+ *  (a point is never broken). A reply into a card with no new point, a worked example or a remediation is not this rule's.
+ *  → the turn, the card held; or `out` as it was. */
+function replyPoint(prev, input, out) {
   const s = out?.state;
   if (input?.event !== "turn" || input.branch || !scriptOn() || recordedNow || !l2On() || !s?.lastMove || out.end) return out;
-  // (the walk already split the point from its card — her reply, the point, its check-in: the D2 shape director29 item 6 forbids. The point
-  // and its card are put back together and held behind her reply, as below; the held half splits them again if they do not fit)
-  let lm = s.lastMove, ui = out.ui;
-  if (s.splitHold) {
-    const h = s.splitHold;
-    if (!h.teach || !lm.splitTeach || h.helpSplit || !h.ui?.ask?.itemId || !(lm.asideAck || lm.returnReply || lm.asideAgain || (s.later ?? []).some((e) => e.at === s.turn && e.share && e.servedAt == null))) return out;
-    const { splitTeach: _st, checkinOk: _ck, noFit: _nf, quick: _q, quickNoRoom: _qn, stayCheckin: _sc, ...m0 } = lm;
-    lm = m0; ui = h.ui;
-  }
-  const rejoin = !!s.splitHold;
-  if (!ui?.ask?.itemId || !ui.ask.text || goOnRecent(prev)) return out;
   if (input.cls?.flags?.distress || input.cls?.flags?.wantsToStop || s.safeguard) return out;
-  if (["safeguard", "wrap", "break", "teachback", "worked_example", "hint"].includes(String(lm.kind ?? "")) || lm.scriptBeat?.kind === "remediation") return out;
-  if (lm.tasteAsked || lm.returned?.topic || lm.help || lm.simpler || lm.smaller || lm.quick || lm.gave || lm.closed || lm.workedDone || lm.problemLines || lm.stepAsk) return out;
-  // (a point said now, or held behind her AI line or a return and said first now)
-  const point = (lm.point && String(lm.point).trim()) || (lm.heldSaid?.length && [lm.scriptBeat?.kind, lm.heldBeat?.kind].includes("explain"));
-  if (!point) return out;
-  // (main's second ruling fix 2 — dry offtopic c6-ch07-t03 50, c4-ch01-t02 46, c5-ch02-t03 46: the side-topic said again at a bridge's or a
-  // point's check-in, her said-again line, is a reply like any other: it ends on its joint as a go-on line)
+  const lm = s.lastMove;
   const reply = !!(lm.asideAck || lm.returnReply || lm.asideAgain);
   const parkNow = (s.later ?? []).some((e) => e.at === s.turn && e.share && e.servedAt == null);
   if (!reply && !parkNow) return out;
   const kind = reply ? (prev?.lastMove?.tasteAsked ? "afterAiLine" : "afterAside") : "afterPark";
-  const forms = jointOf(input.kit, kind, s.ctx?.lang ?? "hinglish");
-  const form = forms?.length ? seamForm(forms, s, kind) : null;
-  if (!form) return out;
-  if (rejoin) { s.activeItemId = s.splitHold.activeItemId ?? undefined; s.quickItem = undefined; s.splitHold = undefined; }
-  s.goOnTurn = s.turn;
-  const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, l2Break: true, noFit: "aside", vpcGoOn: String(form).trim(), replyApart: kind,
-    ...(lm.asideAck ? { asideAck: true } : {}), ...(lm.returnReply ? { returnReply: lm.returnReply } : {}), ...(lm.sadAside ? { sadAside: true } : {}),
-    ...(lm.asideAgain ? { asideAgain: lm.asideAgain } : {}), ...(leadBeatOf ? { scriptBeat: leadBeatOf } : {}) };
-  const held = { ...lm };
-  for (const k of ["asideAck", "returnReply", "sadAside", "asideAgain", "probeAck", "noFit", "vpcGoOn"]) delete held[k];
-  s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: out.moduleCommands ?? [] };
-  // (the card is held, not posed: its posing this turn is undone — the next turn poses it fresh)
+  // (the walk already split the point from its card — her reply, the point, its check-in: D2's shape. Marked, as said)
+  if (s.splitHold) {
+    const h = s.splitHold;
+    if (h.teach && lm.splitTeach && !h.helpSplit && h.ui?.ask?.itemId && !lm.returned?.topic && (lm.point || lm.heldSaid?.length)) {
+      s.lastMove = { ...lm, replyPoint: kind };
+      return { ...out, state: s, move: out.move ? { ...out.move, replyPoint: kind } : out.move };
+    }
+    return out;
+  }
+  const ui = out.ui;
+  if (!ui?.ask?.itemId || !ui.ask.text || !lm.itemId) return out;
+  if (["safeguard", "wrap", "break", "teachback", "worked_example", "hint"].includes(String(lm.kind ?? "")) || lm.scriptBeat?.kind === "remediation") return out;
+  if (lm.tasteAsked || lm.returned?.topic || lm.help || lm.simpler || lm.smaller || lm.quick || lm.gave || lm.closed || lm.workedDone || lm.problemLines || lm.stepAsk) return out;
+  // (a point said now, or held behind her AI line or a return and said first now)
+  const heldPoint = !lm.point && lm.heldSaid?.length && [lm.scriptBeat?.kind, lm.heldBeat?.kind].includes("explain");
+  if (!(lm.point && String(lm.point).trim()) && !heldPoint) return out;
   const id = ui.ask.itemId;
-  if (s.posedAt?.[id] === s.turn) { const { [id]: _p, ...rest } = s.posedAt; s.posedAt = rest; }
-  if (s.cardSaidN?.[id]) s.cardSaidN = { ...s.cardSaidN, [id]: s.cardSaidN[id] - 1 };
-  // (a held part said first in the held half is said there once: the state no longer holds it apart)
-  if (held.heldSaid?.length) s.bodyUnsaid = undefined;
-  s.activeItemId = undefined;
-  s.lastMove = close;
-  const closeUi = { status: "your_turn", ...(ui?.later ? { later: ui.later } : {}), ...(ui?.moment ? { moment: ui.moment } : {}) };
-  s.lastUi = closeUi;
-  return { ...out, state: s, move: close, moduleCommands: [], ui: closeUi, proposal: directorProposal(close, { ui: closeUi, guidance: s.guidance, purpose: s.purpose }) };
+  const sp = splitTeach(heldPoint ? { ...out, move: { ...lm, point: (lm.sayFirst ?? []).join(" ") } } : out, input, -1, 0);
+  if (sp === out || !sp?.state?.splitHold) return out;
+  let m = sp.state.lastMove;
+  if (heldPoint) {
+    // (the card's own sentences belong to the card, said whole on the next turn — as the held-part split below strips them)
+    const cardKs = String(ui.ask.text).split(/(?<=[.!?।])\s+/).map((x) => normLine(x)).filter((x) => x.length > 8);
+    const strip = (t) => String(t).split(/(?<=[.!?।])\s+/).filter((x) => !cardKs.includes(normLine(x))).join(" ").trim();
+    const { point: _p, ...m0 } = m;
+    m = { ...m0, sayFirst: (m0.sayFirst ?? []).map(strip).filter(Boolean), heldSaid: (m0.heldSaid ?? []).map(strip).filter(Boolean), ...(m0.rendered ? { rendered: m0.rendered.map(strip).filter(Boolean) } : {}) };
+  }
+  sp.state.lastMove = { ...m, ...(m.quick ? {} : { noFit: "point" }), replyPoint: kind };
+  sp.move = { ...sp.state.lastMove };
+  // (the card is held, not posed: its posing this turn is undone — the next turn poses it fresh)
+  if (sp.state.posedAt?.[id] === sp.state.turn) { const { [id]: _q, ...rest } = sp.state.posedAt; sp.state.posedAt = rest; }
+  if (sp.state.cardSaidN?.[id]) sp.state.cardSaidN = { ...sp.state.cardSaidN, [id]: sp.state.cardSaidN[id] - 1 };
+  // (a held part said first is said here once: the state no longer holds it apart)
+  if (heldPoint) sp.state.bodyUnsaid = undefined;
+  sp.proposal = directorProposal(sp.move, { ui: sp.ui, guidance: sp.state.guidance, purpose: sp.state.purpose });
+  return sp;
 }
-export const _replyApartForTest = (prev, input, out) => replyApart(prev, input, out);
-/** main's second ruling fix 3 (reader B1, B2 — dry offtopic c5-ch02-t01 46→48, 56→60; c6-ch07-t01 38→40, 46→48): her last turn ended on her
- *  reply's go-on line — or on the AI line said straight after one, which ends on her question as built (O7). → whether it did. */
-const goOnRecent = (prev) => prev?.lastMove?.noFit === "aside" || (!!prev?.lastMove?.tasteAsked && prev.goOnTurn != null && prev.goOnTurn === prev.turn - 1);
-/** The most words her reply to a side-topic takes in a turn (her said-again line or park line): the lead partsOfTurn counts for one. */
-const REPLY_LEAD_WORDS = 15;
-/** main's second ruling fix 3: after a go-on turn the next turn always teaches, and "back to work" is never said twice running. The side-topic
- *  brought up again there (her said-again line, a park, her reply after the AI line) is answered by its short line, then the held point and
- *  card, with no go-on joint between (noReplyJoint: brain/seams.js drops afterAside, afterPark, afterAiLine), and never a second go-on turn
- *  (replyApart skips it). The turn keeps 049 B6's 70 words: over it, the point ends on its check-in and the card is the next turn. */
-function afterGoOn(prev, input, out) {
+export const _replyPointForTest = (prev, input, out) => replyPoint(prev, input, out);
+/** D2, the turn after her reply's point turn: a side-topic at that check-in — her park line, her said-again line, her reply — leads into the
+ *  card with no joint of its own. Her point turn said "back to work" (afterAside, afterPark, afterAiLine) one turn ago; it is never said in two
+ *  turns running (main's second ruling fix 3, gated goOnJointTwice, kept by the fifth ruling item 2). noReplyJoint: brain/seams.js. */
+function afterReplyPoint(prev, input, out) {
   const s = out?.state;
-  if (input?.event !== "turn" || input.branch || !scriptOn() || recordedNow || !l2On() || !s?.lastMove || out.end || !goOnRecent(prev)) return out;
-  if (input.cls?.flags?.distress || input.cls?.flags?.wantsToStop || s.safeguard) return out;
-  if (["safeguard", "wrap", "break"].includes(String(s.lastMove.kind ?? ""))) return out;
+  if (input?.event !== "turn" || !prev?.lastMove?.replyPoint || !s?.lastMove || out.end || s.lastMove.replyPoint) return out;
+  if (["safeguard", "wrap", "break"].includes(String(s.lastMove.kind ?? "")) || s.safeguard) return out;
   const lm = s.lastMove;
   const parkNow = (s.later ?? []).some((e) => e.at === s.turn && e.share && e.servedAt == null);
-  // (main's fourth ruling item 2: her AI line is said whole, its question back with it, as its own turn wherever it comes — the path that dropped
-  // the question and ran the line into the held point and card (tasteNoAsk) is gone. The lesson does not stall: never three turns running
-  // without a teaching part — her reply to the child's answer to the AI question, after a go-on turn and the AI line, is said with the held
-  // point and card, here)
   if (!(lm.asideAgain || lm.asideAck || lm.returnReply || parkNow) || lm.tasteAsked) return out;
-  const mark = { noReplyJoint: true };
-  s.lastMove = { ...lm, ...mark };
-  out = { ...out, move: out.move ? { ...out.move, ...mark } : out.move };
-  const card = out.ui?.ask?.text;
-  if (!s.splitHold && lm.point && lm.itemId && card && wordsIn([lm.point, ...(lm.rendered ?? [])], card) + REPLY_LEAD_WORDS > VPC_MAX) {
-    const id = out.ui.ask.itemId;
-    const sp = splitTeach(out, input, -1, 0);
-    if (sp !== out && sp?.state?.splitHold) {
-      sp.state.lastMove = { ...sp.state.lastMove, ...(sp.state.lastMove?.quick ? {} : { noFit: "point" }), ...mark };
-      sp.move = { ...sp.state.lastMove };
-      if (sp.state.posedAt?.[id] === sp.state.turn) { const { [id]: _p, ...rest } = sp.state.posedAt; sp.state.posedAt = rest; }
-      if (sp.state.cardSaidN?.[id]) sp.state.cardSaidN = { ...sp.state.cardSaidN, [id]: sp.state.cardSaidN[id] - 1 };
-      sp.proposal = directorProposal(sp.move, { ui: sp.ui, guidance: sp.state.guidance, purpose: sp.state.purpose });
-      return sp;
-    }
-  }
-  out.proposal = directorProposal(s.lastMove, { ui: out.ui, guidance: s.guidance, purpose: s.purpose });
-  return out;
+  s.lastMove = { ...lm, noReplyJoint: true };
+  const o = { ...out, state: s, move: out.move ? { ...out.move, noReplyJoint: true } : out.move };
+  o.proposal = directorProposal(s.lastMove, { ui: o.ui, guidance: s.guidance, purpose: s.purpose });
+  return o;
 }
-export const _afterGoOnForTest = (prev, input, out) => afterGoOn(prev, input, out);
+export const _afterReplyPointForTest = (prev, input, out) => afterReplyPoint(prev, input, out);
 /** to-brain 049 B6 and 053 B4: a turn split after a right verdict that ended on the go-on line — the held half comes next whatever the child
  *  says (a right verdict split from its point, noFit "vpc"; a right answer's close apart from the next card, noFit "card" with its go-on). */
 const goesOnSplit = (lm) => lm?.noFit === "vpc" || (!!lm?.noFit && !!lm?.vpcGoOn);
-/** to-brain 054 A, main's second ruling fix 1: a language request on the turn after her reply's go-on line (replyApart) — the held point and
- *  its card, the card asked in its own `hindi` form, as a Hindi request at that card is answered (help.js pickHelp, Brain 046 Q2), or as
- *  written where it has none. Main's fourth ruling item 1: the point first, then the switch line and the Hindi form (switchFirst allows the
- *  switch line there and only there), or at a card with no form the script's joints.easierWords line (051 C5) and the card.
- *  `s` is the state of the turn, its language already set. → the turn, or null (no script card held). */
-function heldHindi(prev, input, s, h) {
-  const live = String(h.ui?.ask?.itemId ?? "");
-  const script = scriptFor(input.kit)?.script;
-  if (!script || !live.startsWith("script:") || !h.ui?.ask?.text || h.move?.kind === "worked_example") return null;
-  const partId = (() => { try { return cardPartOf(input.kit, { itemId: live }); } catch { return null; } })();
-  const part = partId ? (() => { try { return helpPart(script, partId); } catch { return null; } })() : null;
-  if (!part) return null;
-  const lessonKey = prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null;
-  const hf0 = hindiFormOf(script, part);
-  const hf = hf0 ? fillFriend(hf0, friendOf) : null;
-  const ew = Array.isArray(script.joints?.easierWords) && script.joints.easierWords.length ? helpJoint(script, "easierWords", { lang: "hinglish", lessonKey, n: prev.helpJointN?.easierWords ?? 0 }) : null;
-  const d = { part: partId, kind: part.kind, request: "hindi", rung: hf ? { field: "hindi", path: hindiPathOf(script, part), text: "", board: part.board ?? null } : null, board: part.board ?? null,
-    card: hf ? "hindiForm" : "keep", key: null, joint: null, ...(hf ? { hindiForm: hf } : { hindiAsked: true }), ...(ew ? { easierLine: ew } : {}), friend: friendOf };
-  // (main's fourth ruling item 1, dry steady c5-ch02-t01 38: the point first, as written — it is told here for the first time — then the switch
-  // line straight before the card's Hindi form; at a card with no form, the easier-words line before the card. Neither line is said before a
-  // point not yet told: "ise aur seedhe shabdon mein" pointed back at nothing. brain/say.js places it, brain/seams.js records its seam)
-  const lineBeforeCard = hf ? { kind: "hindiSwitch" } : ew?.text ? { kind: "easierWords", text: fillFriend(ew.text, friendOf).trim(), by: ew.by ?? "authored" } : null;
-  const f = { ...(hf ? { hindiForm: hf } : {}), ...(lineBeforeCard ? { lineBeforeCard } : {}) };
-  const move = { ...h.move, ...f, help: helpMark(d), request: "language", noLangAck: true };
-  noteHelp(s, d);
-  const ui = hf ? { ...h.ui, ask: { ...h.ui.ask, text: hf } } : h.ui;
-  // (the walk keeps the card's own text, as helpStay keeps it for a Hindi form: the form is this turn's words for it)
-  s.lastMove = move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent;
-  if (h.activeItemId) s.activeItemId = h.activeItemId;
-  return { state: s, move, moduleCommands: h.moduleCommands ?? [], ui, end: false, proposal: directorProposal(move, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
-}
 /** The held half of a split turn, said now (any reply to "shall we go on?" but a safety read or a stop). null otherwise. */
 function heldTurn(prev, input) {
   const h = prev.splitHold;
@@ -6059,11 +6000,6 @@ function heldTurn(prev, input) {
     s.turn += 1;
     s.ctx = { ...s.ctx, lang: c.request.lang ?? "hindi", langPinned: true };
     s.splitHold = undefined;
-    // (to-brain 054 A, main's second ruling fix 1 — dry steady c5-t01 38, c6-ch07-t03 38: "Hindi mein bolo" after her reply's go-on line is
-    // honoured as at the card it holds: the switch line, the held point, and the card's own Hindi form as its question; at a card with no form,
-    // the script's easier-words line first, as 051 C5 at a card)
-    const hh = prev.lastMove?.replyApart ? heldHindi(prev, input, s, h) : null;
-    if (hh) return hh;
     s.lastMove = h.move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent;
     if (h.activeItemId) s.activeItemId = h.activeItemId;
     return { state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };

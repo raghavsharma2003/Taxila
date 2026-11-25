@@ -3,7 +3,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { initLessonState, step, _replyApartForTest as replyApart } from "../server/director/state.js";
+import { initLessonState, step, _replyPointForTest as replyPoint, _afterReplyPointForTest as afterReplyPoint } from "../server/director/state.js";
 import { applySeams } from "../server/brain/seams.js";
 import { D37A_PREDICATES as P } from "../evals/hybrid-side-by-side/d37a-predicates.mjs";
 import { classifyFast, targetFor } from "../server/director/classify.js";
@@ -33,24 +33,8 @@ describe("fix 1: a request made in reply to a go-on turn is honoured", () => {
   // (the steady child of the dry matrix, c5-maths-ch02-t01, up to row 37: a park at the bridge's check-in, its go-on line, "Hindi mein bolo")
   const LINES = ["haan, samajh aaya", "3", "6 kilometre", "pata nahi", "one sixth", "1 upon 3", "eight", "1/8", "picture dikhao", "between 0 and 1/5 hai na",
     "1/10 wala", "chaar gap", "dhai sau metre", "pehle main try karun?", "1 upon 11", "1/12", "pehle mark par", "kal maine cricket khela, sixer maara", "Hindi mein bolo"];
-  // (main's fourth ruling item 1 supersedes the easier-words lead: the point first, then the switch line before the Hindi form — r8-d37-054a3)
-  test("Hindi after her reply's go-on line: the held point, and the card asked in its own Hindi form, the switch line before it", () => {
-    const rs = walkLines("c5-maths-ch02-t01", LINES);
-    const go = rs.at(-2).state.lastMove, t = rs.at(-1);
-    assert.equal(go.noFit, "aside"); assert.ok(go.replyApart);
-    const m = t.state.lastMove;
-    assert.ok(m.point, "the held point is said");
-    const script = live("c5-maths-ch02-t01");
-    const form = String(m.hindiForm ?? "");
-    assert.ok(form && t.ui.ask.text === form, "the card's Hindi form is the turn's question");
-    assert.equal(m.request, "language"); assert.ok(m.noLangAck, "no switch line before a first telling (T1)");
-    assert.equal(m.lineBeforeCard?.kind, "hindiSwitch", "the switch line comes after the point, before the Hindi form");
-    assert.ok(!script.joints.easierWords.some((f) => f.hi === m.sayFirst?.[0]), "no easier-words line leads");
-    assert.equal(m.help?.request, "hindi"); assert.ok(m.help.hindiForm);
-    assert.equal(t.state.ctx.lang, "hindi");
-    // (the walk keeps the card's own text: the form is this turn's words for it)
-    assert.notEqual(t.state.lastUi.ask.text, form);
-  });
+  // (main's fifth ruling item 1: the go-on turn is gone — a Hindi request at the check-in of her reply's point turn is help on the point, then
+  // the card, as A(ii) routes it: r8-d37-054a's D2 tests)
   test("hindiNoFormNoLine reads the turn after a go-on line like any other: no exemption", async () => {
     const { PREDICATES } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
     const script = live("c5-maths-ch02-t01");
@@ -79,18 +63,12 @@ function turnOf({ lm = {}, later = [], turn = 9 } = {}) {
 const INPUT = { event: "turn", kit: KIT, text: "mujhe cricket pasand hai", cls: { asideReply: true } };
 
 describe("fix 2: a side-topic at a check-in is the same rule", () => {
-  test("her said-again line at a bridge's check-in ends on its joint as a go-on line; the point and card are held", () => {
-    const out = replyApart({ turn: 8, lastMove: { kind: "repair", splitClose: true, bridgeSaid: "Ab aage." } }, INPUT, turnOf({ lm: { asideAgain: { topic: "cricket", returned: true } } }));
+  test("her said-again line at a bridge's check-in, with a new point: the line, the point whole, its check-in (D2); the card held", () => {
+    const out = replyPoint({ turn: 8, lastMove: { kind: "repair", splitClose: true, bridgeSaid: "Ab aage." } }, INPUT, turnOf({ lm: { asideAgain: { topic: "cricket", returned: true } } }));
     const m = out.state.lastMove;
-    assert.equal(m.noFit, "aside"); assert.equal(m.replyApart, "afterAside"); assert.deepEqual(m.asideAgain, { topic: "cricket", returned: true });
-    assert.ok(!m.point); assert.equal(out.state.splitHold.move.point, "Ab 1/3 wale 3 gap chalkar dekho: wahan 3/3 = 1.");
-    assert.ok(!out.state.splitHold.move.asideAgain);
-    assert.equal(out.state.goOnTurn, 9);
-  });
-  test("the seam pass ends the said-again line on afterAside", () => {
-    const state = { turn: 9, ctx: { lang: "hinglish" }, lastMove: { replyApart: "afterAside", vpcGoOn: "x", noFit: "aside" } };
-    const r = applySeams("Achha, wahi cricket!", [{ part: "aside", text: "Achha, wahi cricket!" }], { kit: KIT, state, lang: "hinglish", info: { goOnAfterReply: true } });
-    assert.deepEqual(r.seams.map((x) => [x.right, x.joint]), [["aside", null], ["goOn", "afterAside"]]);
+    assert.equal(m.noFit, "point"); assert.equal(m.replyPoint, "afterAside"); assert.deepEqual(m.asideAgain, { topic: "cricket", returned: true });
+    assert.equal(m.point, "Ab 1/3 wale 3 gap chalkar dekho: wahan 3/3 = 1."); assert.equal(out.state.splitHold.ui.ask.text, CARD.text);
+    assert.ok(!m.vpcGoOn && !out.state.splitHold.move.asideAgain);
   });
   test("replyIntoPoint flags her said-again line run into a new point and its card after a check-in; the turn after a go-on line is fix 3's", () => {
     const row = { who: "teacher", text: "Arre haan, cricket! Achha, ab padhai. Pehle 3/4 ke har hisse. Upar kaunsa number aayega?", seams: [{ right: "aside" }, { right: "point", joint: "afterAside" }, { right: "card" }] };
@@ -105,36 +83,22 @@ describe("fix 2: a side-topic at a check-in is the same rule", () => {
 });
 
 describe("fix 3: after a go-on turn the next turn teaches; 'back to work' is never said twice running", () => {
-  const GO = { turn: 8, goOnTurn: 8, lastMove: { kind: "repair", noFit: "aside", vpcGoOn: "Abhi apne kaam par wapas chalte hain.", replyApart: "afterPark" } };
-  test("the side-topic said again after the go-on line: her said-again line, the held point and card, no second go-on joint", async () => {
-    const { _afterGoOnForTest: afterGoOn } = await import("../server/director/state.js");
-    const out = afterGoOn(GO, INPUT, turnOf({ lm: { asideAgain: { topic: "cricket" } } }));
-    assert.ok(out.state.lastMove.noReplyJoint && out.state.lastMove.point && !out.state.splitHold);
+  // (main's fifth ruling item 1: the go-on turn is gone; the rule now guards the turn after her reply's point turn, D2)
+  const RP = { turn: 8, lastMove: { kind: "explain", noFit: "point", splitTeach: true, replyPoint: "afterPark", asideAck: true } };
+  test("the side-topic said again at the check-in of her reply's point turn: her said-again line and the held card, no second go-on joint", () => {
+    const t = turnOf({ lm: { asideAgain: { topic: "cricket" }, kind: "practice", point: undefined } });
+    const out = afterReplyPoint(RP, INPUT, t);
+    assert.ok(out.state.lastMove.noReplyJoint && !out.state.lastMove.point);
     assert.equal(out.ui.ask.text, CARD.text);
-    // (replyApart never splits it into a second go-on turn)
-    const t = turnOf({ lm: { asideAgain: { topic: "cricket" } } });
-    assert.equal(replyApart(GO, INPUT, t), t);
-    // (nor the turn after her AI line said straight after a go-on line)
-    const ai = { turn: 9, goOnTurn: 8, lastMove: { kind: "repair", tasteAsked: { topic: "Virat" } } };
-    const t2 = turnOf({ turn: 10, lm: { asideAck: true } });
-    assert.equal(replyApart(ai, INPUT, t2), t2);
+    // (a reply's point turn is never followed by a second one: a turn that is itself a reply's point turn takes no mark)
+    const rp = replyPoint(RP, INPUT, turnOf({ lm: { asideAgain: { topic: "cricket" } } }));
+    assert.equal(afterReplyPoint(RP, INPUT, rp).state.lastMove.noReplyJoint, undefined);
   });
-  test("over 70 words with her line, the point ends on its check-in and the card is the next turn", async () => {
-    const { _afterGoOnForTest: afterGoOn } = await import("../server/director/state.js");
-    const long = "Ek do teen char paanch chhe saat aath nau das. ".repeat(6).trim();
-    const out = afterGoOn(GO, INPUT, turnOf({ lm: { asideAgain: { topic: "cricket" }, point: long } }));
-    assert.equal(out.state.lastMove.noFit, "point"); assert.ok(out.state.lastMove.noReplyJoint);
-    assert.equal(out.state.splitHold.ui.ask.text, CARD.text); assert.ok(out.state.splitHold.teach);
-  });
-  // (main's fourth ruling item 2 supersedes tasteNoAsk: the AI line is its own turn, its question back with it — r8-d37-054a3)
-  test("her AI line straight after the go-on line is left to the walk: no tasteNoAsk, no held point run in", async () => {
-    const { _afterGoOnForTest: afterGoOn } = await import("../server/director/state.js");
+  test("her AI line at that check-in is left to the walk, its question back with it; nothing is marked after a turn that was no reply's point turn", () => {
     const t0 = turnOf({ lm: { tasteAsked: { topic: "Virat", n: 1 } } });
-    const out = afterGoOn(GO, { ...INPUT, text: "aapko virat pasand hai?" }, t0);
-    assert.equal(out, t0); assert.ok(!out.state.lastMove.tasteNoAsk && !out.state.lastMove.noReplyJoint);
-    // (not after a turn that was not a go-on line)
-    const t = turnOf({ lm: { tasteAsked: { topic: "Virat", n: 1 } } });
-    assert.equal(afterGoOn({ turn: 8, lastMove: { kind: "explain" } }, INPUT, t), t);
+    assert.equal(afterReplyPoint(RP, { ...INPUT, text: "aapko virat pasand hai?" }, t0), t0);
+    const t = turnOf({ lm: { asideAgain: { topic: "cricket" } } });
+    assert.equal(afterReplyPoint({ turn: 8, lastMove: { kind: "explain" } }, INPUT, t), t);
   });
   test("the seam pass: after her reply said again the seam is replyAgain, which the table gives no joint", () => {
     const state = { turn: 9, ctx: { lang: "hinglish" }, lastMove: { noReplyJoint: true } };
