@@ -10,7 +10,9 @@ const live = (t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${t}
 describe("item 1: a Hindi request after a go-on turn — the point first, then the switch line and the card's Hindi form", () => {
   // (main's fifth ruling item 2: the Hindi-after-a-go-on path is gone with the go-on turn — nothing reaches it. Its walk and seam pins are
   // removed; a Hindi request at the check-in of her reply's point turn is pinned in r8-d37-054a's D2 tests)
-  test("switchFirst: allowed — point, switch line, Hindi-form card; still flagged — the switch line before the point, or with no Hindi form after it", () => {
+  // (main's sixth ruling item 5: switchFirst is back to its a23e5c45d reading — the fourth ruling's item 1 was withdrawn with the go-on turn:
+  // a switch line in a point's first telling is flagged wherever it stands)
+  test("switchFirst (a23e5c45d's reading): the switch line in a point's first telling is flagged — after the point before the Hindi form too", () => {
     const script = live("c5-maths-ch02-t01");
     const card = script.skills.find((k) => k.skillId === "c5-maths-ch02-t01-s2").explain.find((b) => b.id === "e1").ask;
     const hf = String(card.hindi?.hi ?? card.hindi);
@@ -26,7 +28,7 @@ describe("item 1: a Hindi request after a go-on turn — the point first, then t
         pageParts: [{ part: "body", beat: "e1", from: from.point }, { part: "card", beat: "e1", from: from.card }].sort((a, b) => a.from - b.from) };
     };
     const at = (r) => D29_PREDICATES.switchFirst({ rows: [r] }, r, 0, { o: { teacherTexts: [] }, script });
-    assert.equal(at(row([["point", point], ["hindiSwitch", sw], ["card", hf]])), null, "point, switch line, the card's Hindi form");
+    assert.ok(at(row([["point", point], ["hindiSwitch", sw], ["card", hf]])), "point, switch line, the card's Hindi form: no longer excused");
     assert.ok(at(row([["hindiSwitch", sw], ["point", point], ["card", hf]])), "the switch line before the point");
     assert.ok(at(row([["point", point], ["hindiSwitch", sw], ["card", asWritten]])), "the switch line with the card as written after it");
     // (and the switch line after the point with something else between it and the Hindi form)
