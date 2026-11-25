@@ -144,3 +144,25 @@ describe("item 2: a plain no at a comprehension check-in is \"I did not understa
     assert.equal(PREDICATES.plainNoUnhelped({ rows: [card, no, t(["verdict", "card"])] }, t(["verdict", "card"]), 2), null);
   });
 });
+
+describe("item 9 (pr6 section 3): closing item 5's kept-split fallback only where the held board is the board up (`same`)", async () => {
+  const bf = await import("../server/stagecraft/board-first.js");
+  const bars = { template: "fraction-bars@1", params: { bars: [{ parts: 9, shade: 0, label: "" }, { parts: 11, shade: 0, label: "" }] } };
+  const wholes = { template: "wholes@1", params: { wholes: [{ parts: 2, title: "Roti" }, { parts: 10, title: "Roti" }] } };
+  const one = (b) => bf.heldBoard({ intent: { held: { board: b, unit: "u" }, style: { band: "B3" } }, line: { text: "x" } }).lastPage;
+  const barsPage = one(bars), viewPage = one(wholes);
+  const split = { ...barsPage, ops: [...barsPage.ops, ...viewPage.ops.map((o) => ({ ...o, id: `v${o.id}`.slice(0, 32) }))] };
+  const pages = (r) => r.screens.map((s) => [s.from, s.template]);
+  test("the side no matrix row reaches: the board up (a kept split page) differs from the held board and she leads with a joint — the held board never goes up under her lead", () => {
+    const lead = "Achha, chalo dekhte hain.";
+    const rest = "Board par dono roti dekho: 2 hisson wali roti ka ek hissa aadhi roti hai, aur 10 hisson wali ka ek hissa bahut patla. Kaunsa hissa chhota hai?";
+    const text = `${lead} ${rest}`;
+    const ask = { intent: { held: { board: wholes, unit: "c5-maths-ch02-t02-s1:rem:x#help", switchTo: { board: bars, unit: "c5-maths-ch02-t02-s1:rem:x", atChar: text.length - 22 }, clearIfFull: true }, style: { band: "B3" } },
+      line: { text, parts: { list: [{ part: "aside", text: lead }, { part: "simpler", text: rest }] } } };
+    const r = bf.heldBoard(ask, { keepRef: bf.refKey(bars), keepPage: { ...split, keptBeside: { template: "wholes@1", altView: "wholes" } } });
+    assert.ok(r, "a page");
+    const under = pages(r).filter(([from]) => from < lead.length + 1).map(([, t]) => t);
+    assert.ok(!under.includes("wholes@1") || pages(r)[0][1] !== "wholes@1", `the held board under her lead: ${JSON.stringify(pages(r))}`);
+    assert.notDeepEqual(pages(r)[0], [0, "wholes@1"]);
+  });
+});

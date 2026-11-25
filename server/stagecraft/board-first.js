@@ -1403,7 +1403,9 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
         // miss verdict paging to the help's board: the kept split page did not join under the op cap, and the fallback below cleared it, so
         // the verdict was said over a blank page. The held board alone — the card's board that was up, without the view beside — stays
         // under the verdict instead, as every other verdict keeps it, until the next part's own board draws; blank only if that too will not join)
-        if (!joined && base.kept && !split && keptBeside) {
+        // (RULING-G item 9, pr6 section 3: only where the held board IS the board up — `same`; where the board up differs from the held board
+        // and she has leading joints (upKept), drawing the held board here would put the new board up under her lead (v6.11))
+        if (!joined && same && base.kept && !split && keptBeside) {
           const own = drawRef(h.board, { band, lang });
           const j2 = own?.script ? joinPages([{ script: still(own.script), from: 0 }, ...nxs.map(({ w, nx }) => ({ script: nx.script, from: w.atChar, clause: clauseAt(w) }))], text) : null;
           if (j2) { joined = j2; screens = [{ from: 0, ...screenOf({ template: own.template, facts: own.facts ?? {} }, own.facts ?? own.script.facts, own.script) }]; }
