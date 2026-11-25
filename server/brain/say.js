@@ -265,7 +265,20 @@ const ASIDE_AGAIN = {
   hinglish: [(t) => `${capT(t)} wali baat maine likh li hai.`, (t) => `Haan, ${t} — woh mujhe yaad hai.`],
   english: [(t) => `I've noted ${t} down.`, (t) => `Yes, ${t} — I've got that.`],
 };
-export const asideAgainLine = (topic, lang = "hinglish", state = null) => freshForm(ASIDE_AGAIN[lang === "english" ? "english" : "hinglish"], state, String(topic ?? "").trim());
+/** to-brain 054 (RULING-A7 item 5, OPEN-after-A item 3; d37 cause D's added item): "Cricket wali baat maine likh li hai" says she wrote down
+ *  what she did not — where the script's own park forms hold one that speaks of the side-topic as already kept, not promising it as new
+ *  ("Wah, {aside} ki baat sambhaal ke rakhi hai, …"), that form is the said-again line, unless she said it in her last four turns. */
+const KEPT_PARK = /(?<![\p{L}])(?:sambhaal\w*\s+(?:ke\s+)?rakh\w*|yaad\s+(?:hai|rakh\w*))(?![\p{L}])/iu;
+export const asideAgainLine = (topic, lang = "hinglish", state = null, kit = null) => {
+  const t = String(topic ?? "").trim();
+  if (kit && t) {
+    const said = [...(state?.recent ?? [])].filter((x) => x.who === "teacher").slice(-4).map((x) => String(x.text ?? "").toLowerCase());
+    const kept = (jointOf(kit, "asidePark", lang, { topic: asideInHerVoice(t), aside: asideInHerVoice(t) }) ?? [])
+      .filter((x) => typeof x === "string" && !/\{\w+\}/.test(x) && KEPT_PARK.test(x) && !said.some((y) => y.includes(x.toLowerCase())));
+    if (kept.length) return kept[0];
+  }
+  return freshForm(ASIDE_AGAIN[lang === "english" ? "english" : "hinglish"], state, t);
+};
 /** v6.6 A2: how many times her honest line was said this lesson, plus this one (her recent turns). */
 const herLines = (state) => (state?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
 const honestN = (state) => 1 + [...(state?.recent ?? [])].filter((t) => t.who === "teacher" && /\b(?:main\s+ai|i'?m\s+an?\s+ai|meri\s+(?:apni\s+)?(?:koi\s+)?pasand\s+nahi|no\s+favourites)/i.test(String(t.text ?? ""))).length;
@@ -3645,7 +3658,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // bare "Achha." / "Theek hai."; it gets a reply in the child's words — the kind's reply form with a noun she said — else the plain ack)
     // (dc-r8-director25 L2: a return said on this turn is the turn — no "noted" line beside it)
     const againLine = !honestLine && !(ret?.topic && guard.returnLine) && state.lastMove?.asideAgain?.topic ? (state.lastMove.asideAgain.returned ? (againInHerWords(childText, state.lastMove.asideAgain.topic, lang, state) ?? freshOf(NEUTRAL_ACK[lang === "english" ? "english" : "hinglish"], state))
-      : asideAgainLine(state.lastMove.asideAgain.topic, lang, state)) : null;
+      : asideAgainLine(state.lastMove.asideAgain.topic, lang, state, kit)) : null;
     if (againLine) { guard.asideAgain = true; guard.againLine = againLine; }
     // (dc-r8-director20 R1 rule 3: a sad aside gets one sad line of Learning's, no park and no question; the lesson goes on)
     const sadLine = !honestLine && !againLine && state.lastMove?.sadAside ? asideSadLine({ lang, n: state.turn ?? 0 }) : null;

@@ -167,3 +167,15 @@ describe("D3, main's added item (OPEN-after-A item 1): her taste asked again str
   });
 });
 
+describe("the said-again line (RULING-A7 item 5): the script's own park form that speaks of the side-topic as kept, where one fits; else code's line", () => {
+  test("c6-ch07-t01 and c5-t01 have one (\"… sambhaal ke rakhi hai …\"); c6-ch06-t01 has none: code's line stays (named for Learning)", () => {
+    assert.equal(asideAgainLine("cricket", "hinglish", { recent: [] }, kitOf("c6-maths-ch07-t01")), "Wah, cricket ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.");
+    assert.equal(asideAgainLine("cricket", "hinglish", { recent: [] }, kitOf("c5-maths-ch02-t01")), "Wah, cricket ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi.");
+    assert.equal(asideAgainLine("cricket", "hinglish", { recent: [] }, kitOf("c6-maths-ch06-t01")), "Cricket wali baat maine likh li hai.");
+  });
+  test("a kept form she said in her last four turns is not said again: code's line", () => {
+    const recent = [{ who: "teacher", text: "Wah, cricket ki baat sambhaal ke rakhi hai, baad mein zaroor sunungi. Chalo, pehle yahan se aage badhte hain." }];
+    assert.equal(asideAgainLine("cricket", "hinglish", { recent }, kitOf("c6-maths-ch07-t01")), "Cricket wali baat maine likh li hai.");
+  });
+});
+
