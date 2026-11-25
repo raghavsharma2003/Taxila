@@ -117,3 +117,40 @@ describe("B.3: any other turn ends the wait", async () => {
     assert.ok(SHORT_ASK_FORMS.some((f) => turns[2].text.endsWith(f)) || turns[2].seams.at(-1) === "yourTurn", turns[2].text);
   });
 });
+
+// B.5: the two predicates, gated, each on made rows — one that trips it and one that does not (the live c4-maths-ch05-t01 script: its first
+// asked worked step).
+describe("B.5: waitNoQuestion and waitSecondNotReask", async () => {
+  const { PREDICATES, PENDING, lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const { readFileSync } = await import("node:fs");
+  const { yourTurnForms, questionObjectAt } = await import("../server/director/question-run.js");
+  const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c4-maths-ch05-t01.json", import.meta.url), "utf8"));
+  const P = ".skills[0].workedExample.steps[0].ask";
+  const ask = questionObjectAt(script, P);
+  const prompt = norm(ask.prompt.hi), reask = norm(ask.reask.hi), invite = yourTurnForms(script)[0];
+  const sx = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
+  const T = (text, column, seams) => ({ who: "teacher", text, cell: { part: "c4-maths-ch05-t01-s1:worked:step1:ask", column }, seams: sx(...seams) });
+  const C = (text) => ({ who: "child", text });
+  const asked = T(`Aao, agla sawaal main aur tum saath mein karenge. ${prompt}`, "right", ["verdict", "workedProblem", "stepAsk"]);
+  const short = T(`Haan, pehle tum try karo. ${SHORT_ASK_FORMS[0]}`, "try_first", ["tryFirst", "reaskShort"]);
+  const flags = (rows, name) => lessonFlags({ rows, script }).filter((f) => f.predicate === name).map((f) => f.row);
+  test("both are gated", () => { for (const k of ["waitNoQuestion", "waitSecondNotReask"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); } });
+  test("waitSecondNotReask trips on the old wait's invitation (director36 c4 steady 30) and not on the question's reask", () => {
+    const old = [asked, C("pehle main try karun?"), short, C("haan"), T(invite, "yes", ["yourTurn"])];
+    assert.deepEqual(flags(old, "waitSecondNotReask"), [4]);
+    const now = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"])];
+    assert.deepEqual(flags(now, "waitSecondNotReask"), []);
+    // (a side-topic parked in the wait is passed over: the turn after it is still the wait's second)
+    const park = T("Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Pehle is sawaal ka jawab do.", "aside", ["park", "answerFirst"]);
+    assert.deepEqual(flags([asked, C("pehle main try karun?"), short, C("sixer maara"), park, C("haan"), T(invite, "yes", ["yourTurn"])], "waitSecondNotReask"), [6]);
+    assert.deepEqual(flags([asked, C("pehle main try karun?"), short, C("sixer maara"), park, C("haan"), T(reask, "yes", ["stepAsk"])], "waitSecondNotReask"), []);
+  });
+  test("waitNoQuestion trips on three wait turns with neither the question nor help (short ask, invitation, short ask) and not when one says either", () => {
+    const old = [asked, C("pehle main try karun?"), short, C("haan"), T(invite, "yes", ["yourTurn"]), C("haan"), T(SHORT_ASK_FORMS[1], "yes", ["reaskShort"])];
+    assert.deepEqual(flags(old, "waitNoQuestion"), [6]);
+    const reasked = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan"), T(SHORT_ASK_FORMS[1], "yes", ["reaskShort"])];
+    assert.deepEqual(flags(reasked, "waitNoQuestion"), []);
+    const helped = [asked, C("pehle main try karun?"), short, C("haan"), T(invite, "yes", ["yourTurn"]), C("haan"), T(`Khaane se pehle wali poori barfi yaad karo. ${SHORT_ASK_FORMS[1]}`, "yes", ["help", "reaskShort"])];
+    assert.deepEqual(flags(helped, "waitNoQuestion"), []);
+  });
+});

@@ -1044,6 +1044,9 @@ Object.assign(PREDICATES, D35B_PREDICATES);
 // (to-brain 054 A, round d37's builder A: a turn holds one new thing — d37a-predicates.mjs, all four gated)
 import { D37A_PREDICATES } from "./d37a-predicates.mjs";
 Object.assign(PREDICATES, D37A_PREDICATES);
+// (to-brain 054 B, round d37's builder B: a wait says the question — d37b-predicates.mjs, both gated)
+import { D37B_PREDICATES } from "./d37b-predicates.mjs";
+Object.assign(PREDICATES, D37B_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {
