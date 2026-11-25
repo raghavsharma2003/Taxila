@@ -290,12 +290,20 @@ export function goOnPlain(script, { lang = "hinglish", lessonKey = null, n = 0, 
 }
 
 /** A card's key said as the worked answer:the key and its why as one statement (a yes-or-no key: its why alone, never a verdict word). */
+/** to-brain 054 C2 (director36 c4 steady 134, c5-t01 steering 18, c5-t02 steady 102, steering 18: the key's value said twice — "Is sawaal ka
+ *  jawab 1/6 kilometre par hai, kyunki … toh 1/6 kilometre par"): whether a key's `why` names every number of its value — then the key is the
+ *  why alone, its own sentence, as a yes-or-no key's is. A key with no number (a name, a word) is said with its why as built. */
+export function whyNamesKey(key, why) {
+  const nums = (t) => String(t ?? "").match(/\d+(?:[./]\d+)?/g) ?? [];
+  const k = nums(key), w = nums(why);
+  return k.length > 0 && k.every((x) => w.includes(x));
+}
 export function keyLine(part, lang = "hinglish") {
   if (!part || part.key == null || String(part.key).trim() === "") return null;
   const en = lang === "english";
   const why = part.why ? String(saidIn(part.why, lang) ?? "").trim().replace(/[.!?।]+$/, "") : "";
   const yn = /^(?:haan|ha|nahi|nahin|yes|no)$/i.test(String(part.key).trim());
-  const text = yn ? (why ? `${why.charAt(0).toUpperCase()}${why.slice(1)}.` : null)
+  const text = yn || (why && whyNamesKey(part.key, why)) ? (why ? `${why.charAt(0).toUpperCase()}${why.slice(1)}.` : null)
     : `${en ? "The answer is" : "Iska jawab hai"} ${part.key}${why ? `, ${en ? "because" : "kyunki"} ${joinable(why, { lower: true })}` : ""}.`;
   return text ? { key: part.key, why, text, board: part.answerBoard ?? null } : null;
 }

@@ -88,9 +88,13 @@ D26_PREDICATES.goOnStacked = function goOnStacked(L, r) {
 // cell.keyed, which a right answer's verdict set: c5-t01 steady 82, the go-on line at a bridge's check-in)
 D26_PREDICATES.goOnAfterKey = function goOnAfterKey(L, r, i, ctx) {
   const sm = r.seams ?? [];
+  // (main's second ruling on cause C, item 2 — goOnAfterKey's key reader re-pinned by name: a turn whose record carries the key seam of a
+  // why-alone key (to-brain 054 C2: the key said as its why, no "Iska jawab"; the harness's keyWhy) IS a key given on the part she was on;
+  // keyFact is not read for it, so ynNahi stays as it was)
+  if (ctx?.o && r.who === "teacher" && r.keyWhy && sm.some((x) => x.right === "key")) { const k = addressAt(L, r, i, ctx); if (k?.beat) (ctx.o.keyWhyBeats ??= new Set()).add(k.beat); }
   if (!sm.some((x) => x.joint === "afterKeyGoOn")) return null;
   const a = ctx ? addressAt(L, r, i, ctx) : null;
-  const keyed = a ? a.keyed : r.cell?.keyed;
+  const keyed = (a ? a.keyed : r.cell?.keyed) || !!(a?.beat && ctx?.o?.keyWhyBeats?.has(a.beat));
   // (to-brain 049 B6: a give-up or a clarify at a bridge's check-in goes on led by the go-on joint — the greeting's start line was said there)
   if (a && /(?:^|:)bridge$/.test(String(a.beat ?? ""))) return null;
   return keyed ? null : `the go-on line with no key given (${a ? a.beat : r.cell?.part ?? "no part"}, ${r.cell?.column ?? "no column"})`;

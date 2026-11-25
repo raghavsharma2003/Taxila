@@ -40,7 +40,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
+import { pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, whyNamesKey, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -3425,7 +3425,8 @@ function workedAnswerOf(prev, kit) {
   const lang = prev?.ctx?.lang ?? "hinglish", en = lang === "english";
   const why = card.why ? String(saidIn(card.why, lang) ?? "").trim().replace(/[.!?\u0964]+$/, "") : "";
   const yn = /^(?:haan|ha|nahi|nahin|yes|no)$/i.test(String(card.key).trim());
-  const text = yn ? (why ? `${why.charAt(0).toUpperCase()}${why.slice(1)}.` : null)
+  // (to-brain 054 C2: a why that names every number of the key is the key, said alone)
+  const text = yn || (why && whyNamesKey(card.key, why)) ? (why ? `${why.charAt(0).toUpperCase()}${why.slice(1)}.` : null)
     : `${en ? "The answer is" : "Iska jawab hai"} ${card.key}${why ? `, ${en ? "because" : "kyunki"} ${joinable(why, { lower: true })}` : ""}.`;
   return text ? { text, board: card.answerBoard ?? null, key: card.key, why } : null;
 }

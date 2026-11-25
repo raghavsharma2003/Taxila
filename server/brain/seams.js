@@ -253,6 +253,8 @@ function kindOf(p, i, list, info) {
     // (to-brain 053 D: a yes-or-no key said as the fact after a miss — "Nahi, tile ka kona right angle hai; …" — is the key, recorded as one:
     // director34 c4-ch01-t02 stuck 42 was logged missVerdict)
     case "close": if (info.keyFact && i === list.findIndex((q) => q.part === "close")) return "key";
+      // (to-brain 054 C2: a key said as its why alone, with no verdict before it, is the key)
+      if (info.keyWhy && i === list.findIndex((q) => q.part === "close") && norm(t).startsWith(norm(info.keyWhy).slice(0, 40))) return "key";
       return (info.miss || (info.authoredEnd && VERDICT_HEAD.test(t) && !/^(?:haan|bilkul|sahi|yes|exactly|that's right)\b/i.test(t) && MISS_WORD.test(sentencesOf(t)[0] ?? "")))
       && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
     case "closed": return "closed";
@@ -386,7 +388,7 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // (dc-r8-director26 J1: the back-to joint said where the go-on line was dropped carries the lesson on — its record says so)
     if (form && j === "backTo" && info.goOnDropped) seams.at(-1).goOn = true;
     recLeft = k;
-    if ((k === "verdict" || k === "missVerdict") && sentencesOf(p.text).slice(1).some((x) => KEY_HEAD.test(x))) { seams.push({ left: k, right: "key", joint: null }); recLeft = "key"; }
+    if ((k === "verdict" || k === "missVerdict") && sentencesOf(p.text).slice(1).some((x) => KEY_HEAD.test(x) || (info.keyWhy && norm(x).startsWith(norm(info.keyWhy).slice(0, 40))))) { seams.push({ left: k, right: "key", joint: null }); recLeft = "key"; }
     // (a joint into a return, a remediation or the card she invited a try at is said over the board it leads into — as the card's own
     // words were; a joint out of an aside reply is no unit's, and the board waits for her first unit part)
     if (form) { out.push({ part: /^after(?:Aside|AiLine)$/.test(j) ? "aside" : "body", text: form, joint: j }); said[j] = form; used.push(j); }

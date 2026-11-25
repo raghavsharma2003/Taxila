@@ -285,3 +285,64 @@ describe("RULING-C2 item 1: the park after a short ask ends on the question's re
     assert.deepEqual(flags([card, C("haan"), reaskY, C("sixer maara"), parkInv], "waitNoQuestion"), []);
   });
 });
+
+// Main's second ruling on cause C (RULING-C2), item 2 — C2 built: where a key's `why` names every number of its value, the key is the why
+// alone, its own sentence; goOnAfterKey's key reader re-pinned by name (the record's key seam of a why-alone key IS a key given); keyValueTwice
+// gated for every key but a teach-back's (teachbackKeyValueTwice pending).
+describe("RULING-C2 item 2: C2, the key said as its why alone where the why names every number of the value", async () => {
+  const { keyLine, whyNamesKey } = await import("../server/director/help.js");
+  const { nodeOfPart } = await import("../evals/hybrid-side-by-side/d37c-predicates.mjs");
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const sc = scriptOf("c4-maths-ch05-t01");
+  const c2 = nodeOfPart(sc, "c4-maths-ch05-t01-s1:check:c2").node;
+  test("whyNamesKey and keyLine: the why alone where it names the value (11 in \"… toh 11 bache\"); key and why as built where it does not", () => {
+    assert.equal(whyNamesKey("11", c2.why.hi), true);
+    const k = keyLine(c2);
+    assert.equal(k.text, `${c2.why.hi.charAt(0).toUpperCase()}${c2.why.hi.slice(1)}.`);
+    assert.ok(!/Iska jawab hai/.test(k.text));
+    assert.equal(whyNamesKey("7", "5 barabar tukde"), false);
+    assert.equal(whyNamesKey("ek tihai", "teen barabar hisse"), false);
+    assert.match(keyLine({ key: "7", why: { hi: "5 aur 2 milkar" } }).text, /^Iska jawab hai 7, kyunki 5 aur 2 milkar\.$/);
+  });
+  test("walked (c4-maths-ch05-t01, its second check card missed to the cap): the key is the why alone — the value said once", async () => {
+    const w = await walkUntil("c4-maths-ch05-t01", (s) => String(s.lastUi?.ask?.itemId ?? "") === "script:c4-maths-ch05-t01-s1:c2");
+    const turns = await w.play(["13", "9", "8", "7", "6"]);
+    w.done();
+    assert.ok(w.found);
+    const k = turns.find((t) => t.seams.includes("key"));
+    assert.ok(k, turns.map((t) => t.seams.join(">")).join(" | "));
+    assert.ok(k.text.includes(c2.why.hi.charAt(0).toUpperCase() + c2.why.hi.slice(1)), k.text);
+    assert.equal((k.text.match(/(?<![\d/])11(?![\d/])/g) ?? []).length, 1, k.text);
+  });
+  const part = "c4-maths-ch05-t01-s1:check:c2";
+  const R = (text, column, seams, extra = {}) => ({ who: "teacher", text, cell: { part, column }, seams: seams.map((right, n) => ({ left: n ? seams[n - 1] : "start", right, joint: right === "afterKeyGoOn" ? "afterKeyGoOn" : null })), ...extra });
+  const C = (text) => ({ who: "child", text });
+  const bar = (shade) => ({ template: "fraction-parts@1", params: { parts: 12, shade, whole: "bar" } });
+  const pp = (part, beat, b, from = 0) => [{ part, from, beat, boards: [b], own: b }];
+  const ask = R("Tumhari chocolate ke 12 barabar tukde hain. Tumne usmein se 1/12 kha liya. Ab kitne tukde bache?", "right", ["verdict", "card"], { check: { itemId: `script:${part}`, gave: false }, pageParts: pp("card", "c2", bar(0)) });
+  const whyKey = `Yeh jawab sahi nahi hai. ${c2.why.hi.charAt(0).toUpperCase()}${c2.why.hi.slice(1)}. Yahan tak theek hai?`;
+  const goOn = R("Koi baat nahi, chalo aage badhte hain. Cake ke 4 tukde hue: ek bada aur teen ek jitne chhote. Ek chhota tukda cake ke 1/4 se kam hai, 1/4 ke barabar hai, ya 1/4 se zyada?", "aside", ["afterKeyGoOn", "aside", "card"], { pageParts: pp("card", "c3", { template: "wholes@1", params: { wholes: [{ parts: 4, equal: false, title: "Cake" }] } }, 60) });
+  const flags = (rows, name) => lessonFlags({ rows, script: sc }).filter((f) => f.predicate === name).map((f) => f.row);
+  test("goOnAfterKey: the go-on line after a why-alone key (its record's key seam, keyWhy) passes; after a turn with no key of any form it is flagged", () => {
+    const keyed = [ask, C("9"), R(whyKey, "wrong", ["missVerdict", "key", "checkin"], { keyWhy: true, pageParts: pp("close", "c2", bar(1)) }), C("mujhe cricket pasand hai"), goOn];
+    assert.deepEqual(flags(keyed, "goOnAfterKey"), []);
+    const noKey = [ask, C("9"), R("Yeh jawab sahi nahi hai. Socho, 1/12 ka neeche wala number kya ginta hai. Ab kitne tukde bache?", "wrong", ["missVerdict", "help", "card"], { pageParts: pp("card", "c2", bar(0), 30) }), C("mujhe cricket pasand hai"), goOn];
+    assert.deepEqual(flags(noKey, "goOnAfterKey"), [4]);
+    // (the key seam without the record's keyWhy is no why-alone key: read as before)
+    assert.deepEqual(flags([ask, C("9"), R(whyKey, "wrong", ["missVerdict", "key", "checkin"], { pageParts: pp("close", "c2", bar(1)) }), C("mujhe cricket pasand hai"), goOn], "goOnAfterKey"), [4]);
+    // (ynNahi reads keyFact only: unchanged by a why-alone key)
+    assert.deepEqual(flags(keyed, "ynNahi"), []);
+  });
+  test("keyValueTwice is gated for every key but a teach-back's; teachbackKeyValueTwice is pending and reads the teach-back's", async () => {
+    const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    assert.ok(PREDICATES.keyValueTwice && !PENDING.has("keyValueTwice"));
+    assert.ok(PREDICATES.teachbackKeyValueTwice && PENDING.has("teachbackKeyValueTwice"));
+    const twice = R(`Yeh jawab sahi nahi hai. Iska jawab hai 11, kyunki ${c2.why.hi}. Yahan tak theek hai?`, "wrong", ["missVerdict", "key", "checkin"]);
+    assert.deepEqual(flags([ask, C("9"), twice], "keyValueTwice"), [2]);
+    assert.deepEqual(flags([ask, C("9"), R(whyKey, "wrong", ["missVerdict", "key", "checkin"], { keyWhy: true, pageParts: pp("close", "c2", bar(1)) })], "keyValueTwice"), []);
+    const tb = nodeOfPart(sc, "end:teachback").node;
+    const tbRow = { who: "teacher", text: `${tb.key} hi sahi hai. Iska jawab hai ${tb.key}, kyunki ${tb.why.hi}. Ab tak samajh aaya?`, cell: { part: "end:teachback", column: "wrong" }, seams: [{ left: "start", right: "key", joint: null }] };
+    assert.deepEqual(flags([C("5/9"), tbRow], "keyValueTwice"), []);
+    assert.deepEqual(flags([C("5/9"), tbRow], "teachbackKeyValueTwice"), [1]);
+  });
+});

@@ -3,6 +3,7 @@
 //   ownKeyNoReason      C1: an own step's key after a miss or a request (the worked example's your-step, her turn's cell at it, not a right
 //                       answer) that does not say the step's own `why`, or says "Toh poora jawab" after it.
 //   keyValueTwice       C2: a key whose value (every number of the card's `key`) is said twice in the key and its reason.
+//                       (RULING-C2 item 2: gated for every key but a teach-back's; teachbackKeyValueTwice, pending, reads the teach-back's)
 //   capBeforeOwnReason  C3: a key at a card where the child's answer was the card's named wrong answer (`wrongIfMis` with `whyAltAsHelp`, or a
 //                       `wrongAnswers` entry with its `why`) and that answer's reason was never said at the card.
 //   ownStepWorkedHelp   C4: help at an own step (her turn's cell at the your-step) that says the worked problem's `simpler`.
@@ -55,6 +56,21 @@ function namedReason(n, child) {
   for (const w of Array.isArray(n.wrongAnswers) ? n.wrongAnswers : []) if ([w?.answer, ...(w?.accept ?? [])].some((x) => x != null && sameAnswer(child, String(x))) && hi(w?.why)) return hi(w.why);
   return null;
 }
+/** C2: a key whose value (every number of the card's `key`) is said twice in the key and its reason (any key). */
+function keyValueTwice0(L, r, i, ctx) {
+  if (!keyRow(r)) return null;
+  const n = nodeOfPart(ctx?.script, partOf(r))?.node;
+  const keyN = NUMS(n?.key);
+  if (!n?.key || !keyN.length) return null;
+  // (the key and its reason: from the turn's start to the end of the card's why where it is said, else the key's own sentence)
+  const T = String(r.text ?? "").replace(/\s+/g, " ");
+  const why = hi(n.why);
+  let seg = T;
+  if (why) { const tail = String(why).replace(/[.!?।]+$/, "").slice(-12); const k = T.lastIndexOf(tail); if (k >= 0) seg = T.slice(0, k + tail.length); else seg = sentencesOf(T).filter((s) => KEY_WORDS.test(s)).join(" ") || T; }
+  const got = NUMS(seg);
+  return keyN.every((x) => got.filter((y) => y === x).length >= 2) ? `the key's value (${n.key}) said twice in the key and its reason` : null;
+}
+const isTeachback = (p) => /(?:^|:)teachback$/.test(p);
 export const D37C_PREDICATES = {
   questionFiveTimes(L, r, i, ctx) {
     const was = D35A_PREDICATES.questionFiveTimes(L, r, i, ctx);
@@ -70,18 +86,15 @@ export const D37C_PREDICATES = {
     if (/toh poora jawab|so the full answer/i.test(String(r.text ?? ""))) return `an own step's key with "Toh poora jawab" after it`;
     return saysWhole(r.text, why) ? null : `an own step's key without the step's own reason ("${why.slice(0, 50)}…")`;
   },
+  // (main's second ruling on cause C, item 2: gated for every key but a teach-back's — the teach-back's keys are read by the pending
+  // teachbackKeyValueTwice below)
   keyValueTwice(L, r, i, ctx) {
-    if (!keyRow(r)) return null;
-    const n = nodeOfPart(ctx?.script, partOf(r))?.node;
-    const keyN = NUMS(n?.key);
-    if (!n?.key || !keyN.length) return null;
-    // (the key and its reason: from the turn's start to the end of the card's why where it is said, else the key's own sentence)
-    const T = String(r.text ?? "").replace(/\s+/g, " ");
-    const why = hi(n.why);
-    let seg = T;
-    if (why) { const tail = String(why).replace(/[.!?।]+$/, "").slice(-12); const k = T.lastIndexOf(tail); if (k >= 0) seg = T.slice(0, k + tail.length); else seg = sentencesOf(T).filter((s) => KEY_WORDS.test(s)).join(" ") || T; }
-    const got = NUMS(seg);
-    return keyN.every((x) => got.filter((y) => y === x).length >= 2) ? `the key's value (${n.key}) said twice in the key and its reason` : null;
+    if (isTeachback(partOf(r))) return null;
+    return keyValueTwice0(L, r, i, ctx);
+  },
+  /** RULING-C2 item 2 (pending): keyValueTwice at a teach-back's key — the rows left, listed for main. */
+  teachbackKeyValueTwice(L, r, i, ctx) {
+    return isTeachback(partOf(r)) ? keyValueTwice0(L, r, i, ctx) : null;
   },
   capBeforeOwnReason(L, r, i, ctx) {
     if (!keyRow(r) || String(r.cell?.column ?? "") === "right") return null;

@@ -10,7 +10,7 @@ import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
 import { applySeams, seamStart, seamForm, lessonKeyOf, JOIN_MAX_WORDS, CODE_SEAM_FORMS } from "./seams.js";
-import { normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf } from "../director/help.js";
+import { normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf, whyNamesKey } from "../director/help.js";
 /** A child who says she is tired (dc-r8-director27 P6.5). */
 const TIRED = /(?<![\p{L}])(?:thak\s+(?:gayi|gaya|gaye|gai|chuki|chuka)|thaki\s+hu|thaka\s+hu|tired|neend\s+aa\s+rahi|sleepy)(?![\p{L}])/iu;
 import { altCall, QUIET_PICTURE_LINES } from "../stagecraft/board-first.js";
@@ -1544,6 +1544,8 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],
     // (to-brain 053 D: the yes-or-no key said as its fact is recorded as a key)
     keyFact: !!out.guard?.ynFact,
+    // (to-brain 054 C2: the key said as its why alone is recorded as a key)
+    keyWhy: out.guard?.whyKey ?? null,
     // (to-brain 054 A(i) D2: the turn after her reply's point turn takes no second go-on joint)
     noReplyJoint: !!state?.lastMove?.noReplyJoint,
     // (main's second ruling fix 4: the card held apart from a worked close opens on the close's own-turn joint)
@@ -2944,7 +2946,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // answer: its yes-or-no key is said as the fact, its why alone, with no verdict word before it)
     const helpYn = gaveA && yesNo(gaveA) && gw && !ynFact && state.lastMove?.help && state.lastMove.help.request !== "hint"
       ? (() => { const w = joinable(spokenMarks(String(state.lastMove?.gave?.why ?? ""), lang)).replace(/[.!?।]+$/, ""); return w ? `${w.charAt(0).toUpperCase()}${w.slice(1)}.` : null; })() : null;
-    const ynSentence = ynFact ?? helpYn ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
+    // (to-brain 054 C2 — director36 c4 steady 134, c5-t01 steering 18, c5-t02 steady 102, steering 18: where the key's why names every number
+    // of its value, the key is the why alone, its own sentence, as a yes-or-no key's is: "Yeh sadak 6 barabar gaps mein kati hai, … toh 1/6
+    // kilometre par." — the value said once)
+    const whyKey = gaveA && !yesNo(gaveA) && gw && whyNamesKey(gaveA, state.lastMove?.gave?.why) ? (() => { const w = joinable(spokenMarks(String(state.lastMove.gave.why), lang)).replace(/[.!?।]+$/, ""); return w ? `${w.charAt(0).toUpperCase()}${w.slice(1)}.` : null; })() : null;
+    if (whyKey) guard.whyKey = whyKey;
+    const ynSentence = ynFact ?? helpYn ?? whyKey ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
     const gaveS = gaveA ? ynSentence ?? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|is sawaal ka|woh wala|the last|this question|that one)/i.test(x);
     let ss = sentences(reply).map(norm).filter(Boolean)
