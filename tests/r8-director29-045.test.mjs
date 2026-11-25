@@ -136,9 +136,16 @@ describe("P5-P7 (d30 completion): the rows the order names", () => {
     assert.equal(otherFigureOf("Board ke baayein taraf likha hai ki 15 pencil ke 3 barabar group banane hain. Pehle 1/3 ka matlab dekhenge.", "15 pencil 3 barabar group mein baanto, toh ek group mein kitni pencil aayengi?"), false);
     assert.equal(otherFigureOf("Pizza ke 3 barabar hisse hon aur teeno le lo: 3/3 ek poora hai.", "1/5 wale gaps dekho. 0 se theek 1 tak pahunchne ke liye aise kitne gap chalne honge?"), true);
   });
-  test("P6 replyCheckin reads her reply's turn ending on a check-in (c4 offtopic 46, c5-t02 offtopic 38)", () => {
+  // (to-brain 054 A, main's sixth ruling items 2 and 6 — A(i) is design D2: her reply, its joint, ONE new point and its check-in is allowed;
+  // anything else between the reply and the check-in, or nothing, is still read)
+  test("P6 replyCheckin reads c4 offtopic 46 (reply, bridge, point, check-in) and a bare reply and check-in; not c5-t02 offtopic 38 (reply, joint, point, check-in: D2)", () => {
     assert.ok(flagged("offtopic", "c4", "replyCheckin").has(46));
-    assert.ok(flagged("offtopic", "c5t02", "replyCheckin").has(38));
+    assert.ok(!flagged("offtopic", "c5t02", "replyCheckin").has(38));
+    const { rows, script } = lesson("offtopic", "c5t02");
+    const r = rows[38], cut = (r.pageParts ?? []).find((p) => p.part === "body")?.from;
+    assert.ok(cut > 0);
+    const bare = { ...r, text: `${r.text.slice(0, cut).trim()} Yahan tak theek hai?`, pageParts: [], seams: r.seams.filter((x) => x.right !== "point") };
+    assert.ok(lessonFlags({ rows: [...rows.slice(0, 38), bare], script }).some((f) => f.predicate === "replyCheckin" && f.row === 38));
   });
   test("P6: her reply into the next skill's bridge takes its joint back, as into a point", async () => {
     const { seamJoint } = await import("../server/brain/seams.js");
