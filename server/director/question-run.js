@@ -159,7 +159,7 @@ function helpIn(lm) {
 }
 /** A child's request to hear the question again (brain/say.js askedForIt's words). */
 export const HEAR_Q = /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu;
-const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot", "answerFirst", "waitShort", "waitReask"];
+const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot", "answerFirst", "waitShort", "waitReask", "pointHelpReask"];
 /** to-brain 052 B4 (ruling): code's pointed invitations, said where the script has no `joints.answerFirst` (rotated). */
 export const ANSWER_FIRST_FORMS = Object.freeze([{ hi: "Pehle is sawaal ka jawab do.", en: "First answer this question." },
   { hi: "Board wala sawaal abhi baaki hai, uska jawab do.", en: "The question on the board is still open, answer it." },
@@ -203,6 +203,8 @@ const dropB4 =(m) => { if (!m || typeof m !== "object") return m; const o = { ..
  *  - `askNot` on the turn after an invitation, at the same question: the sentence said before the invitation, which brain/say.js's
  *    re-ask rotation reads as her turn before's question (no sentence is said two question-turns running).
  *  The fields never carry from one move to the next (help builds its move from the last one). → out, changed in place. */
+/** d37 RULING-G item 7: the move's help is the point's wording (its pointAlt or simpler) said at a card — the question at `path` a card's. */
+const pointHelpAtCard = (lm, path) => ["pointAlt", "simpler"].includes(String(lm?.help?.rung ?? "")) && /\.ask$/.test(String(path ?? "")) && /:card$/.test(String(lm?.cell?.part ?? lm?.help?.part ?? ""));
 export function yourTurnPass(prev, out, script, childText = "") {
   const s = out?.state;
   if (!s?.lastMove || !script) return out;
@@ -334,6 +336,17 @@ export function yourTurnPass(prev, out, script, childText = "") {
   // imperative, a picture turn, an aside reply that came back to it)
   void hiPrev;
   if (runOfTwo(script, her, nowPath) !== nowPath) return out;
+  // (d37 RULING-G item 7, stuck c5-ch02-t01 12, c5-ch02-t02 12, c5-ch02-t03 12: help at a card said in its POINT's wording — the point's
+  // pointAlt or simpler, help.js's card ladder past the card's own simpler — teaches again, and the question it was taught for is asked
+  // after it: the turn ends on the card's own `reask` (brain/say.js puts it in the card's place, as a wait's second hearing), never on the
+  // invitation. The evals' questionThreeRunning and yourTurnNotThird allow exactly this turn: pointHelpReaskAt)
+  // (where her turn before already ended on that reask — RULING-B3's help — the reask is not said twice running: the turn ends on the card
+  // as posed, its own question, as a help turn does; reaskSameAfterHelp)
+  if (pointHelpAtCard(lm, nowPath) && !tbQ) {
+    const t = reaskOf(script, nowPath, lang);
+    if (t && endsOnReaskOf(script, nowPath, her.at(-1) ?? "")) { set({ pointHelpReask: true }); return out; }
+    if (t) { set({ waitReask: t, pointHelpReask: true }); return out; }
+  }
   const n = s.yourTurnN ?? 0;
   set({ yourTurn: forms[n % forms.length], yourTurnAfter: closingQuestion(her[1]) });
   if (tbQ) tbSet(forms[n % forms.length], "yourTurn");

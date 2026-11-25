@@ -12,7 +12,7 @@ const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { findItem } = await import("../server/director/items.js");
 const { textReply, replyDeps } = await import("../server/brain/say.js");
-const { atQuestionOf, reaskOf, SHORT_ASK_FORMS, endsOnShortAsk } = await import("../server/director/question-run.js");
+const { atQuestionOf, reaskOf, SHORT_ASK_FORMS, endsOnShortAsk, endsOnYourTurn } = await import("../server/director/question-run.js");
 const { fillFriend } = await import("../server/director/friend.js");
 
 const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
@@ -156,15 +156,19 @@ for (const TOPIC of ["c4-maths-ch05-t01", "c6-maths-ch07-t01"]) describe(`RULING
   w.done();
   // (RULING-B5 item 1: the second give-up's help ended on the invitation — that was wait one, so the first bare haan is wait two, never a
   // short ask after "Ab tum batao.": the reask was heard in the first give-up's help, so wait two is help; wait three the key)
-  test("the help turn ending on the invitation is wait one; the first bare haan is wait two, help ending on the question (never a short ask, never the reask alone); wait three the key", () => {
+  // (re-pinned by d37 RULING-G item 7: the second give-up's help is the POINT's wording at the card — it ends on the card's question, never
+  // the invitation; with the reask said the turn before, on the card as posed (reaskSameAfterHelp). The wait starts at the first bare haan:
+  // wait one the invitation; wait two the reask, as ruled where her last turn at the question did not end on it; wait three the key)
+  test("the point-wording help ends on the card's question (item 7); the first bare haan is wait one (the invitation), wait two the reask, wait three the key", () => {
     assert.ok(turns[0].text.endsWith(reaskFilled(w.script, w.P)), turns[0].text);
-    assert.equal(turns[1].seams.at(-1), "yourTurn", turns[1].seams.join(">"));
-    assert.equal(turns[2].lm.waitN, 2);
-    assert.ok(turns[2].seams.includes("help"), turns[2].seams.join(">"));
-    assert.equal(atQuestionOf(w.script, turns[2].text), w.P, turns[2].text);
-    assert.ok(!turns[2].text.endsWith(reaskFilled(w.script, w.P)), turns[2].text);
-    assert.equal(turns[3].lm.waitN, 3);
-    assert.ok(turns[3].lm.gave, turns[3].text);
+    assert.ok(turns[1].lm.pointHelpReask, JSON.stringify(turns[1].lm.help));
+    assert.equal(turns[1].seams.at(-1), "card", turns[1].seams.join(">"));
+    assert.equal(atQuestionOf(w.script, turns[1].text), w.P, turns[1].text);
+    assert.ok(!turns[1].text.endsWith(reaskFilled(w.script, w.P)), turns[1].text);
+    assert.equal(turns[2].lm.waitN, 1); assert.equal(turns[2].seams.at(-1), "yourTurn", turns[2].seams.join(">"));
+    assert.equal(turns[3].lm.waitN, 2); assert.ok(turns[3].text.endsWith(reaskFilled(w.script, w.P)), turns[3].text);
+    assert.equal(turns[4].lm.waitN, 3);
+    assert.ok(turns[4].lm.gave, turns[4].text);
   });
   test("where the reask was not heard (a bare haan from the card), wait two is the reask as ruled", async () => {
     const w2 = await walkTo(TOPIC, "card");
@@ -426,9 +430,11 @@ describe("sixth ruling, item 1: a try-first is answered as a request, wherever i
     const w = await walkTo("c4-maths-ch05-t01", "card");
     const turns = await w.play(["give", "give", "try", "haan"]);
     w.done();
-    assert.equal(turns[1].seams.at(-1), "yourTurn", turns[1].text);
+    // (re-pinned by d37 RULING-G item 7: the second give-up's help, the point's wording at the card, ends on the card's question — not the
+    // invitation — so the try-first after it is her third turn at the question: the go-ahead and the invitation (no longer the short ask))
+    assert.equal(turns[1].seams.at(-1), "card", turns[1].text); assert.ok(turns[1].lm.pointHelpReask);
     assert.ok(goAhead(turns[2]), turns[2].text);
-    assert.ok(endsOnShortAsk(w.script, turns[2].text), turns[2].text);
+    assert.ok(endsOnYourTurn(w.script, turns[2].text), turns[2].text);
     assert.equal(turns[3].lm.waitN, 2);
   });
   test("in a wait at a step (after the reask): the go-ahead and the invitation; the count is kept, and the next bare haan is wait three", async () => {

@@ -284,3 +284,44 @@ describe("item 6: a side-topic the child TELLS, said again where its park comes 
     assert.equal(S.toldNowOf({ ...ret, topic: "football" }, st(true), TOLD), ret.said);
   });
 });
+
+describe("item 7: help at a card said in its POINT's wording ends on the card's reask (stuck c5-ch02-t01 12, c5-ch02-t02 12, c5-ch02-t03 12)", async () => {
+  const { pointHelpReaskAt } = await import("../evals/hybrid-side-by-side/d34b-predicates.mjs");
+  const { reaskOf } = await import("../server/director/question-run.js");
+  const fs = await import("node:fs");
+  const sc = JSON.parse(fs.readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t01.json", import.meta.url), "utf8"));
+  const GIVE = { outcome: "no_evidence", confidence: 1, flags: {}, request: { type: "give_up" } };
+  test("the walk: give-ups at the first card — the turn whose help is the point's wording, third at the question, ends on the card's reask, never the invitation", async () => {
+    const w = await walker("c5-maths-ch02-t01");
+    try {
+      await w.until((s) => /:ask:e1$/.test(String(s.activeItemId ?? "")));
+      const reask = reaskOf(sc, ".skills[0].explain[0].ask");
+      let hit = null, before = null, last = null;
+      for (let k = 0; k < 4 && !hit; k++) {
+        const t = await w.go("pata nahi", GIVE);
+        if (["pointAlt", "simpler"].includes(String(t.lm.help?.rung)) && t.lm.pointHelpReask) { hit = t; before = last; }
+        last = t;
+      }
+      assert.ok(hit, "a point-wording help turn marked pointHelpReask");
+      assert.ok(!/Ab tum batao\.$/.test(hit.text), hit.text);
+      // (on the reask; where her turn before ended on that reask, on the card as posed — the reask is not said twice running)
+      if (before?.text.endsWith(reask)) assert.ok(!hit.text.endsWith(reask) && /\?$/.test(hit.text), hit.text);
+      else assert.ok(hit.text.endsWith(reask), hit.text);
+      assert.ok(pointHelpReaskAt({ who: "teacher", cell: { part: "c5-maths-ch02-t01-s1:e1:card" }, text: hit.text }, sc, before ? { text: before.text } : null), hit.text);
+    } finally { w.done(); }
+  });
+  test("questionThreeRunning's exemption reads exactly that turn: the point's simpler at the card ending on its reask passes; the same help ending on the invitation, or a card's own simpler, does not", () => {
+    const simpler = sc.skills[0].explain[0].simpler.hi;
+    const reask = reaskOf(sc, ".skills[0].explain[0].ask");
+    const cell = { part: "c5-maths-ch02-t01-s1:e1:card", column: "give_up" };
+    assert.ok(pointHelpReaskAt({ who: "teacher", cell, text: `${simpler} ${reask}` }, sc));
+    assert.ok(!pointHelpReaskAt({ who: "teacher", cell, text: `${simpler} Ab tum batao.` }, sc));
+    assert.ok(!pointHelpReaskAt({ who: "teacher", cell, text: `Kuch aur socho. ${reask}` }, sc));
+    assert.ok(!pointHelpReaskAt({ who: "teacher", cell: { ...cell, part: "c5-maths-ch02-t01-s1:e1:checkin" }, text: `${simpler} ${reask}` }, sc));
+    // (the card as posed, its own question, only where her turn before ended on the reask)
+    const prompt = sc.skills[0].explain[0].ask.prompt.hi;
+    assert.ok(pointHelpReaskAt({ who: "teacher", cell, text: `${simpler} ${prompt}` }, sc, { text: `Kuch socho. ${reask}` }));
+    assert.ok(!pointHelpReaskAt({ who: "teacher", cell, text: `${simpler} ${prompt}` }, sc, { text: "Kuch socho. Ab tum batao." }));
+    assert.ok(!pointHelpReaskAt({ who: "teacher", cell, text: `${simpler} ${prompt}` }, sc));
+  });
+});

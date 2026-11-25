@@ -13,7 +13,8 @@
 //                         said
 //   returnAsksAgain       C6 (widens d33's): and a return that asks when, after an aside that said when ("kal", "aaj", …); a return that asks
 //                         what they like in it, to a child who told what they like
-import { atQuestionOf, endsOnYourTurn, endsOnShortAsk, runOfTwo } from "../../server/director/question-run.js";
+import { atQuestionOf, endsOnYourTurn, endsOnShortAsk, runOfTwo, endsOnReaskOf } from "../../server/director/question-run.js";
+import { helpPart, at as atPath, sentencesOf as helpSentences, normSentence as helpNorm } from "../../server/director/help.js";
 import { D33_PREDICATES } from "./d33-predicates.mjs";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
@@ -63,6 +64,22 @@ const ASKS_WHEN = /(?:kab ki baat|kab hua|kab (?:khela|kiya|gaye)|when was that|
 const ASKS_LIKE = /(?:pasand|achha lag|achhi lag|sabse achha|sabse achhi|favou?rite|like (?:most|best)|enjoy most)/i;
 const lastQOf = (t) => (String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+/).filter((x) => /\?\s*$/.test(x)).at(-1) ?? "");
 
+/** d37 RULING-G item 7: help at a card said in its POINT's wording (a sentence of the point's pointAlt or simpler, by the script) that ends on
+ *  the card's own `reask` — the one turn questionThreeRunning and yourTurnNotThird allow (stuck c5-ch02-t01 12, c5-ch02-t02 12, c5-ch02-t03 12). */
+export function pointHelpReaskAt(r, script, prevT = null) {
+  const part = String(r?.cell?.part ?? "");
+  if (!script || !/:card$/.test(part)) return false;
+  let p = null;
+  try { p = helpPart(script, part); } catch { p = null; }
+  const qp = `.${String(p?.path ?? "").replace(/^\./, "")}`;
+  // (or, where her turn before ended on that reask, the card's own question — the reask is not said twice running)
+  const askQ = (x) => qKey(String(x ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+/).at(-1) ?? "");
+  const prompt = atPath(script, `${String(p?.path ?? "")}.prompt`);
+  const endsOnPrompt = !!prevT && endsOnReaskOf(script, qp, prevT.text) && [prompt?.hi, prompt?.en, typeof prompt === "string" ? prompt : null].filter(Boolean).some((x) => askQ(x) && askQ(x) === askQ(r.text));
+  if (!p?.point || !p?.path || !(endsOnReaskOf(script, qp, r.text) || endsOnPrompt)) return false;
+  const ss = new Set(helpSentences(String(r.text ?? "")).map(helpNorm));
+  return ["pointAlt", "simpler"].some((f) => { const v = atPath(script, `${p.point}.${f}`); return [v?.hi, v?.en, typeof v === "string" ? v : null].filter(Boolean).some((x) => helpSentences(x).map(helpNorm).some((y) => ss.has(y))); });
+}
 export const D34B_PREDICATES = {
   /** to-brain 049 B6 (d33's), and to-brain 051 C6: a return never asks when after the aside said when (director33 c5-t01 steady 40, c5-t03
    *  steering 50: "Tumne sixer ki baat ki thi: woh kab ki baat hai?" after "kal maine cricket khela"), nor what they like in it to a child who
@@ -90,6 +107,8 @@ export const D34B_PREDICATES = {
     if (r.who !== "teacher" || !ctx?.script) return null;
     // (the turns that rightly end on the question: one that parks an aside or replies to one, one with no help in it — they count)
     if (asideTurn(r) || !helpTurn(r)) return null;
+    // (d37 RULING-G item 7: the point's wording said as help at a card, ending on the card's reask — allowed)
+    if (pointHelpReaskAt(r, ctx.script, ctx.prevT)) return null;
     const { n, path } = runAt(L, i, ctx.script);
     return n >= 3 ? `the question ${path ?? "(a short ask)"} ends ${n} of her turns running` : null;
   },
