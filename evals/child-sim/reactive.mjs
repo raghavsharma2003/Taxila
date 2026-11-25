@@ -28,7 +28,6 @@
 // right is not answered again; no reason line sounds like a picture request; and it never answers a card whose question
 // she has not asked (no "?" in her line): it asks for the question instead.
 
-import { BEAT_ASK, WORKED_ASK } from "../../server/brain/say.js";
 export const MIN_TURNS = 20;
 /** director9: the most "which question?" replies one card gets in a row before the child answers it anyway. */
 export const WHICH_MAX = 2;
@@ -134,8 +133,6 @@ function rngOf(seed, persona) {
   return () => { a = (a + 0x6d2b79f5) >>> 0; let t = Math.imul(a ^ (a >>> 15), a | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 const pick = (rng, xs) => xs[Math.floor(rng() * xs.length)];
-/** d37 close item 6b: her yes-or-no check-in forms, as the walk says them (brain/say.js BEAT_ASK and WORKED_ASK, both languages). */
-const CHECKIN_FORMS = new Set([...Object.values(BEAT_ASK), ...Object.values(WORKED_ASK)].flat().map((f) => String(f).trim().toLowerCase()));
 
 /** A right answer in the forms a Hinglish-speaking child uses: "3", "teen", "3 hai na", "ek bata chaar" for 1/4. */
 export function rightForms(key, accept = []) {
@@ -343,14 +340,10 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
         return say({ text: pick(rng, /aasaan|easy/i.test(lastQ) ? ["thoda mushkil tha", "aasaan laga", "thoda mushkil, thoda aasaan"] : ["achha laga", "maza aaya", "thoda mushkil tha", "sawaal achhe the"]), kind: "ack" });
       }
       // no keyed question on the table: an open question gets a short go, anything else a short acknowledgement
-      // (d37 close item 6b: the stuck and steering children answer her yes-or-no check-in — one of the walk's own check-in forms — with a
-      // yes or a no: "nahi" where they do not understand, never "pata nahi, aap batao"; the same draws, so every other line is as before)
-      if (/\?\s*$/.test(String(input.teacher ?? ""))) {
-        if (rng() < P.right.open) return say({ text: pick(rng, ["haan", "mujhe lagta hai haan", "haan, samajh aaya"]), kind: "ack" });
-        const no = ["stuck", "steering"].includes(persona) && CHECKIN_FORMS.has(lastQ.trim().toLowerCase());
-        const t = pick(rng, LINES.dontknow);
-        return say({ text: no ? "nahi" : t, kind: "ack" });
-      }
+      // (d37 close item 6b — the stuck and steering children saying "nahi" at her yes-or-no check-in — is NOT built: with it the walk reads a
+      // bare "nahi" as no column ("other") and says the point smaller with the check-in again, the card held, which gated replyPointCardNext
+      // flags after A(ii)'s and D2's check-ins (17 rows on the closing builder's first matrix). A clash for main to rule on; the line stays)
+      if (/\?\s*$/.test(String(input.teacher ?? ""))) return say({ text: rng() < P.right.open ? pick(rng, ["haan", "mujhe lagta hai haan", "haan, samajh aaya"]) : pick(rng, LINES.dontknow), kind: "ack" });
       return say({ text: pick(rng, LINES.ack), kind: "ack" });
     },
   };

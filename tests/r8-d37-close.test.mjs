@@ -189,7 +189,7 @@ describe("item 6c: cause B's twelve driven walks (b3/ROWS4.md, evals/hybrid-side
   });
 });
 
-describe("item 6a/6b: the rule-based children (evals/child-sim/reactive.mjs)", async () => {
+describe("item 6a (and 6b not built): the rule-based children (evals/child-sim/reactive.mjs)", async () => {
   const { createReactiveChild } = await import("../evals/child-sim/reactive.mjs");
   const kit = { topicId: "c5-maths-ch02-t01" };
   test("6a: her 'kab …?' question about the aside is answered with a when; a 'kiske saath' still with a with whom", () => {
@@ -199,24 +199,13 @@ describe("item 6a/6b: the rule-based children (evals/child-sim/reactive.mjs)", a
     const b = c.reply({ turn: 4, returned: true, teacher: "Virat ko tum kiske saath dekhte ho?" });
     assert.match(b.text, /saath dekhta|saath dekhti/);
   });
-  test("6b: at a yes-or-no check-in the stuck and steering children say yes or 'nahi', never 'pata nahi, aap batao'; at another open question as before", () => {
-    for (const persona of ["stuck", "steering"]) {
-      const seen = new Set();
-      for (let seed = 1; seed <= 40; seed++) {
-        const c = createReactiveChild({ persona, seed, kit, toEnd: true });
-        const o = c.reply({ turn: 25, teacher: "Ek roti ke 2 barabar hisse hain. Yahan tak theek hai?" });
-        if (o.kind !== "ack") continue; // (a scheduled event of the persona's on this turn: not this rule's)
-        const t = o.text;
-        assert.match(t, /^(?:haan|mujhe lagta hai haan|nahi)\b/, `${persona} ${seed}: ${t}`);
-        assert.ok(!/pata nahi/.test(t), t);
-        seen.add(t.startsWith("nahi") ? "no" : "yes");
-      }
-      assert.ok(seen.has("no"), `${persona}: some child does not understand`);
+  test("6b NOT built (a clash with gated replyPointCardNext, for main): the stuck and steering children answer a check-in as before", () => {
+    const seen = new Set();
+    for (let seed = 1; seed <= 40; seed++) {
+      const o = createReactiveChild({ persona: "stuck", seed, kit, toEnd: true }).reply({ turn: 25, teacher: "Ek roti ke 2 barabar hisse hain. Yahan tak theek hai?" });
+      if (o.kind === "ack") seen.add(o.text);
     }
-    // (the steady child, and any child at a question that is no check-in, as before: a give-up line where it does not know)
-    const other = new Set();
-    for (let seed = 1; seed <= 40; seed++) other.add(createReactiveChild({ persona: "stuck", seed, kit, toEnd: true }).reply({ turn: 25, teacher: "Socho, isme kya khaas hai?" }).text);
-    assert.ok([...other].some((t) => /pata nahi|samajh nahi|nahi pata/.test(t)), [...other].join(" | "));
+    assert.ok(![...seen].includes("nahi"), [...seen].join(" | "));
   });
 });
 
