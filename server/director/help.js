@@ -401,7 +401,7 @@ export function namedReasonOf(node, last, path) {
   if (!v || typeof v !== "object" || !(v.hi || v.en)) return null;
   return { field: "whyAltHelp", path: `${path}.wrongAnswers[${k - 1}].why`, value: v, present: true, named: k };
 }
-export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null, explain = false, boardUp = null }) {
+export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null, explain = false, boardUp = null, heldCard = false }) {
   if (!HELP_REQUESTS.includes(asked)) return null;
   const part = helpPart(script, partId);
   if (!part) return null;
@@ -553,8 +553,10 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     // (what happens to the card with a wording said: a posed card stays; a point's or a remediation's card is asked after a give-up or
     // a Hindi request, and waits after a clarify; a worked step and a key's check-in end on the check-in; a bridge goes on)
     // (dc-r8-director27 P3: a bridge's second wording is said and she waits on its check-in, as a point's — the lesson goes on from there)
+    // (to-brain 054 A, main's sixth ruling item 1: at the check-in that ends her reply's point turn (D2) or the split first turn (A(ii)) — the
+    // card held for the next turn, `heldCard` — a clarify takes the give-up path: the point's wording, then its card, never another check-in)
     const card = keyed || closed ? "wait" : isCard ? "keep" : part.kind === "bridge" ? "wait" : part.kind === "worked_step" ? "wait"
-      : part.card && request !== "clarify" ? "ask" : "wait";
+      : part.card && (request !== "clarify" || heldCard) ? "ask" : "wait";
     return { ...base, rung, board: rung.board, card, key: null, joint: null };
   }
   // nothing unsaid left

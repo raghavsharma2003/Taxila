@@ -3730,7 +3730,9 @@ function helpDecision(prev, input, request, said) {
   const d = pickHelp({ script, part: where.part, keyed: where.keyed, closed: !!where.closed, request, said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
     lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: prev.answerAt?.[where.part] ?? null, bridgeAgain, closedWhy,
     // (to-brain 053 B7: a Hindi request that also asks for an explanation — "samjhao", "samjha do", "batao kaise")
-    explain: request === "hindi" && HINDI_EXPLAIN.test(String(input.text ?? "")), boardUp: prev.heldUp?.board ?? null });
+    explain: request === "hindi" && HINDI_EXPLAIN.test(String(input.text ?? "")), boardUp: prev.heldUp?.board ?? null,
+    // (to-brain 054 A, main's sixth ruling item 1: the check-in of her reply's point turn (D2) or of the split first turn (A(ii)), its card held)
+    heldCard: !!(prev.lastMove?.replyPoint || prev.lastMove?.startApart) && !!prev.splitHold?.teach && !!prev.splitHold?.ui?.ask?.itemId });
   return d ? { ...noPictureKeeps(resultHeldHelp(d, prev, script), prev.heldUp?.board ?? null), friend: friendOf } : null;
 }
 /** to-brain 051 C2: help on a worked step after an earlier step's result board went up is said over that board (it is the held board for the
@@ -3833,6 +3835,7 @@ const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field
 const helpJointOf = (d) => (d.then?.text && !d.rung && !d.key
   ? { kind: d.then.kind, form: fillFriend(d.then.text, d.friend ?? "").trim(), by: d.then.by, spent: { form: fillFriend(d.joint.text, d.friend ?? "").trim(), by: d.joint.by, kind: d.joint.kind } }
   : { kind: d.joint.kind, form: d.joint.text, by: d.joint.by });
+export const _helpJointOfForTest = (d) => helpJointOf(d);
 function helpFields(kit, d) {
   const words = helpWords(d);
   const board = helpBoardOf(d);

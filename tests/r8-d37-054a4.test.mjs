@@ -101,31 +101,79 @@ describe("item 4: replyPointCardNext, gated — after her reply's point turn the
   });
 });
 
-describe("the walk, where D2 put a third clarify at a point's check-in (dry stuck c4-ch06-t01 62): the help's two lines are recorded as said", () => {
+describe("the walk, where D2 put a third clarify at a point's check-in (dry5 stuck c4-ch06-t01 62): the help's two lines are recorded as said", () => {
+  // (the sixth ruling's item 1 sends a clarify at D2's check-in down the give-up path, so a walk no longer reaches the spent ladder there; the
+  // record is pinned on pickHelp's own decision for a point with nothing unsaid)
   test("nothing easier, then helpToCard, then the card: the help joint is helpToCard with the helpSpent line spent before it; the seam pass marks both", async () => {
+    const { _helpJointOfForTest: helpJointOf } = await import("../server/director/state.js");
+    const { pickHelp } = await import("../server/director/help.js");
+    const { applySeams } = await import("../server/brain/seams.js");
+    const { readFileSync } = await import("node:fs");
+    const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t01.json", import.meta.url), "utf8"));
+    const part = "c5-maths-ch02-t01-s2:e1:checkin";
+    // (every wording of the point said: its ladder is spent)
+    let said = [], d = pickHelp({ script, part, request: "clarify", said });
+    for (let n = 0; n < 8 && d?.rung; n++) { said = [...said, ...String(d.rung.text).split(/(?<=[.!?\u0964])\s+/).map((k) => ({ k: k.toLowerCase().replace(/[^\p{L}\p{N}/]+/gu, " ").trim(), row: n }))]; d = pickHelp({ script, part, request: "clarify", said }); }
+    assert.equal(d?.card, "ask"); assert.equal(d.joint?.kind, "helpSpent"); assert.equal(d.then?.kind, "helpToCard");
+    const hj = helpJointOf(d);
+    assert.equal(hj.kind, "helpToCard"); assert.equal(hj.spent?.kind, "helpSpent");
+    const list = [{ part: "simpler", text: hj.spent.form }, { part: "simpler", text: hj.form }, { part: "card", text: "Kis fraction par pahunchoge?" }];
+    const sp = applySeams(list.map((p) => p.text).join(" "), list, { kit: { topicId: "t", __joints: {} }, state: { turn: 9 }, lang: "hinglish", info: { helpJoint: hj } });
+    assert.deepEqual(sp.seams.map((x) => [x.right, x.joint ?? null]).slice(0, 2), [["helpSpent", "helpSpent"], ["helpToCard", "helpToCard"]]);
+  });
+});
+
+describe("sixth ruling item 1: a clarify at a held-card check-in takes the give-up path — the point's help and its card in the same turn", () => {
+  const walk = async (topicId, lines) => {
     const { initLessonState, step } = await import("../server/director/state.js");
     const { classifyFast, targetFor } = await import("../server/director/classify.js");
     const { kitFromFile } = await import("../server/content/kits.js");
     const { getTopic } = await import("../server/content/curriculum.js");
     const { findItem } = await import("../server/director/items.js");
     const { dryReading } = await import("../evals/hybrid-side-by-side/dry-reader.mjs");
-    const { applySeams } = await import("../server/brain/seams.js");
-    const topicId = "c5-maths-ch02-t01", kit = kitFromFile(getTopic(topicId));
-    const ctx = { firstName: "Riya", teacherName: "Asha", lang: "hinglish", interests: ["cricket"], classLevel: 5, sessionId: "s-054a4", teacher: "director" };
+    const kit = kitFromFile(getTopic(topicId)), cl = Number(/^c(\d)/.exec(topicId)[1]);
+    const ctx = { firstName: "Riya", teacherName: "Asha", lang: "hinglish", interests: ["cricket"], classLevel: cl, sessionId: "s-054a4", teacher: "director" };
     let s = step(initLessonState({ topicId, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 }).state;
-    // (the steady child's lines of the dry matrix to D2's park and point turn at s2 e1, then three clarifies)
-    const LINES = ["haan, samajh aaya", "3", "6 kilometre", "pata nahi", "one sixth", "1 upon 3", "eight", "1/8", "picture dikhao", "between 0 and 1/5 hai na", "1/10 wala", "chaar gap", "dhai sau metre", "pehle main try karun?", "1 upon 11", "1/12", "pehle mark par", "kal maine cricket khela, sixer maara", "samajh nahi aaya", "samajh nahi aaya", "samajh nahi aaya"];
-    let r;
-    LINES.forEach((text, n) => {
+    const out = [];
+    lines.forEach((text, n) => {
       const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
       const target = targetFor(s, kit, item);
-      const fast = classifyFast({ target, childText: text, lang: "hinglish", classLevel: 5, typed: true });
-      r = step({ ...s, recent: [...(s.recent ?? []), { who: "child", text }] }, { event: "turn", kit, text, cls: fast.result ?? dryReading(target), now: n + 1 }); s = r.state;
+      const fast = classifyFast({ target, childText: text, lang: "hinglish", classLevel: cl, typed: true });
+      const r = step({ ...s, recent: [...(s.recent ?? []), { who: "child", text }] }, { event: "turn", kit, text, cls: fast.result ?? dryReading(target), now: n + 1 }); out.push(r); s = r.state;
     });
-    const hj = r.state.lastMove.helpJoint;
-    assert.equal(hj?.kind, "helpToCard"); assert.equal(hj.spent?.kind, "helpSpent"); assert.equal(r.ui.ask?.itemId, "script:c5-maths-ch02-t01-s2:ask:e1");
-    const list = [{ part: "simpler", text: hj.spent.form }, { part: "simpler", text: hj.form }, { part: "card", text: r.ui.ask.text }];
-    const sp = applySeams(list.map((p) => p.text).join(" "), list, { kit, state: r.state, lang: "hinglish", info: { helpJoint: hj } });
-    assert.deepEqual(sp.seams.map((x) => [x.right, x.joint ?? null]).slice(0, 2), [["helpSpent", "helpSpent"], ["helpToCard", "helpToCard"]]);
+    return out;
+  };
+  const LINES = ["haan, samajh aaya", "3", "6 kilometre", "pata nahi", "one sixth", "1 upon 3", "eight", "1/8", "picture dikhao", "between 0 and 1/5 hai na", "1/10 wala", "chaar gap", "dhai sau metre", "pehle main try karun?", "1 upon 11", "1/12", "pehle mark par", "kal maine cricket khela, sixer maara"];
+  test("D2 (c5-t01, the dry's stuck 60 to 64): 'samajh nahi aaya' at her park's point check-in — the point's other wording, then its card", async () => {
+    const t = (await walk("c5-maths-ch02-t01", [...LINES, "samajh nahi aaya"])).at(-1);
+    assert.equal(t.state.lastMove.help?.request, "clarify"); assert.equal(t.state.lastMove.help?.rung, "pointAlt");
+    assert.equal(t.ui.ask?.itemId, "script:c5-maths-ch02-t01-s2:ask:e1", "the card in the same turn, never another check-in");
+  });
+  test("A(ii) (c5-t02): a clarify at the split first turn's check-in — help on the point and the card", async () => {
+    const t = (await walk("c5-maths-ch02-t02", ["pata nahi", "pata nahi", "samajh nahi aaya"])).at(-1);
+    assert.equal(t.state.lastMove.help?.request, "clarify"); assert.equal(t.ui.ask?.itemId, "script:c5-maths-ch02-t02-s1:ask:e1");
+  });
+  test("elsewhere a clarify is as built: at a point's check-in with no card held for it, the wording and the check-in again", async () => {
+    const { pickHelp } = await import("../server/director/help.js");
+    const { readFileSync } = await import("node:fs");
+    const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t01.json", import.meta.url), "utf8"));
+    const part = "c5-maths-ch02-t01-s2:e1:checkin";
+    assert.equal(pickHelp({ script, part, request: "clarify", said: [] })?.card, "wait");
+    assert.equal(pickHelp({ script, part, request: "clarify", said: [], heldCard: true })?.card, "ask");
+    assert.equal(pickHelp({ script, part, request: "give_up", said: [] })?.card, "ask");
+  });
+});
+
+describe("sixth ruling item 1, the check that reads it: clarifyCard accepts the point's help and its card after a held-card check-in, and only there", () => {
+  test("after D2's check-in or A(ii)'s, help and the card: not flagged; after any other check-in, or a card with no help: flagged as before", () => {
+    const sm = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
+    const d2 = T({ text: "Cricket ki baat bhi hogi. Is baar line 3 gaps mein kati hai. Yahan tak theek hai?", noFit: "point", seams: sm("park", "point", "checkin") });
+    const start = T({ text: "Theek hai, main shuru karti hoon. Roti ke 4 hisse. Yahan tak theek hai?", noFit: "point", seams: [{ left: "start", right: "startAnyway", joint: "startAnyway" }, ...sm("hook", "point", "checkin").slice(1)] });
+    const plain = T({ text: "Haan, sahi hai. Ab aage dekhenge. Yahan tak theek hai?", seams: sm("verdict", "bridge", "checkin") });
+    const help = T({ text: "Chocolate se socho. Kis fraction par pahunchoge?", card: "Kis fraction par pahunchoge?", seams: sm("help", "card"), pageParts: [{ part: "simpler", from: 0 }, { part: "card", from: 20 }] });
+    const bare = T({ text: "Kis fraction par pahunchoge?", card: "Kis fraction par pahunchoge?", seams: sm("card"), pageParts: [{ part: "card", from: 0 }] });
+    const read = (prevT, r) => PREDICATES.clarifyCard({ rows: [prevT, C("samajh nahi aaya"), r] }, r, 2, { prevT, prevChild: "samajh nahi aaya", script: null });
+    assert.equal(read(d2, help), null); assert.equal(read(start, help), null);
+    assert.ok(read(plain, help)); assert.ok(read(d2, bare));
   });
 });

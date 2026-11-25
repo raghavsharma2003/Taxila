@@ -84,7 +84,7 @@ describe("A(i), design D2 (main's fifth ruling item 1): her reply, its joint, th
     assert.equal(m.replyPoint, "afterPark"); assert.equal(m.noFit, "point"); assert.ok(m.point);
     assert.equal(t.ui.ask, undefined); assert.equal(t.state.splitHold?.ui?.ask?.itemId, CARD2);
   });
-  test("each answer to that check-in, routed as A(ii): a yes or silence the card alone; a give-up or Hindi help on the point and the card; a clarify help, then the card", () => {
+  test("each answer to that check-in, routed as A(ii): a yes or silence the card alone; a give-up, a Hindi request or (sixth ruling item 1) a clarify, help on the point and the card", () => {
     for (const yes of ["haan", ""]) {
       const t = walkLines("c5-maths-ch02-t01", [...LINES, yes]).at(-1);
       assert.equal(t.ui.ask?.itemId, CARD2, yes); assert.ok(!t.state.lastMove.point && !t.state.lastMove.help, yes);
@@ -93,8 +93,8 @@ describe("A(i), design D2 (main's fifth ruling item 1): her reply, its joint, th
       const t = walkLines("c5-maths-ch02-t01", [...LINES, req]).at(-1);
       assert.equal(t.state.lastMove.help?.rung, "pointAlt", req); assert.equal(t.ui.ask?.itemId, CARD2, req);
     }
-    const [c1, c2] = walkLines("c5-maths-ch02-t01", [...LINES, "samajh nahi aaya", "haan"]).slice(-2);
-    assert.equal(c1.state.lastMove.help?.rung, "pointAlt"); assert.equal(c2.ui.ask?.itemId, CARD2);
+    const c1 = walkLines("c5-maths-ch02-t01", [...LINES, "samajh nahi aaya"]).at(-1);
+    assert.equal(c1.state.lastMove.help?.rung, "pointAlt"); assert.equal(c1.ui.ask?.itemId, CARD2);
   });
   test("a side-topic at that check-in: her line to it and the card — no new point, no return, and no second back-to-work joint", () => {
     const t = walkLines("c5-maths-ch02-t01", [...LINES, "mujhe cricket pasand hai"]).at(-1);

@@ -209,6 +209,12 @@ export const PREDICATES = {
     // and the earlier card: that is the request's answer)
     if ((r.seams ?? []).some((x) => x.joint === "afterKeyReturn")) return null;
     if (r.cell?.keyed && !cardIn(r)) return null;
+    // (to-brain 054 A, main's sixth ruling item 1: at the check-in that ends her reply's point turn (D2) or the split first turn (A(ii)) — the
+    // point told, its card held for the next turn — a clarify takes the give-up path: the point's help, then its card, in the same turn)
+    const pk = (ctx.prevT.seams ?? []).map((x) => String(x.right ?? ""));
+    const heldCard = ctx.prevT.noFit === "point" && pk.at(-1) === "checkin" && pk.includes("point")
+      && (pk.some((x, n) => ["asideReply", "aiReply", "park"].includes(x) || (n === 0 && x === "aside")) || (ctx.prevT.seams ?? []).some((x) => x.joint === "startAnyway"));
+    if (heldCard && (r.seams ?? []).some((x) => ["help", "simpler"].includes(String(x.right ?? "")))) return null;
     return atCheckin && cardIn(r) ? "clarify at a check-in answered with a card" : null;
   },
   /** A planned in-turn board change the record does not draw; a board change under a joint word. */
