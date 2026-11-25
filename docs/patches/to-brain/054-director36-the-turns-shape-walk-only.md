@@ -1,0 +1,221 @@
+# To Brain 054: director36, the turn's shape (walk only)
+
+From main, 2026-11-25. Source: `docs/design/round7/judgements/director36-2026-11-25.md` (`dc-r8-director36` items 3, 4) and
+`director35-2026-11-24.md` items 3, 8. Rows: 0-based in `director` of
+`tests/fixtures/eval-results/hybrid-side-by-side/results/2026-11-25-director36/` (st, sk, of, sr: steady, stuck, offtopic,
+steering; bracketed: the row's words).
+
+Four causes, built and measured ONE AT A TIME, A to D: each its own branch, dry matrix (`check rc=0`, its predicates 0) and
+two-topic pair run with two judges, read first under director36 item 4. A cause is done "when both judges' rows for it fall by half
+on the two topics and no other axis falls" (director35 item 6).
+
+## Not in this round
+
+No script sentence (Learning 025); a rule needing words no script field has is marked *needs Learning* and left out. The path
+around a safety turn is the owner's; `server/safety/` and what calls it are frozen. The AI line still says she is an AI
+(`DENIES_AI`, `TASTE_CLAIM` stay). Not mechanisms 8 and 9 (fixed forms, the stop menu).
+
+---
+
+## Main's rulings on this order (2026-11-25)
+
+- **A is built first and alone**, then read as heard on the offline walk, then measured on a two-topic paid run, before B starts.
+- **A(i): design D1.** Her reply's turn may end on its own joint as a go-on line: this is a second place for 049's statement
+  ending, and the only one added. D2 is the reversal, not an option.
+- **A(ii): design II-B.** The whole point, then the check-in; the card is the next turn. This amends the words of
+  `dc-r8-director36` item 3(a) ("the point's first sentence"): a point is never broken inside itself.
+- **A(iii): as written.** The roti-then-ribbon turn and the verdict, lead-in, problem and step turn are left.
+- **B, C and D are not ruled yet** (open questions 3 to 6): each is ruled when its turn comes, after A's measure.
+
+## A. A turn holds one new thing
+
+**1. The fault.** (i) A reply, park or AI reply run into a new point and card, 28 turns: c5-t01 of 46 (73), of 50 (73), st 36
+(73), st 42 (72); c4-ch06-t01 of 36 (71), st 42 (69); c6-ch07-t01 of 64 (72), of 38 (67), sr 44 (67), sk 54 (66); c6 st 40 (71), st 34 (69), sr 44 (66); c5-t03 sk 54 (71); c4 of 56 (69); c5-t02 st 44
+(69); c4-ch01-t02 sr 38 (65); c6-ch07-t03 st 34 (71). (ii) `startAnyway`, hook, point and card after two requests at the
+greeting: c5-t02 sk 4 (60), c5-t03 sk 4 (59), sr 4 (60), c6 sk 4 (60), c6-ch07-t01 sr 4 (59), c4-ch06-t01 sk 4 (57), sr 4 (55).
+(iii) A miss, a roti remediation and a ribbon card: c5-t02 sk 70, of 60 (67). An own step's close and the next card: c6-ch07-t03
+st 26 (73), of 20 (74), sr 36 (74).
+
+**2. Today** (`server/director/state.js`). Brain 044 T6 leaves her reply, park line and joint out of the 75 (`splitTeach`'s
+`parkLead = 0`, `walkLeadWords`, the held-part block in `step()`): 66 to 73 is by design. `walkNextV2`'s hook branch puts the hook
+in the first explain beat's `sayFirst`; `step()`'s `greetAgain` adds `startAnyway`. A remediation and its card share a turn to 60,
+or 65 when listed (`unitTurn`). A right verdict, reason, point and card split over 70 on the go-on line (`splitLongOnce`,
+`VPC_MAX`, `help.js` `goOnPlain`); a worked close and a card do not. Binding: director29 item 6 and director30 item 3: a reply's
+turn never ends on a check-in (gated `replyCheckin`, T6's `asideCheckin`); the one statement ending is 049 B6.1's go-on line;
+`brain/say.js` turns other statement tails into check-ins (`l2Checkin`), sparing `vpcGoOn`.
+
+**3. The rule.**
+
+(i) A turn opening with her reply to a side-topic (an aside's, the AI line's, a return's reply, or a park) never also carries a new
+point and its card.
+
+| | c5-t01 of 50 | next turn | per lesson |
+|---|---|---|---|
+| **D1** | "Oho, batting! Isi mein tumhe maza aata hai. Theek hai, ab phir se dhyaan idhar lagate hain." (17) | "Ab 1/3 wale 3 gap chalkar dekho: … kitne gap chalne honge?" (56) | +0.8 turns, +0 check-ins |
+| **D2** | the same, the point, "Yahan tak theek hai?" (56) | "Ab socho, ek doosri line 1/5 wale gaps mein kati ho. … kitne gap chalne honge?" (21) | +0.8 turns, +0.8 check-ins |
+
+**Recommended: D1.** It keeps director29's endings and both gates; D2 reverses them and adds 28 check-ins after a point, 8 straight
+after a bridge's check-in. D1 ends on the reply's own joint (`afterAside`, `afterPark`, `afterAiLine`: three forms in each script)
+as a go-on line: `noFit: "aside"`, the joint its statement tail (the `vpcGoOn` branch widened). The next turn is the held point and
+card (`splitHold`, `heldTurn`) whatever the child says, except a stop or a safety turn (as built) and the side-topic said again
+(the `asideAgain` line, then the point and card: the one place (i) gives way, so the lesson cannot stall). A request there is
+answered by the point and card (`requestHelpedOrThrow` accepts it). A reply into a card with no new point is not this rule's.
+
+(ii) The first teaching turn after two requests at the greeting is two turns.
+
+| | c6-ch07-t03 sk 4 | turn 6 |
+|---|---|---|
+| **II-A** (the decision's words) | "Theek hai, main shuru karti hoon. Roti ke 4 hisse karo ya 8, khaoge utni hi. Pehli patti 1/3 rangeen hai. Yahan tak theek hai?" (25) | "Doosri ka har hissa 2 mein kata: 2/6. Rang utna hi hai: yeh barabar bhinn hain. Ab socho, … kitne hisse rangeen hain?" (39) |
+| **II-B** | the same, the whole point, "Yahan tak theek hai?" (41) | the card (23) |
+
+**Recommended: II-B.** The point stays whole (L2: never broken inside an authored part); two first sentences are four and five
+words ("Yeh ek square hai.", c4-ch01-t02; the one above) and teach nothing alone; II-B is `splitTeach`'s `noFit: "point"` shape. It
+ends on the check-in (`BEAT_ASK`). A yes or silence: the card alone. A give-up, clarify or Hindi: help on the point as built
+(`pointAlt`, then the card). A side-topic: the park line, its joint, the card. Cost: +1 turn and +1 check-in in the 18 stuck and
+steering lessons.
+
+(iii) One rule covers the worked close: 049 B6's split extends to a right `workedDone` close and a card: whole to 70, over it
+the go-on line and the card next whatever the child says (`closeApart`, as 053 B4). Left: roti-ribbon (two figures are the
+script's; splitting brings back the remediation alone, director35 mechanism 11), and verdict, lead-in, problem, step at 66 to 73
+(c4 st 26, c4-ch01-t02 st 94), which their judges call dense, not too much.
+
+**4. Must not change.** `replyCheckin`, `asideCheckin` gated (`tests/r8-director30-046.test.mjs` Q3, `r8-director28-044.test.mjs`
+T6); `endsOnQuestion` gains only `noFit: "aside"`; `splitEndsOnCheckin`, `closeNoFitCheckin`, `firstTeachLong`, `inviteAfterPark`,
+`answerFirstThird` stay 0; 046 Q3's due return; 053 B6 (`r8-d35-053a.test.mjs`); T1, the hook never ends a turn.
+
+**5. Predicates.** `replyIntoPoint` (seams `park`, `asideReply` or `aiReply` with `point` and `card`); `asideGoOnNext` (after
+`noFit: "aside"`, not its point and card; a stop excepted); `startIntoCard`; `closeCardLong` (a worked close and a card over 70).
+
+**6. Measure.** c5-ch02-t01 and c6-maths-ch07-t01 (four such turns each; c6-ch07-t01 sr 4). Those turns 8 → 0; register rows
+under length or shape (8 and 7) halve; rows +1 to +2 a lesson. Worse: the go-on turn heard as dead or a brush-off; listening
+falls; the offtopic lesson stops earlier.
+
+**7. Reversal.** Decided for (ii): "if two judges hear the split first turn as slow for a child who was ready, the split is kept
+only after two give-ups at the greeting." Proposed for (i): two judges hear the go-on turn as dead; then D2, `replyCheckin` relaxed
+for that turn alone.
+
+---
+
+## B. A wait says the question
+
+**1. The fault.** c4 st 28 to 48, eleven turns ("Ab phir se socho, jawab kya hoga?" 28 (7); "Ab tumhara jawab sunti hoon." 30
+(5)); c4-ch01-t02 st 28 to 46, nine; c6-ch07-t01 st 38 to 48, six; one turn each at sk 22 of c5-t01,
+c5-t02, c5-t03 and c6, and c6 of 24 to 26.
+
+**2. Today.** `question-run.js` `yourTurnPass` (053 B2): `waitShort`, then the invitation, round again. `state.js` `heardOf` skips
+the short ask (main's R2) and `capCueOf` never caps a yes (R1): `heardCap` never fires.
+
+**3. The rule (director35 item 3, as decided).** At a card or asked step whose question her turn before said: after "Haan, pehle tum
+try karo." or a bare yes ("haan", "achha", "theek hai", "mujhe lagta hai haan"), wait one is the short ask, as built; wait two is the
+question's `reask` (every question has one), a hearing; wait three and after is a turn
+with no answer: help as for a give-up (`pickHelp`, ending on the question), a hearing; the fifth hearing is the cap as built. A
+side-topic in a wait is parked once (052 B4) and neither restarts nor advances the count. c4 st: 28 short ask, 30 re-ask, 32 park,
+34 help, 36 Hindi form, 38 the step told, twelve rows sooner.
+
+**4. Must not change.** 053 B2 (`cardWholeAfterTryOrYes`); R2; R1 (`questionFiveTimes`); `shortAskNoAnswer`; 052 B4. Three pins
+change, re-pinned by name only: `questionThreeRunning` and
+`yourTurnNotThird` (049 B4) exempt the wait's re-ask; gated `stepToldEarly` (d30) exempts the cap's turn; `r8-d35-053a.test.mjs`
+"at an asked step: … a bare haan waits; the step is never told".
+
+**5. Predicates.** `waitNoQuestion` (three turns at one question after a try-first or yes, none saying the question or help);
+`waitSecondNotReask`.
+
+**6. Measure.** c4-maths-ch05-t01 and c6-maths-ch07-t01. The longest wait with the question unsaid, 11 and 6 → 2. Worse: a key or
+told step for a child about to answer; the re-ask heard as nagging.
+
+**7. Reversal (decided):** "if two judges hear the re-ask as nagging a child who was thinking; then the second wait is an
+invitation that names what the question is about, and only the third is the re-ask." That invitation needs Learning.
+
+---
+
+## C. Keys, reasons and help as said
+
+**1. The fault.** Own-step key, no reason: c5-t01 sk 42 ("Iska jawab hai pehla khamba … 1/4 kilometre door hai." 20), c6 sk
+42 (33; 8 + 9 + 14 never said). Value twice: c4 st 134 ("pehle 1/10, phir 1/7, phir 1/4" twice, 37), c5-t01 sr 18 (38), c5-t02
+st 102 (32), sr 18 (33). Cap before an unsaid own reason: c6-ch07-t01 of 34 (60), c6-ch07-t03 of 34 (56). Own-step help from the
+worked problem: c5-t03 sk 32 (32), c6-ch07-t03 sk 40 (36), c5-t01 sk 40 (45). A remediation's wording on its own board at its
+follow-up card: c4 sk 32 (30). "Nothing easier" after a key: sr 20 of c5-t01 (38), c5-t02 (48), c6 (39), c6-ch07-t03 (49).
+
+**2. Today.** An own step's key is the worked example's answer and why (`workedDone`, `brain/say.js` `doneS`); the step's `why`,
+with the sum, is dropped by the one-close rule and `splitLong`'s `closeShort`. Keys: `help.js` `keyLine`, `state.js`
+`workedAnswerOf`, `teachback`. `heardCap` keys whatever own reason is unsaid. `help.js` `ladderSpec`: `your_step` is the step's
+`simpler`, then the worked problem's; `then_card` its `simpler`, then the remediation's `sayAlt` and `simpler` on the
+remediation's board. `pickHelp`, keyed, nothing unsaid: `helpSpent`, then `afterKeyReturn` or the go-on line.
+
+**3. The rule.**
+- **C1.** An own step's key, after misses or the cap, is `yourStep.key` with `yourStep.why`, as `keyLine` says a card's; no "Toh
+  poora jawab" after it; never shortened by `closeShort`. After a right answer, as built.
+- **C2.** Where a key's `why` names every number of its value, the key is the `why` alone, its own sentence (`keyLine`'s yes/no
+  branch): "Abhi yeh sahi nahi hai. Yeh sadak 6 barabar gaps mein kati hai, … toh 1/6 kilometre par."
+- **C3.** Where the child's answer at the cap is the card's named wrong answer and its reason is unsaid, the turn is the miss
+  verdict, that reason and the question (one hearing more, once a card); the cap comes next.
+- **C4.** Help at an own step is the step's: `yourStep.simpler`, then C1's key.
+- **C5.** At a follow-up card: its own `simpler`, then the key. The remediation's wordings are written about its board (ruling 1);
+  over the card's board they could be untrue in 46 of 49 cards, whose boards differ. All have a `simpler`.
+- **C6.** At a keyed card's check-in, a give-up or clarify with nothing unsaid gets the card's `whyShort` (the key's reason in
+  other words), then as built; `helpSpent` only once `whyShort` is said.
+
+C3: +1 turn in two lessons of 36; C4, C5: a help turn or two fewer in a stuck lesson; no check-in.
+
+**4. Must not change.** 052 A1 (`keyBeforeHint`); 053 F (`whyAltNoMiss`); 053 A1/A3 and release 61 (`noPictureBare`,
+`hintBoardNotDrawn`, re-pinned by name); `helpSpentCold`, `hindiSpentCold`, `spentThenReturn`,
+`keyCheckinBareCard`; `KEY_AFTER_MISSES`; T5; 051 C2 `resultHeldHelp`; `r8-director32-049.test.mjs` B3.
+
+**5. Predicates.** `ownKeyNoReason`, `keyValueTwice`, `capBeforeOwnReason`, `ownStepWorkedHelp`, `thenHelpOtherBoard`,
+`spentWithShortUnsaid`.
+
+**6. Measure.** c6-maths-ch06-t01 and c5-ch02-t01. Own-step keys with reason 0/2 → 2/2; values twice 1 → 0; worked-problem help
+1 → 0; "nothing easier" 2 → 0. Worse: help with nothing new (`whyShort` heard as the key again), or keys where a hint would have
+done (clause 4), rising.
+
+**7. Reversal.** Item 8 states none. Proposed: two judges count C6's `whyShort` as nothing new, the line returns as built; a judge
+finds a child keyed at a follow-up card that a remediation wording would have reached, C5's rungs return where Learning marks
+one true of the card's board.
+
+---
+
+## D. Closes and returns
+
+**1. The fault.** A return straight after a verdict: c5-t03 sr 26 ("Sixer ki baat tumne ki thi: …" 35), c6-ch07-t01 st 52 (48),
+of 68 (26), c4-ch06-t01 sk 46 (31), of 44 (32), c5-t01 st 40 (25), c6-ch07-t03 st 38 (29). Parks never returned: c5-t02, c6 of 18
+(15, 17). Asking what was said: c5-t02, c6 of 28 ("Tumhara favourite kaun hai?" after "aapko virat pasand hai?", 12), c4-ch01-t02
+of 22 ("…kya kehna tha?" 30). The goodbye's reply: c4 st 140 ("Achha, theek hai, maine sun liya." to "thoda mushkil tha", 27);
+st 106, 92, 100, 100, 114, 88 of c5-t02, c5-t03, c6-ch07-t01, c4-ch06-t01, c4-ch01-t02, c5-t01.
+
+**2. Today.** `state.js` `returnApart` puts the return after a right verdict (049 B5); `brain/say.js` `returnQuestion` picks an
+`asideReturn` form, the library line or `RETURN_TOLD_Q`, none needing a joint. `tasteServesPark` counts the AI exchange as the
+park's return. `honestTasteLine` asks `TASTE_QS` in order. `toWrap`'s `ackFits` chooses among `wrap.ack` forms that, in all nine
+scripts, only note or thank.
+
+**3. The rule.**
+- **D1.** A return led by a verdict takes an `asideReturn` form opening on a back-to word ("Ab", "Chalo", "Jaisa kaha tha", "… ki
+  baari"); every script has one, and the two judged fine open so (c6 st 38, c5-t02 st 42). If 049 B6.3's filter leaves none, the
+  verdict ends on the go-on line and the told return is the next turn.
+- **D2.** An AI exchange does not serve a park of something the child told (`said` on the entry); it is returned at the next
+  boundary.
+- **D3.** The AI line never asks a favourite the child's question named; a later ask takes the first `TASTE_QS` form not answered,
+  else the honest line alone. "kya kehna tha" joins `ASKS_TOLD`.
+- **D4.** A goodbye reply chosen from what the child said *needs Learning*: `wrap.ack` forms by kind (`hard`, `liked`, `any`)
+  for `ackFits`. Out of d37.
+
+**4. Must not change.** `verdictCheckinBeforeReturn`, `returnInsideWorked` (`r8-director32-049.test.mjs` B5); `returnAsksAgain`
+(`r8-director33-051b.test.mjs`); 049 B6.3 (`r8-director32-049-b6.test.mjs`); `asideReplyKind`; `wrapAckTwice`;
+`r8-d35-053b.test.mjs`'s wrap replies.
+
+**5. Predicates.** `returnColdAfterVerdict`, `shareParkUnreturned` (no return before the wrap), `aiAsksTold`.
+
+**6. Measure.** c6-maths-ch06-t01 and c6-maths-ch07-t01. Abrupt returns (clause 8) 2 → 0; parks unreturned 1 → 0; AI questions
+about what was said 1 → 0. Worse: the opener heard as a fixed form; a late return heard as breaking in.
+
+**7. Reversal (decided):** "if the joint is heard as one more fixed form, it is dropped and the return waits one turn."
+
+---
+
+## Open questions for main
+
+1. A(i): D1, a reply's turn ending on its joint as a go-on line (a second place for 049's statement ending)?
+2. A(ii): the whole point (II-B), not the decision's "point's first sentence"?
+3. B: the re-ask overriding 049 B4's third-turn invitation, and the cap overriding gated `stepToldEarly`: intended?
+4. C5: drop the remediation's wordings at a follow-up card rather than say them over its board?
+5. C3: one more hearing for the named answer's reason, rather than reason and key in one turn?
+6. D4 out of d37 until Learning 025 writes `wrap.ack` by kind?
