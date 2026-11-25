@@ -60,7 +60,12 @@ function posesAt(L, j, script) {
   while (k >= 0 && ((asideTurn(L.rows[k]) && !waitCue(L.rows[k])) || tryPassed(L, k, script))) k = prevTeacher(L, k);
   if (k < 0) return true;
   const t = L.rows[k].text;
-  return !(atQuestionOf(script, t) === a || standsFor(script, t) || waitCue(L.rows[k]));
+  // (main's sixth ruling, item 6 — pr3's C: a yes-cued turn before it is a wait turn only where it did not end its wait — no key, no told step,
+  // no cap: a card posed on the "haan" after a wait's key starts a wait of its own, so two questions' waits back to back are each read. A
+  // try-first's turn is no wait turn: item 1)
+  const y = L.rows[k];
+  const inWait = waitCue(y) && !tryCue(y) && !(y.stepAnswer?.told || seamsOf(y).some((x) => ENDS.has(x)) || y.heardCap);
+  return !(atQuestionOf(script, t) === a || standsFor(script, t) || inWait);
 }
 /** The wait whose turns end at row i: { P, turns } — P the question's path (the last her turns said before the wait), turns the wait's
  *  teacher rows in order (side-topic turns passed over) — or null where row i is no wait turn. */

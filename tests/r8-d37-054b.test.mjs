@@ -571,4 +571,18 @@ describe("sixth ruling, items 4 to 9: the checks", async () => {
     assert.deepEqual(flags([...lead, T1(`${HELP2} ${invite}`, "yes", ["help", "yourTurn"])], "waitSecondNotReask"), [6]);
     assert.deepEqual(flags([...lead, T1(`${HELP2} ${lastQ(e1)}`, "yes", ["help", "card"])], "waitSecondNotReask"), []);
   });
+  // (pr3's x11: haan ten times across two cards — the first card's wait ends on the cap's key and check-in, and the next card is posed on the
+  // "haan" to that check-in)
+  const capped = [asked1, C("haan"), short1, C("haan"), T1(e1Reask, "yes", ["card"]), C("haan"), T1(`${HELP1} ${lastQ(e1)}`, "yes", ["help", "card"]), C("haan"),
+    T1(`${KEY1} Yahan tak theek hai?`, "yes", ["key", "checkin"], { heardCap: E1 }), C("haan"), T2(`Pizza dekho. ${e2}`, "yes", ["point", "card"])];
+  test("item 6 (pr3 C): a card posed on the haan after a wait's key starts its own wait, read like any other (two waits back to back)", async () => {
+    const { waitAt } = await import("../evals/hybrid-side-by-side/d37b-predicates.mjs");
+    const L = { rows: [...capped, C("haan"), T2(SHORT_ASK_FORMS[0], "yes", ["reaskShort"])] };
+    assert.deepEqual(waitAt(L, 12, script), { P: E2, turns: [12] });
+    // (wait two said as a short ask again: flagged — before, no wait was read at this card)
+    assert.deepEqual(flags([...L.rows, C("haan"), T2(SHORT_ASK_FORMS[0], "yes", ["reaskShort"])], "waitSecondNotReask"), [14]);
+    assert.deepEqual(flags([...L.rows, C("haan"), T2(norm(q(E2).reask.hi), "yes", ["card"])], "waitSecondNotReask"), []);
+    // (a yes-cued turn that did NOT end its wait is still one of the wait's turns: the card said after it is no new wait)
+    assert.deepEqual(waitAt({ rows: [asked1, C("haan"), short1, C("haan"), T1(e1, "yes", ["card"])] }, 4, script)?.turns, [2, 4]);
+  });
 });
