@@ -168,6 +168,9 @@ import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 import { yourTurnPass, atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, endsOnReaskOf } from "./question-run.js";
 import { isSadAside } from "../brain/asideReplies.js";
+// (to-brain 054 D1: the return form a right verdict leads into — the walk asks brain/say.js whether a back-to form is left; say.js imports this
+// module too, and neither reads the other at load)
+import { returnQuestion } from "../brain/say.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
@@ -3411,7 +3414,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard", "heardCap", "afterWorkedLead", "replyPoint", "noReplyJoint"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard", "heardCap", "afterWorkedLead", "replyPoint", "noReplyJoint", "returnLed"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -5731,14 +5734,25 @@ function returnApart(out, input = null) {
   // (the aside is not served on this turn: it stays due, and the next boundary — the held half, heldTurn — returns it on a turn of its
   // own; a request answered first keeps it due, never lost)
   const t0 = String(move.returned.topic);
-  if (!rightNow) s.later = (s.later ?? []).map((e) => (e.servedAt === s.turn && String(e.topic) === t0 ? { ...e, servedAt: undefined } : e));
+  // (to-brain 054 D1: the return led by the verdict takes a form opening on a back-to word — brain/say.js returnQuestion's lead "verdict";
+  // where 049 B6.3's filter leaves none, the verdict ends on the go-on line (help.js goOnPlain, as 049 B6's split) and the return, still
+  // due, is said alone on the next turn — the held half's, as below)
+  const said0 = String(move.returned.said ?? "");
+  const plainRet = !ASKS_HER_TASTE.test(said0) && !isSadAside(said0) && !isSadAside(t0);
+  const goOnJ = rightNow && plainRet && !recordedWalk(input) && !returnQuestion(t0, s.ctx?.lang === "english" ? "english" : "hinglish", s, { said: move.returned.said ?? null, kit: input?.kit, lead: "verdict" })
+    ? goOnPlain(scriptFor(input?.kit)?.script, { lang: s.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: s.ctx?.lessonKey ?? s.ctx?.sessionId ?? s.lessonId ?? null, n: s.helpJointN?.afterKeyGoOn ?? 0 }) : null;
+  const ledApart = !!goOnJ?.text;
+  if (!rightNow || ledApart) s.later = (s.later ?? []).map((e) => (e.servedAt === s.turn && String(e.topic) === t0 ? { ...e, servedAt: undefined } : e));
   // (her one line to an aside the child said again — asideAgain, a taste question, a sad aside — answers what the child said on this
   // turn: it rides on the half said now, never on the held one: r7-brain-v67, c5-t02 offtopic 28 'mujhe cricket pasand hai')
   const closeKeys = ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "methods", "prefs", ...NOW_LINES];
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, gaveCheck: true, l2Break: true, ...(move.verdict ? { verdict: move.verdict } : {}),
     ...Object.fromEntries(closeKeys.filter((k) => move[k] != null).map((k) => [k, move[k]])), ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}),
     ...(saidNow && !move.asideAgain && !move.tasteAsked ? { asideAgain: { topic: String(move.returned.topic) } } : {}) };
-  if (rightNow) { close.returned = { ...move.returned }; close.gaveCheck = false; }
+  if (rightNow && ledApart) {
+    Object.assign(close, { noFit: "return", vpcGoOn: goOnJ.text });
+    s.helpJointN = { ...(s.helpJointN ?? {}), afterKeyGoOn: (s.helpJointN?.afterKeyGoOn ?? 0) + 1 };
+  } else if (rightNow) { close.returned = { ...move.returned }; close.gaveCheck = false; if (plainRet) close.returnLed = true; }
   // (d31 046 follow-up, the dry offtopic c6-ch06-t01 34 → 38: the skill's bridge goes with the close, ending on its check-in, as it does with
   // no return due — never held into her reply's turn after the return, where it and the next point ran past their card's 75 words and the
   // reply's turn ended on a check-in, replyCheckin)

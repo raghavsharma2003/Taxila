@@ -190,7 +190,33 @@ export const RETURN_TOLD_RE = /^(?:Tumne .{2,40} ki baat ki thi: woh kab ki baat
 const TIME_SAID = /(?<![\p{L}])(?:kal|aaj|parso|parson|abhi|yesterday|today)(?![\p{L}])/iu;
 const ASKS_WHEN_Q = /(?:kab ki baat|kab hua|when was that|when did)/i;
 const ASKS_LIKE_Q = /(?:pasand|achha lag|achhi lag|sabse achha|sabse achhi|favou?rite|like (?:most|best)|enjoy most)/i;
-export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null } = {}) => {
+/** to-brain 054 D1 (director36: a return straight after a verdict that opens cold — "Sixer ki baat tumne ki thi: …", "Cricket wali baat batao
+ *  na, …" — heard as abrupt; the two judged fine open on a back-to word, c6 st 38 "Ab cricket ki baat …", c5-t02 st 42 "Jaisa kaha tha, …"):
+ *  a return form that opens on a back-to word — "Ab", "Chalo", "Jaisa kaha tha" (after an "Achha," at most) or "… ki baari" in its first
+ *  clause. Read by the evals' returnColdAfterVerdict too. */
+export const BACK_TO_LEAD = /^(?:(?:achha|accha|theek hai|haan),\s+)?(?:ab|chalo|jaisa\s+kaha\s+tha|now|so|as\s+promised)(?![\p{L}])|^[^,:;.?!]{0,40}?(?<![\p{L}])ki\s+baari(?![\p{L}])/iu;
+export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null, lead = null } = {}) => {
+  // (to-brain 054 D1: a return led by a verdict — `lead: "verdict"`, state.js returnApart — takes a form opening on a back-to word, by the
+  // same filters as below; with none left, null: the verdict ends on the go-on line and the return is said alone on the next turn)
+  if (lead === "verdict") {
+    const ok = (x) => !!x && BACK_TO_LEAD.test(String(x).trim());
+    const ledState = { ...(state ?? {}) };
+    const all = [];
+    const t0 = String(topic ?? "").trim() || (lang === "english" ? "that" : "woh");
+    const raw = kit ? scriptFor(kit)?.script?.joints?.asideReturn : null;
+    const fs = Array.isArray(raw) ? raw.filter((f) => !/\{said\}/.test(JSON.stringify(f))) : [];
+    const j = fs.length ? rotated(jointOf({ ...kit, __joints: { asideReturn: fs } }, "asideReturn", lang, { topic: asideInHerVoice(t0), aside: asideInHerVoice(t0) }), jointCount(ledState, "asideReturn")) : [];
+    all.push(...j.filter((x) => !/\{\w+\}/.test(x)));
+    const lib = asideReturnLine(t0, { lang, n: jointCount(ledState, "asideReturn") });
+    if (lib) all.push(lib);
+    const told = toldOf(t0, said);
+    const toldWhen = TIME_SAID.test(String(said ?? "")) || childLinesBefore(state).some((x) => TIME_SAID.test(x) && String(t0).toLowerCase().split(/\s+/).some((w) => w.length > 2 && x.includes(w)));
+    const toldLike = !!state?.tasteAsked && (state.tasteAsked.turn ?? -1) < (state.turn ?? 0);
+    const fresh = (x) => !(toldWhen && ASKS_WHEN_Q.test(String(x ?? ""))) && !(toldLike && ASKS_LIKE_Q.test(String(x ?? "")));
+    const back = all.filter(ok);
+    if (told) return back.find((x) => !ASKS_TOLD.test(x) && fresh(x)) ?? null;
+    return back.find(fresh) ?? (back.length ? back[0] : null);
+  }
   const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "woh");
   // (to-brain 051 C6: the return asks nothing the child already told — not when, after an aside that said when ("kal maine cricket khela":
   // director33 c5-t01 steady 40, c5-t03 steering 50); not what they like in it, after they answered her question what they like best
@@ -3143,7 +3169,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // +calls per turn)
       // (R1 rule 3: a sad aside gets a sad line and no return question — the lesson goes on after it)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      // (to-brain 054 D1: a return the walk put after a right verdict — state.js returnApart's returnLed — opens on a back-to word)
+      const led = state.lastMove?.returnLed ? returnQuestion(ret.topic, lang, state, { said: ret.said, kit, lead: "verdict" }) : null;
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : led ?? returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       { const k = String(ret.topic ?? "").toLowerCase(); ss = ss.filter((x) => !k || !x.toLowerCase().includes(k)); }
       if (line && sad) { aside.push(line); guard.returnSaid = true; guard.returnSad = true; }
