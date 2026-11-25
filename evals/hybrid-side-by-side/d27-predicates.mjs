@@ -275,6 +275,9 @@ export const D27_PREDICATES = {
     if (!a || !ctx.script) return null;
     const { parts } = st.cur;
     if (parts.some((p) => p.part === "simpler" && p.beat === a.beat)) return null;
+    // (to-brain 054, dry offtopic c5-t03 34 once A moved the lesson: a card's marked whyAlt, due because the child's last answer there was its
+    // named wrong answer — main's ruling on 049 B3 — is an unsaid wording of that card's, help as a simpler is)
+    if (parts.some((p) => p.part === "whyAlt" && p.beat === a.beat) && ownReasonDue(L, i, ctx, partIdOf(a, ctx.script))) return null;
     // (Brain 046 Q2: a Hindi request answered with the card's `hindi` form)
     if (req === "hindi" && hindiFormSaid(ctx.script, r)) return null;
     // (dc-r8-director29 Brain 045 P3: a request on the worked problem whose step is asked is helped on that step — its simpler)

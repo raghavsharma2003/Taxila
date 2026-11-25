@@ -4192,7 +4192,31 @@ export function step(prev, input) {
       out.state.helpJointN = { ...(out.state.helpJointN ?? {}), startAnyway: (prev.helpJointN?.startAnyway ?? 0) + 1 };
       out.state.lastMove = { ...out.state.lastMove, sayFirst: [j.text, ...(out.state.lastMove.sayFirst ?? [])], helpJoint: { kind: "startAnyway", form: j.text, by: j.by }, help: { part: "greet", request: columnName(input0, prev), rung: null, card: "goOn", joint: "startAnyway", board: null } };
       if (out.move) out.move = { ...out.state.lastMove };
+      // (to-brain 054 A(ii), main's ruling II-B — director36 c5-t02 stuck 4, 60 words: the start line, the hook, the point and its card in one
+      // breath after two requests at the greeting. The first teaching turn is the start line, the hook and the whole point, ending on its
+      // check-in; the card is the next turn. A point is never broken inside itself: this amends dc-r8-director36 item 3(a)'s "first sentence")
+      if (out.ui?.ask?.itemId && out.state.lastMove.point && !out.state.splitHold && !out.end && scriptOn() && !recordedNow && l2On()) {
+        const id = out.ui.ask.itemId;
+        const sp = splitTeach(out, input, -1, 0);
+        if (sp !== out && sp?.state?.splitHold) {
+          // (a point with a quick question that fits ends on it, as splitTeach's own split does: no script has one today)
+          sp.state.lastMove = { ...sp.state.lastMove, ...(sp.state.lastMove?.quick ? {} : { noFit: "point" }), startApart: true };
+          sp.move = { ...sp.state.lastMove };
+          if (sp.state.posedAt?.[id] === sp.state.turn) { const { [id]: _p, ...rest } = sp.state.posedAt; sp.state.posedAt = rest; }
+          if (sp.state.cardSaidN?.[id]) sp.state.cardSaidN = { ...sp.state.cardSaidN, [id]: sp.state.cardSaidN[id] - 1 };
+          sp.proposal = directorProposal(sp.move, { ui: sp.ui, guidance: sp.state.guidance, purpose: sp.state.purpose });
+          out = sp;
+        }
+      }
     }
+  }
+  // (to-brain 054 A(ii), dry stuck c5-t02 12 once the first card came a turn later: a help turn built from the Hindi turn before kept its
+  // hindiForm mark — the B4 pass read it as a Hindi turn and brain/say.js said the card before the invitation. The mark is the turn's only
+  // where its help said the form)
+  if (input?.event === "turn" && out?.state?.lastMove?.hindiForm && out.state.lastMove.help && !out.state.lastMove.help.hindiForm) {
+    const { hindiForm: _h, ...lmH } = out.state.lastMove;
+    out.state.lastMove = lmH;
+    if (out.move) { const { hindiForm: _h2, ...mH } = out.move; out.move = mH; }
   }
   // (help's wording is said on its own turn: a walk move built from the last one never carries it into a turn help did not decide)
   if (input?.event === "turn" && out?.state?.lastMove && !out.state.lastMove.help && prev?.lastMove?.help && out.state.lastMove.simpler && out.state.lastMove.simpler === prev.lastMove.simpler) {
@@ -5254,6 +5278,9 @@ export function splitLong(out, input) {
   if (out?.move?.workedDone?.why && !scriptFor(input.kit)?.script?.recordedRun && l2On() && input?.event === "turn") {
     const a0 = cloneOut(out);
     const a1 = a0 ? splitLongOnce(a0, input) : null;
+    // (to-brain 054 A(iii): a right worked close split from its card over 70 words is said whole — its why kept — and ends on the go-on line;
+    // P5's short close is for the other splits)
+    if (a1?.state?.splitHold && a1.state.lastMove?.noFit === "close") return a1;
     if (a1?.state?.splitHold) {
       const c0 = cloneOut(out);
       if (c0) {
@@ -5388,6 +5415,11 @@ function splitLongOnce(out, input, opt = {}) {
       return closeApart(out, "card");
     }
   }
+  // (to-brain 054 A(iii), director36 c6-ch07-t03 steady 26, offtopic 20, steering 36 — 73 and 74 words: a right worked close — the child's
+  // own step answered right, "Toh poora jawab: …" — and the next card are 049 B6's split: said whole up to 70 words; over it the close ends
+  // on the go-on line (closeGoesOn, as 053 B4) and the card is the next turn whatever the child says)
+  if (l2On() && vpcSplitOn() && !recorded && hasClose && move.workedDone && !move.gave && !move.point && ui?.ask?.itemId && !move.returned?.topic && !move.bridgeSaid
+    && String(input.cls?.outcome ?? "") === "correct" && partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0).reduce((a, p) => a + p.n, 0) + VPC_SLACK > VPC_MAX) return closeApart(out, "close");
   // (dc-r8-director25 L2: a turn of more than one part over 75 words breaks at the last seam before 75 — breakL2 below)
   // (TAXILA_R7_SPLIT_CLOSE=on, the opt-in closing split of v6.1 policy B, decides a turn with closures by itself, as it did before L2)
   const splitCloseOptIn = closing.some(Boolean) && process.env.TAXILA_R7_SPLIT_CLOSE === "on";

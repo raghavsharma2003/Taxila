@@ -468,6 +468,9 @@ export const PREDICATES = {
     // (Brain 046 Q2: the card's `hindi` form asked in its place is the answer to a Hindi request)
     if (!simpler && hindiFormSaid(ctx.script, r)) return null;
     if (!simpler) return "a Hindi request on a card answered with no simpler";
+    // (to-brain 054 A(ii), dry steering c5-t02 8 once the first card came a turn later: help's simpler, then the card's `hindi` form — the card's
+    // question asked in Hindi, Q2's answer — is a question said)
+    if (hindiFormSaid(ctx.script, r) && sentencesOf(r.text).at(-1) && /[?？]\s*$/.test(sentencesOf(r.text).at(-1))) return null;
     // (2.4 S2: the card's re-ask — its question with its givens named — is its question too)
     const reasks = (ctx.o.reasks ??= (() => { const out = []; const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") { if (o.reask) for (const v of [o.reask.hi, o.reask.en, o.reask]) if (typeof v === "string") out.push(key(v.replace(/\{\w+\}/g, ""))); for (const v of Object.values(o)) walk(v); } }; walk(ctx.script ?? {}); return out; })());
     const reasked = reasks.some((k) => k && key(r.text).includes(k.slice(0, 40)));

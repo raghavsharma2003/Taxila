@@ -5,6 +5,29 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { _replyApartForTest as replyApart, REPLY_APART_JOINTS } from "../server/director/state.js";
 import { applySeams, SEAM_TABLE } from "../server/brain/seams.js";
+import { initLessonState, step } from "../server/director/state.js";
+import { classifyFast, targetFor } from "../server/director/classify.js";
+import { kitFromFile } from "../server/content/kits.js";
+import { getTopic } from "../server/content/curriculum.js";
+import { findItem } from "../server/director/items.js";
+import { dryReading } from "../evals/hybrid-side-by-side/dry-reader.mjs";
+
+/** The walk alone (state.js step, no reply): each child line read as the dry matrix reads it — code's reader, else the dry stub. → the
+ *  step results, one a line. */
+function walkLines(topicId, lines) {
+  const kit = kitFromFile(getTopic(topicId));
+  const ctx = { firstName: "Riya", teacherName: "Asha", lang: "hinglish", interests: ["cricket"], classLevel: Number(/^c(\d)/.exec(topicId)[1]), sessionId: "s-054a", teacher: "director" };
+  let s = step(initLessonState({ topicId, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 }).state;
+  const out = [];
+  for (const text of lines) {
+    const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+    const target = targetFor(s, kit, item);
+    const fast = classifyFast({ target, childText: text, lang: "hinglish", classLevel: ctx.classLevel, typed: true });
+    const r = step({ ...s, recent: [...(s.recent ?? []), { who: "child", text }] }, { event: "turn", kit, text, cls: fast.result ?? dryReading(target), now: out.length + 1 });
+    out.push(r); s = r.state;
+  }
+  return out;
+}
 
 const KIT = { topicId: "t-test", __joints: {
   afterAside: [{ hi: "Theek hai, ab phir se dhyaan idhar lagate hain.", en: "Okay, back to our work." }],
@@ -64,5 +87,36 @@ describe("A(i), design D1: her reply to a side-topic is its own turn, ending on 
     // (without the walk's mark nothing is added: a reply that leads into the lesson is joined as before)
     const r0 = applySeams(list[0].text, [list[0]], { kit: KIT, state: { turn: 9 }, lang: "hinglish", info: { asideAck: true } });
     assert.equal(r0.reply, "Oho, batting! Isi mein tumhe maza aata hai.");
+  });
+});
+
+describe("A(ii), design II-B: after two requests at the greeting, the start line, the hook and the whole point end on the check-in; the card next", () => {
+  test("c5-t02 (director36 stuck 4, 60 words): two give-ups at the greeting — the first teaching turn holds no card, its card is held", () => {
+    const [, t2] = walkLines("c5-maths-ch02-t02", ["pata nahi", "pata nahi"]);
+    const m = t2.state.lastMove;
+    assert.ok(m.point && m.hookSaid && m.startApart, "the hook and the whole point");
+    assert.equal(m.noFit, "point"); assert.equal(m.helpJoint?.kind, "startAnyway");
+    assert.equal(t2.ui.ask, undefined);
+    assert.equal(t2.state.splitHold?.ui?.ask?.itemId, "script:c5-maths-ch02-t02-s1:ask:e1");
+  });
+  test("a yes at its check-in gets the card alone; a ready child (a yes at the greeting) gets the hook, the point and the card as before", () => {
+    const [, , t3] = walkLines("c5-maths-ch02-t02", ["pata nahi", "pata nahi", "haan"]);
+    assert.equal(t3.ui.ask?.itemId, "script:c5-maths-ch02-t02-s1:ask:e1");
+    assert.ok(!t3.state.lastMove.point);
+    const [r1] = walkLines("c5-maths-ch02-t02", ["haan"]);
+    assert.ok(r1.state.lastMove.point && r1.ui.ask?.itemId && !r1.state.lastMove.noFit);
+  });
+});
+
+describe("A(iii): a right worked close and the next card over 70 words: the close whole, the go-on line, the card the next turn", () => {
+  // (the steady child's lines of the dry matrix, c5-t03: director36 steady 20 said the close and c1's card in 73 words)
+  const LINES = ["haan, samajh aaya", "1", "1", "pata nahi", "paanch hisse", "6 hisson mein", "6 gap chalne honge", "aath hisse", "picture dikhao", "chaar", "achha"];
+  test("c5-t03: the own step answered right — the close with its why ends on the go-on statement; whatever the child says, the card comes", () => {
+    const rs = walkLines("c5-maths-ch02-t03", LINES);
+    const close = rs[9].state.lastMove;
+    assert.equal(close.noFit, "close"); assert.ok(close.splitClose && close.vpcGoOn && !/\?\s*$/.test(close.vpcGoOn), close.vpcGoOn);
+    assert.ok(close.workedDone?.why, "the close keeps its why: P5's short close is not taken");
+    assert.equal(rs[9].ui.ask, undefined);
+    assert.equal(rs[10].ui.ask?.itemId, "script:c5-maths-ch02-t03-s1:c1");
   });
 });
