@@ -10,7 +10,8 @@
 //                           end — its wrap, goodbye or stop line. Her AI exchange is no return of it (D2: it asks her taste, not what they
 //                           told). Read at the end row. director36: c5-t02 and c6 offtopic 18. (d37 close item 12: only a return of THAT
 //                           park — its topic — clears it; a lesson with no end row is read at her last row; her AI exchange that serves an
-//                           untold park by design returns it.)
+//                           untold park by design returns it. d37 G3, BRIEF-G item 11: read at the lesson's true last row of hers, never
+//                           at a mid-lesson break row; a park whose topic cannot be read is not cleared by a return of another topic.)
 //   aiAsksTold              D3: her AI line's question asking a favourite where the child's question named one ("Tumhara favourite kaun
 //                           hai?" to "aapko virat pasand hai?": director36 c5-t02 and c6 offtopic 28); or a return asking what they had to
 //                           say ("… kya kehna tha?", "… kya bata rahe the?") after a side-topic that told its thing ("kal maine cricket
@@ -30,10 +31,13 @@ const ASKS_SAID = /(?<![\p{L}])(?:kya\s+kehna\s+tha|kya\s+bata\s+rahe\s+the|what
 const familyOf = (w) => { const x = String(w ?? "").toLowerCase(); return Object.entries(INTERESTS).find(([k, ws]) => k === x || ws.includes(x))?.[0] ?? x; };
 /** The topic a park row parked: the record's parkTopic, else the side-topic its child line names (state.js asideTopic), else null. */
 const parkTopicOf = (rows, n) => rows[n].parkTopic ?? asideTopic(String([...rows.slice(0, n)].reverse().find((x) => x.who === "child")?.text ?? ""), []) ?? null;
+/** Whether a word is one of an interest's (its own name or one of its words). */
+const interestWord = (w) => { const x = String(w ?? "").toLowerCase(); return Object.entries(INTERESTS).some(([k, ws]) => k === x || ws.includes(x)); };
 /** Whether a return row returns that topic: its record's returnTopic, else its text names a word of the topic's interest. A park whose topic
- *  cannot be read is returned by any return, as before. */
+ *  cannot be read is returned only by a return whose topic cannot be read either — never by a return of another topic (d37 G3, BRIEF-G
+ *  item 11). */
 function returnsTopic(y, topic) {
-  if (!topic) return true;
+  if (!topic) return !y.returnTopic && !wordsOf(y.text).some(interestWord);
   const f = familyOf(topic);
   if (y.returnTopic) return familyOf(y.returnTopic) === f;
   return (String(y.text ?? "").toLowerCase().match(/\p{L}+/gu) ?? []).some((w) => familyOf(w) === f);
@@ -49,11 +53,11 @@ export const D37D_PREDICATES = {
   },
   shareParkUnreturned(L, r, i) {
     const rows = L.rows ?? [];
-    // (the end: the first such row of the lesson; d37 close item 12, pr5 section 2: a lesson with no end row is read at its last row of hers)
+    // (the end: the lesson's true last row of hers — d37 G3, BRIEF-G item 11: a mid-lesson "break" or wrap row is no end, the lesson went on
+    // after it; d37 close item 12: a lesson with no end row is read at its last row of hers too. A park said in an end row itself is not read)
     const lastT = rows.map((x, n) => (x.who === "teacher" ? n : -1)).reduce((a, b) => Math.max(a, b), -1);
-    const hasEnd = rows.some((x) => ENDS(x));
-    if (hasEnd ? !ENDS(r) || rows.slice(0, i).some((x) => ENDS(x)) : i !== lastT) return null;
-    const parks = rows.slice(0, i + (hasEnd ? 0 : 1)).map((x, n) => ({ x, n })).filter(({ x }) => x.who === "teacher" && seamsOf(x).includes("park"));
+    if (i !== lastT) return null;
+    const parks = rows.slice(0, i + 1).map((x, n) => ({ x, n })).filter(({ x, n }) => x.who === "teacher" && seamsOf(x).includes("park") && !(n === i && ENDS(x)));
     // (item 12: the return that clears a park is a return of THAT park — its topic, as the record names it (parkTopic, returnTopic) or, in a
     // record without them, as the park's child line and the return's text name it — never any return seam. Her AI exchange that serves an
     // untold share park by design (state.js tasteServesPark; the record's servedByAi, its returnTopic) returns that park)

@@ -488,3 +488,27 @@ describe("item 10: cardDroppedAfterShortAsk — past a park; the remediation exe
     assert.deepEqual(flags([...lead, C("2/1", "incorrect"), T(`Nahi, 2/1 theek nahi. ${q(R1)}`, ["missVerdict", "remediation"])]), [4]);
   });
 });
+
+// d37 G3, BRIEF-G item 11 (evals only): shareParkUnreturned is read at the lesson's true last row of hers — a mid-lesson break or wrap row is
+// no end — and a park whose topic cannot be read is not cleared by a return of another topic.
+describe("item 11: shareParkUnreturned — the true last row; an unread park is not cleared by another topic's return", async () => {
+  const { PREDICATES: P } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const T = (o) => ({ who: "teacher", ...o, seams: (o.seams ?? []).map((right) => ({ right })) });
+  const C = (text, intent = null) => ({ who: "child", text, ...(intent ? { intent } : {}) });
+  const flag = (rows) => rows.map((r, i) => (r.who === "teacher" && P.shareParkUnreturned({ rows }, r, i) ? i : null)).filter((x) => x != null);
+  const SIXER = "kal maine cricket khela, sixer maara";
+  const park = T({ text: "Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Pehle is sawaal ka jawab do.", seams: ["park", "answerFirst"] });
+  const brk = T({ text: "Theek hai, thoda ruk jaate hain. Jab tayyar ho, batana.", move: "break", seams: ["wrapAsk"] });
+  const ret = T({ text: "Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", returnSaid: true, seams: ["return"] });
+  const bye = T({ text: "Aaj ke liye itna hi, phir milte hain.", move: "wrap", seams: ["goodbye"] });
+  test("a mid-lesson break is no end: a return after it clears the park; with none, the lesson's last row is flagged, never the break", () => {
+    assert.deepEqual(flag([C(SIXER, "aside"), park, C("ruko"), brk, C("chalo"), ret, C("Rohit"), bye]), []);
+    assert.deepEqual(flag([C(SIXER, "aside"), park, C("ruko"), brk, C("chalo"), T({ text: "Bilkul sahi. Agla sawaal?", seams: ["verdict", "card"] }), C("4"), bye]), [7]);
+  });
+  test("a park whose topic cannot be read: a return of another topic does not clear it; a return whose topic cannot be read does", () => {
+    const vague = [C("ek baat batani hai", "aside"), T({ text: "Woh baat bhi sununga, pehle yeh kaam.", seams: ["park"] })];
+    assert.deepEqual(flag([...vague, C("4"), ret, C("Rohit"), bye]), [5]);
+    assert.deepEqual(flag([...vague, C("4"), { ...ret, returnTopic: "cricket" }, C("Rohit"), bye]), [5]);
+    assert.deepEqual(flag([...vague, C("4"), T({ text: "Haan, ab batao, tum kya batana chahte the?", returnSaid: true, seams: ["return"] }), C("kuch nahi"), bye]), []);
+  });
+});
