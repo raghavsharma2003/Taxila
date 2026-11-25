@@ -458,3 +458,33 @@ describe("RULING-G item 8: one go-on or back-to line a turn; no opener twice run
     assert.deepEqual([...said].sort(), joints.afterAside.map((x) => x.hi).sort(), said.join(" | "));
   });
 });
+
+// d37 G3, BRIEF-G item 10 (evals only): cardDroppedAfterShortAsk reads the next turn of hers that is not a park or a reply to a side-topic
+// (not only the turn right after the short ask); its remediation exemption holds only for the FIRST card's remediation (its skill's) with
+// a miss verdict said in the turn.
+describe("item 10: cardDroppedAfterShortAsk — past a park; the remediation exemption is the first card's, with a miss verdict", async () => {
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const { readFileSync } = await import("node:fs");
+  const { questionObjectAt, SHORT_ASK_FORMS } = await import("../server/director/question-run.js");
+  const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c4-maths-ch05-t01.json", import.meta.url), "utf8"));
+  const sx = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
+  const C = (text, read) => ({ who: "child", text, ...(read ? { read } : {}) });
+  const T = (text, seams, extra = {}) => ({ who: "teacher", text, cell: { part: "x", column: "yes" }, seams: sx(...seams), ...extra });
+  const flags = (rows) => lessonFlags({ rows, script }).filter((f) => f.predicate === "cardDroppedAfterShortAsk").map((f) => f.row);
+  const q = (P) => norm(questionObjectAt(script, P).prompt.hi);
+  const E1 = ".skills[0].explain[0].ask", E2 = ".skills[0].explain[1].ask";
+  const lead = [T(`Yeh roti dekho. ${q(E1)}`, ["point", "card"]), C("haan"), T(SHORT_ASK_FORMS[0], ["reaskShort"])];
+  const park = T("Cricket ki baat baad mein karenge.", ["park"], { cell: { part: "x", column: "aside" } });
+  test("a park between the short ask and the next card: the card after it is read, and flagged with nothing ending the first", () => {
+    assert.deepEqual(flags([...lead, C("mujhe cricket pasand hai"), park, C("haan"), T(q(E2), ["card"])]), [6]);
+    // (other side: a right answer read between ends the first question; a key said in the park's turn ends it)
+    assert.deepEqual(flags([...lead, C("mujhe cricket pasand hai"), park, C("1/2", "correct"), T(`Bilkul sahi. ${q(E2)}`, ["verdict", "card"])]), []);
+    assert.deepEqual(flags([...lead, C("mujhe cricket pasand hai"), { ...park, seams: sx("park", "key") }, C("haan"), T(q(E2), ["card"])]), []);
+  });
+  test("the remediation exemption: the first card's remediation after a miss verdict passes; with no miss verdict, or another skill's, it is flagged", () => {
+    const R0 = ".skills[0].remediation[0].then", R1 = ".skills[1].remediation[0].then";
+    assert.deepEqual(flags([...lead, C("2/1", "incorrect"), T(`Nahi, 2/1 theek nahi. ${q(R0)}`, ["missVerdict", "remediation"])]), []);
+    assert.deepEqual(flags([...lead, C("2/1", "incorrect"), T(q(R0), ["remediation"])]), [4]);
+    assert.deepEqual(flags([...lead, C("2/1", "incorrect"), T(`Nahi, 2/1 theek nahi. ${q(R1)}`, ["missVerdict", "remediation"])]), [4]);
+  });
+});

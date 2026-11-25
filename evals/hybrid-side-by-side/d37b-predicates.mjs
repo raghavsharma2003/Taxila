@@ -209,13 +209,24 @@ export const D37B_PREDICATES = {
   cardDroppedAfterShortAsk(L, r, i, ctx) {
     const script = ctx.script;
     if (!script || r.who !== "teacher" || !ctx.prevT || ["safeguard", "break", "wrap"].includes(String(r.move ?? ""))) return null;
-    if (!standsForOnly(script, ctx.prevT.text)) return null;
-    const P0 = stoodFor(L, L.rows.lastIndexOf(ctx.prevT), script);
+    // (d37 G3, BRIEF-G item 10: read at the next turn of hers that is not a park or a reply to a side-topic — her turns of that kind between
+    // the short ask and this one are passed over, never only the turn right after it)
+    let j = prevTeacher(L, i);
+    while (j >= 0 && asideTurn(L.rows[j]) && !standsForOnly(script, L.rows[j].text)) j = prevTeacher(L, j);
+    if (j < 0 || !standsForOnly(script, L.rows[j].text)) return null;
+    if (j !== prevTeacher(L, i) && asideTurn(r)) return null;
+    const P0 = stoodFor(L, j, script);
     const P = atQuestionOf(script, r.text);
     if (!P0 || !P || P === "?short" || P === P0) return null;
-    if (ctx.prevCls === "correct") return null;
-    // (a miss read at the first question and its remediation's own question after the verdict: the first card's miss path, not a drop)
-    if (["misconception", "incorrect", "partial"].includes(String(ctx.prevCls ?? "")) && /\.remediation\[\d+\]/.test(P)) return null;
+    // (the passed-over turns said nothing of the first question's end: a key or a told step there ends it)
+    if (L.rows.slice(j + 1, i).some((x) => x.who === "teacher" && (x.stepAnswer?.told || seamsOf(x).some((k) => ENDS.has(k)) || x.heardCap))) return null;
+    const reads = L.rows.slice(j + 1, i).filter((x) => x.who !== "teacher").map((x) => String(x.read ?? "").split(" ")[0]);
+    if (reads.includes("correct")) return null;
+    // (a miss read at the first question and its remediation's own question after the verdict: the first card's miss path, not a drop —
+    // item 10: the FIRST card's remediation (the same skill's) and a miss verdict said in this turn)
+    const skillOf = (x) => /^\.skills\[\d+\]/.exec(String(x ?? ""))?.[0] ?? null;
+    if (reads.some((c) => ["misconception", "incorrect", "partial"].includes(c)) && /\.remediation\[\d+\]/.test(P) && skillOf(P) === skillOf(P0)
+      && seamsOf(r).includes("missVerdict")) return null;
     if (r.stepAnswer?.told || seamsOf(r).some((k) => ENDS.has(k)) || r.heardCap) return null;
     return `after a short ask or an invitation at ${P0}, ${P}'s question with no told step, key or cap for the first`;
   },
