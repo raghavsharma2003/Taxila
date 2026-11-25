@@ -197,7 +197,10 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
   let rungs;
   // (dc-r8-director27 P3, c5-t02 stuck 42: after a key the why's other wording comes first, then the card's own wordings still unsaid — the
   // picker decides before any joint does; the go-on line was said with the worked example's simpler unsaid)
-  if (keyed) return CARD_KINDS.has(part.kind) ? [rung("whyAlt", `${part.path}.whyAlt`, part.answerBoard), ...ladderSpec(script, part)] : [];
+  // (to-brain 054 C6 — director36 steering 20 of c5-t01, c5-t02, c6, c6-ch07-t03: "nothing easier" said straight after a key: the card's
+  // whyShort, the key's reason in other words, is the keyed ladder's last rung — said once, on the answer board, before the "nothing easier"
+  // line)
+  if (keyed) return CARD_KINDS.has(part.kind) ? [rung("whyAlt", `${part.path}.whyAlt`, part.answerBoard), ...ladderSpec(script, part), rung("whyShort", `${part.path}.whyShort`, part.answerBoard)] : [];
   switch (part.kind) {
     case "point": case "checkin": rungs = [rung("pointAlt", `${part.point}.pointAlt`, part.board), rung("simpler", `${part.point}.simpler`, part.board)]; break;
     case "card": {
@@ -597,17 +600,6 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // (a closed card with nothing left: the helpSpent line, and the lesson goes on — the go-on line is a key's)
   if (closed && !keyed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 }) };
   if (keyed) {
-    // (to-brain 054 C6 — director36 steering 20 of c5-t01, c5-t02, c6, c6-ch07-t03: "nothing easier" said straight after a key: at a keyed
-    // card's check-in a give-up or a clarify with nothing unsaid gets the card's whyShort — the key's reason in other words — once; the
-    // "nothing easier" line only once it is said)
-    if ((request === "give_up" || request === "clarify") && isCard) {
-      const ws = saidIn(at(script, `${part.path}.whyShort`), L);
-      if (ws && String(ws).trim() && !sentencesOf(ws).some((x) => inSaid(x, said))) {
-        const t0 = String(ws).trim();
-        const rung = { field: "whyShort", path: `${part.path}.whyShort`, text: `${t0.charAt(0).toUpperCase()}${t0.slice(1)}${/[.!?।]$/.test(t0) ? "" : "."}`, board: part.answerBoard ?? null };
-        return { ...base, rung, board: rung.board, card: "wait", key: null, joint: null };
-      }
-    }
     // (dc-r8-director28 Brain 044 T5: after a key with nothing unsaid, the "nothing easier" line is the help — then the go-on line or the after-key
     // return, and the lesson goes on. The go-on line alone is no help: c5-t01 stuck 30, steering 18, offtopic 62; c5-t02 stuck 30, steering 58)
     const spentJ = helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 });
