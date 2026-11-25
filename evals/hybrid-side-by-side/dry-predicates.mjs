@@ -1236,7 +1236,8 @@ PREDICATES.longTwoPart = (L, r, i, ctx) => {
 PREDICATES.endsOnQuestion = (L, r, i, ctx) => {
   if (/^(?:wrap|safeguard|break)$/.test(String(r.move ?? ""))) return null;
   // (049 B6 and to-brain 053 B4: a right verdict's close split from what it led into ends on the go-on line — an allowed ending)
-  if (r.noFit === "vpc" || r.noFitGoOn) return null;
+  // (to-brain 054 A, main's fifth ruling item 2: never her reply's go-on line, noFit "aside" — the go-on turn of D1 is gone)
+  if ((r.noFit === "vpc" || r.noFitGoOn) && r.noFit !== "aside") return null;
   if (!(L.rows ?? []).slice(i + 1).some((x) => x.who === "child")) return null;
   const t = String(r.text ?? "").trim();
   if (!t || /[?？]\s*$/.test(t)) return null;

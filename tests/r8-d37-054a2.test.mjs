@@ -74,9 +74,9 @@ describe("fix 2: a side-topic at a check-in is the same rule", () => {
     const row = { who: "teacher", text: "Arre haan, cricket! Achha, ab padhai. Pehle 3/4 ke har hisse. Upar kaunsa number aayega?", seams: [{ right: "aside" }, { right: "point", joint: "afterAside" }, { right: "card" }] };
     const checkin = { who: "teacher", text: "Ab tak samajh aaya?", seams: [{ right: "verdict" }, { right: "bridge" }, { right: "checkin" }] };
     assert.ok(P.replyIntoPoint({}, row, 2, { prevT: checkin }));
-    // (third ruling item 3: the said-again turn after a go-on line is excused only with no after joint)
+    // (main's fifth ruling item 2: strict — the said-again exemption after a go-on line is gone with the go-on turn)
     const bare = { ...row, seams: [{ right: "aside" }, { right: "point", left: "replyAgain", joint: null }, { right: "card" }] };
-    assert.equal(P.replyIntoPoint({}, bare, 2, { prevT: { who: "teacher", noFit: "aside", noFitGoOn: true } }), null);
+    assert.ok(P.replyIntoPoint({}, bare, 2, { prevT: { who: "teacher", noFit: "aside", noFitGoOn: true } }));
     assert.ok(P.replyIntoPoint({}, row, 2, { prevT: { who: "teacher", noFit: "aside", noFitGoOn: true } }));
     assert.equal(P.replyIntoPoint({}, { ...row, seams: [{ right: "aside" }, { right: "goOn", joint: "afterAside" }] }, 2, { prevT: checkin }), null);
   });
@@ -184,7 +184,7 @@ test("third ruling item 2: orderDisplaced holds a displaced part over one go-on 
   assert.ok(mk({ ...go }));
 });
 
-test("third ruling item 3: replyIntoPoint reads a first seam aside; the said-again exemption holds only with no after joint and within 70 words; asideGoOnNext reads the turn after the AI line said after a go-on", () => {
+test("third ruling item 3: replyIntoPoint reads a first seam aside (strict since the fifth ruling); asideGoOnNext reads the turn after the AI line said after a go-on", () => {
   const go = { who: "teacher", text: "Ab wapas kaam par.", noFit: "aside", noFitGoOn: true, seams: [{ right: "park" }, { right: "goOn", joint: "afterPark" }] };
   const checkin = { who: "teacher", text: "Ab tak samajh aaya?", seams: [{ right: "verdict" }, { right: "bridge" }, { right: "checkin" }] };
   const w = (n) => Array.from({ length: n }, (_, k) => `shabd${k}`).join(" ");
@@ -192,7 +192,8 @@ test("third ruling item 3: replyIntoPoint reads a first seam aside; the said-aga
   assert.ok(P.replyIntoPoint({}, again(40), 2, { prevT: checkin }));
   // (an aside seam inside a turn, not its first, is not her reply's)
   assert.equal(P.replyIntoPoint({}, { ...again(40), seams: [{ right: "verdict" }, { right: "aside" }, { right: "point" }, { right: "card" }] }, 2, { prevT: checkin }), null);
-  assert.equal(P.replyIntoPoint({}, again(60), 2, { prevT: go }), null);
+  // (main's fifth ruling item 2: no exemption after a go-on row any more — strict)
+  assert.ok(P.replyIntoPoint({}, again(60), 2, { prevT: go }));
   assert.ok(P.replyIntoPoint({}, again(60, "afterAside"), 2, { prevT: go }));
   assert.ok(P.replyIntoPoint({}, again(72), 2, { prevT: go }));
   assert.equal(P.asideGoOnNext({}, again(60), 2, { prevT: go }), null);

@@ -47,10 +47,17 @@ describe("Q3: an aside reply's turn", () => {
     const { seamJoint } = await import("../server/brain/seams.js");
     for (const k of ["point", "card", "help", "remediation", "bridge"]) assert.equal(seamJoint("aside", k), "afterAside", k);
   });
-  test("replyCheckin is gated and reads c4 offtopic 46 (reply, bridge, point, check-in, the card dropped for a due return)", async () => {
+  // (to-brain 054 A, main's fifth ruling item 3 — A(i) is design D2: a check-in at the end of a reply's turn is allowed only when a new point,
+  // told for the first time, stands between the reply and the check-in. c4 offtopic 46 — her reply, the bridge, s2's first point, its check-in —
+  // is that turn now; the same row with no point between still reads)
+  test("replyCheckin is gated; c4 offtopic 46 (reply, bridge, a new point, check-in) is D2's allowed turn, and reads again with the point taken out", async () => {
     const { PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
     assert.ok(!PENDING.has("replyCheckin"));
-    assert.ok(flagged("offtopic", "c4", "replyCheckin").has(46));
+    assert.ok(!flagged("offtopic", "c4", "replyCheckin").has(46));
+    const { rows, script } = lesson("offtopic", "c4");
+    const r = rows[46], cut = r.pageParts[0].from;
+    const bare = { ...r, text: `${r.text.slice(0, cut).trim()} Yahan tak saaf hai?`, pageParts: [], seams: r.seams.filter((x) => x.right !== "point") };
+    assert.ok(lessonFlags({ rows: [...rows.slice(0, 46), bare], script }).some((f) => f.predicate === "replyCheckin" && f.row === 46));
   });
   test("returnAlone accepts a return whose question ends the turn after a remediation said alone (c6 steering 50's rule), not after a verdict alone", () => {
     const { rows, script } = lesson("steering", "c6");

@@ -37,6 +37,7 @@ export function partStartOf(r, p) {
 import { endsOnYourTurn } from "../../server/director/question-run.js";
 import { otherFigureOf, sharesThing } from "../../server/brain/seams.js";
 import { ownHelpLast } from "./d31-predicates.mjs";
+import { newPointBeforeCheckin } from "./d37a-predicates.mjs";
 import { POINT_WHOLE, FIRST_TEACH_MAX } from "../../scripts/lesson-scripts/check.mjs";
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
@@ -376,12 +377,16 @@ export const D30_PREDICATES = {
   },
   /** P6: a turn that holds her reply to an aside never ends on a check-in, whatever follows the reply (c4 offtopic 46: reply, bridge, point,
    *  check-in; c5-t02 offtopic 38: reply, point, check-in). Gated (Brain 046 Q3): where the card is held for a due return the turn ends on the return's question. */
-  replyCheckin(L, r) {
+  replyCheckin(L, r, i) {
     if (r.who !== "teacher") return null;
     const sm = r.seams ?? [];
     // (a worked example that asks no step ends each told step on its own step check-in — that walk's, read by workedCheckin: the
     // point-card fixture's steering c4 38)
     if (sm.at(-2)?.right === "workedStep") return null;
+    // (to-brain 054 A, main's fifth ruling item 3 — A(i) is design D2: a check-in at the end of a reply's turn is allowed ONLY when a new point,
+    // told for the first time, stands between the reply and the check-in. A reply followed straight by a check-in — or by anything else, as
+    // before — is still flagged: a check-in after a bare reply checks nothing)
+    if (newPointBeforeCheckin(L, r, i, ["asideReply", "aiReply"])) return null;
     return sm.some((x) => ["asideReply", "aiReply"].includes(x.right)) && sm.at(-1)?.right === "checkin" ? `her reply's turn (${sm.map((x) => x.right).join(" > ")}) ends on a check-in` : null;
   },
   /** P4: the "nothing easier" line is never said before something has been taught (row 4 in stuck c4, c5-t02, c6; offtopic c4; steering c4,

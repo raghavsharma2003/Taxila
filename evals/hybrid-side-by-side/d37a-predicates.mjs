@@ -13,6 +13,12 @@
 //                   or in the second, or (main's fourth ruling item 2) three of her turns running with no teaching part, the first a go-on
 //                   turn: a go-on, the AI line, a go-on — after a go-on turn the lesson teaches within two turns.
 //   goOnJointTwice  a go-on joint (afterAside, afterPark, afterAiLine, afterKeyGoOn) said in two of her turns running — "back to work" twice.
+// Main's fifth ruling on cause A (A(i) is design D2; tests/r8-d37-054a4.test.mjs): replyIntoPoint reads strictly again (no exemptions);
+// goOnNoTeach reads ANY three of her turns running with no teaching part; asideGoOnNext and goOnJointTwice stay gated, guarding against the
+// go-on turn coming back; and one more, gated:
+//   replyPointCardNext  after her reply's point turn — a reply, a park or her line to a side-topic, a new point, its check-in — the next turn
+//                   that teaches says that point's card and no new point (a stop, a wrap, a break or a safety turn excepted; help on the point
+//                   alone, a clarify's, waits for the card as A(ii) routes it).
 import { VPC_MAX } from "../../server/director/state.js";
 
 const REPLY = new Set(["asideReply", "aiReply", "park"]);
@@ -40,11 +46,40 @@ const GO_ON_JOINTS = new Set(["afterAside", "afterPark", "afterAiLine", "afterKe
 // her reply to the child's answer then goes back, dry stuck c5-ch02-t02 50 → 52)
 const goOnJoint = (r) => { const sm = r?.seams ?? []; const j = sm.findIndex((x) => GO_ON_JOINTS.has(String(x.joint ?? ""))); return j >= 0 && !sm.slice(j).some((x) => x.right === "return") ? sm[j].joint : null; };
 
+/** Main's fifth ruling item 3: a point told for the first time — none of its sentences said in her turns before row `i`. `r`'s point is the
+ *  text of its body parts, less the joints the seam pass placed there. */
+const said = (L, i) => new Set((L.rows ?? []).slice(0, i).filter((x) => x?.who === "teacher").flatMap((x) => sentencesOf(x.text)).map(normS));
+const normS = (x) => String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/]+/gu, " ").trim();
+const sentencesOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?\u0964])\s+/).filter(Boolean);
+export function pointToldFirst(L, r, i) {
+  const pp = r.pageParts ?? [], t = String(r.text ?? "");
+  const b = pp.findIndex((p) => p.part === "body");
+  if (b < 0) return false;
+  const end = pp.slice(b).find((p) => p.part !== "body")?.from ?? t.length;
+  const joints = new Set((r.seams ?? []).map((x) => normS(x.form)).filter(Boolean));
+  const ss = sentencesOf(t.slice(pp[b].from ?? 0, end)).map(normS).filter((x) => x && !joints.has(x));
+  const before = said(L, i);
+  // (the turn's own last sentence is its check-in, never part of the point)
+  const pt = ss.filter((x) => x !== normS(sentencesOf(t).at(-1)));
+  return pt.length > 0 && pt.every((x) => !before.has(x));
+}
+/** Main's fifth ruling item 3, the relaxed reading of replyCheckin (d30) and asideCheckin (d29): her reply's turn may end on a check-in only
+ *  when a NEW point — a point seam told for the first time — stands between her last reply (or park, or AI reply, or her line at a check-in
+ *  `kinds`) and the check-in. → whether it does. */
+export function newPointBeforeCheckin(L, r, i, kinds) {
+  const k = rightsOf(r);
+  if (k.at(-1) !== "checkin") return false;
+  let at = -1; k.forEach((x, n) => { if (kinds.includes(x)) at = n; });
+  return at >= 0 && k.slice(at + 1, -1).includes("point") && pointToldFirst(L, r, i);
+}
+/** D2's turn: her reply (seams asideReply, aiReply, park, or her line at a check-in, seam aside, first), then a new point, ending on its
+ *  check-in. */
+const replyPointTurn = (L, r, i) => { const at = replyAt(rightsOf(r)); return at >= 0 && newPointBeforeCheckin(L, r, i, [rightsOf(r)[at]]); };
 export const D37A_PREDICATES = {
   goOnNoTeach(L, r, i) {
-    // (main's fourth ruling item 2: the rule that stops a lesson stalling is never three turns running without a teaching part — a go-on, the AI
-    // line, a go-on is that shape. Read: a go-on turn, then her turns with no teaching part up to this one, three or more in all — or two go-on
-    // turns running, as before)
+    // (main's fourth ruling item 2: the rule that stops a lesson stalling is never three turns running without a teaching part. Main's fifth
+    // ruling item 2, the reader's finding in offtopic c4-ch05-t01: ANY three of her turns running with no teaching part, whatever the first —
+    // or two go-on turns running, as before)
     if (r.who !== "teacher" || teaches(r) || STOPS.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     let n = 1;
     for (let j = i - 1; j >= 0; j--) {
@@ -52,7 +87,7 @@ export const D37A_PREDICATES = {
       if (x?.who !== "teacher") continue;
       if (teaches(x) || STOPS.test(String(x.move?.kind ?? x.move ?? ""))) return null;
       n += 1;
-      if (goOnEnd(x) && (goOnEnd(r) || n >= 3)) return `${n} turns running with no teaching part after the go-on turn at row ${j} (rows ${j} to ${i})`;
+      if (n >= 3 || (goOnEnd(x) && goOnEnd(r))) return `${n} turns running with no teaching part (rows ${j} to ${i})`;
     }
     return null;
   },
@@ -67,10 +102,8 @@ export const D37A_PREDICATES = {
     // (main's fourth ruling item 2, reader N1 and N2: a turn that opens on her AI line itself and carries a new point and its card — seam aiLine
     // or aiQuestion, first — is never allowed, after a go-on turn or not: offtopic c4-ch01-t02 48, c4-ch05-t01 54, c5-ch02-t01 58 of dry3)
     if (/^ai(?:Line|Question)$/.test(k[0] ?? "") && k.includes("point") && cardIn(k)) return `her AI line runs into a new point and its card (${k.join(" > ")}, ${wordsOf(r.text)} words)`;
-    // (the said-again turn after her reply's go-on line, and — fourth ruling item 2 — her reply to the child's answer to the AI line said straight
-    // after that go-on turn: the held point and card come with the reply there, so that no three turns run without a teaching part; each only as
-    // shaped, no after* joint and within the said-again turn's 70 words)
-    if ((goOnRow(ctx?.prevT) || aiAfterGoOn(ctx)) && againShaped(r)) return null;
+    // (main's fifth ruling item 2: strict — a reply seam with a new point AND its card in one turn is flagged, with no exemptions: the go-on turn
+    // they were for is gone)
     const at = replyAt(k);
     if (at < 0) return null;
     const rest = k.slice(at + 1);
@@ -85,6 +118,24 @@ export const D37A_PREDICATES = {
     if (!againShaped(r)) return `the turn after her reply's go-on line says a second go-on joint or runs past ${VPC_MAX} words (${wordsOf(r.text)})`;
     // (a point and its card that do not fit split again as T1 splits any — the point on its check-in, noFit "point": still the held point)
     return (k.includes("point") || k.includes("held")) && (cardIn(k) || r.noFit === "point") ? null : `the turn after her reply's go-on line is not its held point and card (${k.join(" > ") || "no seams"})`;
+  },
+  replyPointCardNext(L, r, i) {
+    if (r.who !== "teacher" || !replyPointTurn(L, r, i)) return null;
+    const pb = (r.pageParts ?? []).find((p) => p.part === "body")?.beat ?? null;
+    const sk = String(r.beat ?? "").split(":")[0];
+    if (!pb || !sk) return null;
+    for (const y of (L.rows ?? []).slice(i + 1)) {
+      if (y?.who !== "teacher") continue;
+      if (STOPS.test(String(y.move?.kind ?? y.move ?? ""))) return null;
+      if (!teaches(y)) continue;
+      const k = rightsOf(y);
+      // (help on the point alone — a clarify's, the card waiting — is not the card's turn yet: A(ii)'s routing)
+      if (!cardIn(k) && !k.includes("point") && k.every((x) => !TEACH.has(x) || ["help", "simpler"].includes(x))) continue;
+      const own = String(y.check?.itemId ?? "").endsWith(`-${sk}:ask:${pb}`) || ((y.pageParts ?? []).some((p) => p.part === "card" && p.beat === pb) && String(y.beat ?? "").startsWith(`${sk}:`));
+      if (k.includes("point")) return `the turn after her reply's point turn (row ${i}) says a new point (${k.join(" > ")})`;
+      return cardIn(k) && own ? null : `the turn after her reply's point turn (row ${i}) is not its card ${sk}:${pb} (${k.join(" > ") || "no seams"})`;
+    }
+    return null;
   },
   startIntoCard(L, r) {
     if (r.who !== "teacher") return null;

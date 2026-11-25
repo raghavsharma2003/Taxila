@@ -153,12 +153,13 @@ describe("A.5: the four predicates, gated, each on a made row that trips it and 
   test("all four are registered and gated", () => {
     for (const k of ["replyIntoPoint", "asideGoOnNext", "startIntoCard", "closeCardLong"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); }
   });
-  test("replyIntoPoint: a park, a point and its card trips it; the reply alone on its go-on line, or the turn straight after one, does not", () => {
+  test("replyIntoPoint: a park, a point and its card trips it, after a go-on line too (strict, fifth ruling); D2's point on its check-in does not", () => {
     assert.ok(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("park", "point", "card") }), 0, {}));
     assert.ok(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("aiReply", "point", "card") }), 0, {}));
     assert.equal(PREDICATES.replyIntoPoint({ rows: [] }, goOn, 0, {}), null);
     assert.equal(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("asideReply", "card") }), 0, {}), null);
-    assert.equal(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("park", "point", "card") }), 2, { prevT: goOn }), null);
+    assert.equal(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("park", "point", "checkin") }), 0, {}), null);
+    assert.ok(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("park", "point", "card") }), 2, { prevT: goOn }));
   });
   test("asideGoOnNext: after the go-on line, a turn that is not the point and its card trips it; the point and card, a stop or the AI line do not", () => {
     assert.ok(PREDICATES.asideGoOnNext({ rows: [] }, T({ seams: seams("help", "checkin") }), 2, { prevT: goOn }));

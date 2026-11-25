@@ -77,8 +77,9 @@ describe("item 2: a child who asks about her own taste gets the AI line whole, a
     assert.equal(P.replyIntoPoint({}, aiQ, 2, { prevT: go() }), null);
     assert.equal(P.replyIntoPoint({}, { ...aiInto, seams: [{ right: "aiLine" }, { right: "point" }, { right: "checkin" }] }, 2, { prevT: go() }), null);
   });
-  test("replyIntoPoint: her reply to the answer, after a go-on and the AI line, is excused only as shaped (no after joint, within 70 words)", () => {
-    assert.equal(P.replyIntoPoint({}, reply, 4, { prevT: aiQ, prevPrevT: go() }), null);
+  // (main's fifth ruling item 2: replyIntoPoint reads strictly — the exemption after a go-on and the AI line is gone with the go-on turn)
+  test("replyIntoPoint: her reply to the answer, after a go-on and the AI line, run into a new point and card, is flagged — no exemption", () => {
+    assert.ok(P.replyIntoPoint({}, reply, 4, { prevT: aiQ, prevPrevT: go() }));
     const joint = { ...reply, seams: [{ right: "aiReply" }, { right: "point", joint: "afterAiLine" }, { right: "card" }] };
     assert.ok(P.replyIntoPoint({}, joint, 4, { prevT: aiQ, prevPrevT: go() }));
     const long = { ...reply, text: `${reply.text} ${"ek do teen chaar paanch ".repeat(12)}` };

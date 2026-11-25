@@ -31,6 +31,7 @@
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
 import { partStartOf, helpOtherFigure, reaskNoFormAt, hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
+import { newPointBeforeCheckin } from "./d37a-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(",")}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(",")}}` : JSON.stringify(v ?? null));
@@ -107,8 +108,11 @@ export const D29_PREDICATES = {
   },
   /** T6: an aside reply, a park or a return never ends on a check-in (c5-t01 stuck 42, steering 34, 38; c5-t02 stuck 42; c6 stuck 44, offtopic
    *  30, 34, steering 34, 38): read from the record's seams — the last part said before the check-in. */
-  asideCheckin(L, r) {
+  asideCheckin(L, r, i) {
     if (r.who !== "teacher" || !CHECKIN_END.test(norm(r.text))) return null;
+    // (to-brain 054 A, main's fifth ruling item 3 — A(i) is design D2: allowed ONLY when a new point, told for the first time, stands between her
+    // reply, park, AI reply or return and the check-in; a reply followed straight by a check-in is still flagged)
+    if (newPointBeforeCheckin(L, r, i, ["asideReply", "aiReply", "park", "return"])) return null;
     const last = [...(r.seams ?? [])].reverse().find((x) => x.right !== "checkin");
     return last && ["asideReply", "aiReply", "park", "return"].includes(last.right) ? `her ${last.right} ends on a check-in` : null;
   },
