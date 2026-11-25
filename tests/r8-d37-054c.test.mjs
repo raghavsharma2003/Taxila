@@ -119,3 +119,22 @@ describe("C3: at the cap, the named wrong answer's unsaid reason first — the m
     assert.deepEqual(flagsOf([C("7"), T(key, part, "wrong", ["missVerdict", "key", "checkin"])], "capBeforeOwnReason", script), []);
   });
 });
+
+describe("C4: help at an own step is the step's simpler, then the key — never the worked problem's simpler", () => {
+  for (const TOPIC of ["c5-maths-ch02-t01", "c6-maths-ch06-t01", "c6-maths-ch07-t01"]) {
+    const script = scriptOf(TOPIC), sk = script.skills[0], part = `${sk.skillId}:worked:yourStep`;
+    test(`${TOPIC}: a give-up gets yourStep.simpler; with it said, the key (not workedExample.simpler)`, () => {
+      const d1 = pickHelp({ script, part, request: "give_up", said: [] });
+      assert.equal(nk(d1.rung.text), nk(sk.workedExample.yourStep.simpler.hi));
+      const d2 = pickHelp({ script, part, request: "give_up", said: addSaid([], sk.workedExample.yourStep.simpler.hi, 1) });
+      assert.equal(d2.card, "close", JSON.stringify(d2.rung));
+      assert.ok(d2.key);
+    });
+  }
+  test("ownStepWorkedHelp (gated) trips on the worked problem's simpler said at the your-step, not on the step's own", () => {
+    const script = scriptOf("c5-maths-ch02-t01"), sk = script.skills[0], part = `${sk.skillId}:worked:yourStep`;
+    assert.ok(!PENDING.has("ownStepWorkedHelp"));
+    assert.deepEqual(flagsOf([C("1/3 km"), T(`Nahi. ${sk.workedExample.simpler.hi} Ab tum batao.`, part, "wrong", ["missVerdict", "help", "yourTurn"])], "ownStepWorkedHelp", script), [1]);
+    assert.deepEqual(flagsOf([C("1/3 km"), T(`Nahi. ${sk.workedExample.yourStep.simpler.hi} Ab tum batao.`, part, "wrong", ["missVerdict", "help", "yourTurn"])], "ownStepWorkedHelp", script), []);
+  });
+});
