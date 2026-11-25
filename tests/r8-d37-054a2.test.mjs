@@ -232,3 +232,11 @@ test("third ruling item 3: replyIntoPoint reads a first seam aside; the said-aga
   assert.equal(P.asideGoOnNext({}, goAgain, 4, { prevT: ai, prevPrevT: checkin }), null);
 });
 
+test("third ruling item 5: closeCardLong fires on a worked close and a card over 70 words whether or not afterWorked is said", () => {
+  const w = Array.from({ length: 72 }, (_, k) => `shabd${k}`).join(" ");
+  const row = { who: "teacher", text: w, seams: [{ right: "verdict" }, { right: "card" }], pageParts: [{ part: "close", beat: "worked" }, { part: "card", beat: "c1" }] };
+  assert.ok(P.closeCardLong({}, row));
+  assert.ok(P.closeCardLong({}, { ...row, pageParts: [], seams: [{ right: "verdict" }, { right: "card", joint: "afterWorked" }] }));
+  assert.equal(P.closeCardLong({}, { ...row, pageParts: [{ part: "close", beat: "c2" }, { part: "card", beat: "c3" }] }), null);
+  assert.equal(P.closeCardLong({}, { ...row, text: "chhota" }), null);
+});

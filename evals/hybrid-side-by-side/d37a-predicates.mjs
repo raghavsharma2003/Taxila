@@ -78,7 +78,9 @@ export const D37A_PREDICATES = {
     return k.includes("point") && cardIn(k) ? `the start line, the hook, the point and its card in one turn (${wordsOf(r.text)} words)` : null;
   },
   closeCardLong(L, r) {
-    if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.joint === "afterWorked") || !cardIn(rightsOf(r))) return null;
+    // (third ruling item 5: whether or not the afterWorked joint is said — a worked close is its joint, or its close part on the worked beat)
+    const worked = (r.seams ?? []).some((x) => x.joint === "afterWorked") || (r.pageParts ?? []).some((p) => p.part === "close" && /^worked/.test(String(p.beat ?? "")));
+    if (r.who !== "teacher" || !worked || !cardIn(rightsOf(r))) return null;
     const n = wordsOf(r.text);
     return n > VPC_MAX ? `a worked close and the next card in ${n} words > ${VPC_MAX}` : null;
   },
