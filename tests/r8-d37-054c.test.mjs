@@ -386,3 +386,20 @@ describe("RULING-C3 item 6: questionThreeRunning exempts the park's re-ask only 
     assert.deepEqual(fl([card, C("2/3"), missInv, C("sixer"), parkQ, C("2/3"), missQ, C("2/3"), missQ]), [8]);
   });
 });
+
+// RULING-C3 item 9 (pr4's gap): ownKeyNoReason also reads the worked example's close said in place of an own step's key with no key seam
+// and no key words (say.js's yes-or-no close opens on "Nahi," in place of "Iska jawab hai").
+describe("RULING-C3 item 9: ownKeyNoReason reads a worked close said in place of an own step's key", () => {
+  const sc = scriptOf("c6-maths-ch07-t01"), sk = sc.skills[0], we = sk.workedExample, ys = we.yourStep, part = `${sk.skillId}:worked:yourStep`;
+  const row = (text, column, seams) => ({ who: "teacher", text, cell: { part, column }, seams: seams.map((right) => ({ right })) });
+  test("flagged: the worked close with no key seam and the step's why unsaid; and the key words with the step's why unsaid (as before)", () => {
+    assert.ok(!PENDING.has("ownKeyNoReason"));
+    assert.deepEqual(flagsOf([C("1/6"), row(`Nahi, ${we.answer.hi}, kyunki ${we.why.hi}. Yahan tak theek hai?`, "misconception", ["missVerdict", "checkin"])], "ownKeyNoReason", sc), [1]);
+    assert.deepEqual(flagsOf([C("1/6"), row(`Nahi. Iska jawab hai ${we.answer.hi}, kyunki ${we.why.hi}. Yahan tak theek hai?`, "misconception", ["missVerdict", "key", "checkin"])], "ownKeyNoReason", sc), [1]);
+  });
+  test("not flagged: the step's own key and why; a right answer's close; a help turn that says neither close", () => {
+    assert.deepEqual(flagsOf([C("1/6"), row(`Nahi. Iska jawab hai ${ys.key}, kyunki ${ys.why.hi}. Yahan tak theek hai?`, "misconception", ["missVerdict", "key", "checkin"])], "ownKeyNoReason", sc), []);
+    assert.deepEqual(flagsOf([C(String(ys.key)), row(`Haan, sahi. Toh poora jawab: ${we.answer.hi}, kyunki ${we.why.hi}.`, "right", ["verdict", "checkin"])], "ownKeyNoReason", sc), []);
+    assert.deepEqual(flagsOf([C("1/6"), row(`Nahi. ${ys.simpler.hi} Ab tum batao.`, "wrong", ["missVerdict", "help", "yourTurn"])], "ownKeyNoReason", sc), []);
+  });
+});

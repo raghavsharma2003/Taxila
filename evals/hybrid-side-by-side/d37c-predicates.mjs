@@ -3,6 +3,8 @@
 // (tests/r8-d37-054c.test.mjs pins each on made rows).
 //   ownKeyNoReason      C1: an own step's key after a miss or a request (the worked example's your-step, her turn's cell at it, not a right
 //                       answer) that does not say the step's own `why`, or says "Toh poora jawab" after it.
+//                       (RULING-C3 item 9: also the worked example's close — its answer or why — said there in place of the key with no
+//                       key seam and no key words, the step's own why unsaid)
 //   keyValueTwice       C2: a key whose value (every number of the card's `key`) is said in the key and its reason more times than the
 //                       script's own sentence (its `why`) says it, and at least twice (RULING-C3 item 8). For every key but a teach-back's
 //                       (RULING-C2 item 2), GATED; teachbackKeyValueTwice reads the teach-back's, pending.
@@ -85,10 +87,17 @@ export const D37C_PREDICATES = {
     return reason && saysAny(r.text, reason) && !before(L, i).some((t) => saysAny(t, reason)) ? null : was;
   },
   ownKeyNoReason(L, r, i, ctx) {
-    if (r.who !== "teacher" || !isOwnStep(partOf(r)) || !keyRow(r) || String(r.cell?.column ?? "") === "right") return null;
-    const n = nodeOfPart(ctx?.script, partOf(r))?.node;
+    if (r.who !== "teacher" || !isOwnStep(partOf(r)) || String(r.cell?.column ?? "") === "right") return null;
+    const { part: p, node: n } = nodeOfPart(ctx?.script, partOf(r)) ?? {};
     const why = hi(n?.why);
     if (!why) return null;
+    // (RULING-C3 item 9, pr4's gap: the worked example's close — its answer or its why — said in place of the own step's key with no key seam
+    // and no key words, e.g. a yes-or-no close opened on "Nahi," (say.js ynFact); read where the step's own why is unsaid in the turn)
+    if (!keyRow(r)) {
+      const wA = p?.worked ? hi(at(ctx.script, `${p.worked}.answer`)) : null, wW = p?.worked ? hi(at(ctx.script, `${p.worked}.why`)) : null;
+      const close = [wA, wW].find((w) => w && String(w).trim().length > 8 && saysWhole(r.text, w));
+      return close && !saysWhole(r.text, why) ? `the worked example's close said in place of an own step's key, no key seam ("${String(close).slice(0, 50)}…")` : null;
+    }
     if (/toh poora jawab|so the full answer/i.test(String(r.text ?? ""))) return `an own step's key with "Toh poora jawab" after it`;
     return saysWhole(r.text, why) ? null : `an own step's key without the step's own reason ("${why.slice(0, 50)}…")`;
   },
