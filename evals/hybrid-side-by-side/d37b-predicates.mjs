@@ -202,6 +202,23 @@ function stepHelpSpent(L, r, i, script) {
 }
 
 export const D37B_PREDICATES = {
+  /** d37 close item 2 (pr3b's A, the gap older than the round): after her turn that stood for a question without saying it (a short ask or an
+   *  invitation), the next turn says a DIFFERENT card's or step's question with no told step, no key and no cap for the first one — the
+   *  first card dropped unanswered. The child's line between read right ends the first question, as a verdict does; a miss read there and
+   *  the remediation's own question after its verdict is the first question's miss path; a safety, stop or wrap turn is not read. Gated. */
+  cardDroppedAfterShortAsk(L, r, i, ctx) {
+    const script = ctx.script;
+    if (!script || r.who !== "teacher" || !ctx.prevT || ["safeguard", "break", "wrap"].includes(String(r.move ?? ""))) return null;
+    if (!standsForOnly(script, ctx.prevT.text)) return null;
+    const P0 = stoodFor(L, L.rows.lastIndexOf(ctx.prevT), script);
+    const P = atQuestionOf(script, r.text);
+    if (!P0 || !P || P === "?short" || P === P0) return null;
+    if (ctx.prevCls === "correct") return null;
+    // (a miss read at the first question and its remediation's own question after the verdict: the first card's miss path, not a drop)
+    if (["misconception", "incorrect", "partial"].includes(String(ctx.prevCls ?? "")) && /\.remediation\[\d+\]/.test(P)) return null;
+    if (r.stepAnswer?.told || seamsOf(r).some((k) => ENDS.has(k)) || r.heardCap) return null;
+    return `after a short ask or an invitation at ${P0}, ${P}'s question with no told step, key or cap for the first`;
+  },
   /** B.5: three of her turns at one question after a try-first or a bare yes, none saying the question or help. Gated. */
   waitNoQuestion(L, r, i, ctx) {
     // (to-brain 054 C step 0, the as-heard read of cause B, walk 11: a side-topic's park inside a wait is passed over for the count, but a
