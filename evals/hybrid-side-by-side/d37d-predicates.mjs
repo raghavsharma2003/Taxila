@@ -6,7 +6,8 @@
 //                           st 52, of 68, c4-ch06-t01 sk 46, of 44, c5-t01 st 40, c6-ch07-t03 st 38.
 //   shareParkUnreturned     D2: a park of the child's side-topic with no return (a turn with the `return` seam) after it before the lesson's
 //                           end — its wrap, goodbye or stop line. Her AI exchange is no return of it (D2: it asks her taste, not what they
-//                           told). Read at the end row. director36: c5-t02 and c6 offtopic 18.
+//                           told). Read at the end row; not where her turn before the end held the return for the next turn (D1's
+//                           go-on, noFit "return") and the child left on it. director36: c5-t02 and c6 offtopic 18.
 //   aiAsksTold              D3: her AI line's question asking a favourite where the child's question named one ("Tumhara favourite kaun
 //                           hai?" to "aapko virat pasand hai?": director36 c5-t02 and c6 offtopic 28); or a return asking what they had to
 //                           say ("… kya kehna tha?", "… kya bata rahe the?") after a side-topic that told its thing ("kal maine cricket
@@ -37,6 +38,9 @@ export const D37D_PREDICATES = {
     // (the end: the first such row of the lesson — a park before it and no return between)
     if (rows.slice(0, i).some((x) => ENDS(x))) return null;
     if (seamsOf(r).includes("return")) return null;
+    // (a return D1 held for the turn after her verdict's go-on line, the child leaving on that turn: it had no turn — dry stuck c4-ch06-t01 66)
+    const lastT = [...rows.slice(0, i)].reverse().find((x) => x.who === "teacher");
+    if (lastT?.noFit === "return") return null;
     const parks = rows.slice(0, i).map((x, n) => ({ x, n })).filter(({ x }) => x.who === "teacher" && seamsOf(x).includes("park"));
     const open = parks.filter(({ n }) => !rows.slice(n + 1, i).some((y) => y.who === "teacher" && seamsOf(y).includes("return")));
     return open.length ? `a park never returned before the lesson's end (park at ${open.map((p) => p.n).join(", ")}: "${String(rows[open[0].n - 1]?.text ?? "").slice(0, 40)}")` : null;

@@ -5727,6 +5727,20 @@ function closeApart(out, noFit) {
   s.lastUi = closeUi;
   return { ...out, state: s, move: close, moduleCommands: [], ui: closeUi, proposal: directorProposal(close, { ui: closeUi, guidance: s.guidance, purpose: s.purpose }) };
 }
+/** to-brain 054 D1: the go-on line a verdict ends on when its return waits a turn — a plain form (help.js goOnPlain) of the rotation, the one
+ *  the afterKeyGoOn rotation does not say next (helpJoint over all its forms, at the count after this one) and not in her recent turns where
+ *  the script has such a form: the plain list and the full one rotate on one count, and the same form came back first (dry steering
+ *  c4-ch05-t01 28 and 58, jointRotation). */
+function ledGoOn(s, input) {
+  const script = scriptFor(input?.kit)?.script;
+  const o = { lang: s.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: s.ctx?.lessonKey ?? s.ctx?.sessionId ?? s.lessonId ?? null };
+  const n = s.helpJointN?.afterKeyGoOn ?? 0;
+  const next = helpJoint(script, "afterKeyGoOn", { ...o, n: n + 1 })?.text ?? null;
+  const said = (s.recent ?? []).filter((x) => x.who === "teacher").map((x) => String(x.text ?? "").toLowerCase());
+  const all = [0, 1, 2, 3].map((k) => goOnPlain(script, { ...o, n: n + k })).filter((g) => g?.text);
+  const fresh = (g) => !said.some((x) => x.includes(g.text.toLowerCase().replace(/[.!?]+$/, "")));
+  return all.find((g) => g.text !== next && fresh(g)) ?? all.find(fresh) ?? all.find((g) => g.text !== next) ?? all[0] ?? null;
+}
 function returnApart(out, input = null) {
   const { state: s, move, ui } = out;
   // (the child said the aside again on this very turn — the return was due because of it — so the close's half carries her one line on
@@ -5747,7 +5761,7 @@ function returnApart(out, input = null) {
   const said0 = String(move.returned.said ?? "");
   const plainRet = !ASKS_HER_TASTE.test(said0) && !isSadAside(said0) && !isSadAside(t0);
   const goOnJ = rightNow && plainRet && !recordedWalk(input) && !returnQuestion(t0, s.ctx?.lang === "english" ? "english" : "hinglish", s, { said: move.returned.said ?? null, kit: input?.kit, lead: "verdict" })
-    ? goOnPlain(scriptFor(input?.kit)?.script, { lang: s.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: s.ctx?.lessonKey ?? s.ctx?.sessionId ?? s.lessonId ?? null, n: s.helpJointN?.afterKeyGoOn ?? 0 }) : null;
+    ? ledGoOn(s, input) : null;
   const ledApart = !!goOnJ?.text;
   if (!rightNow || ledApart) s.later = (s.later ?? []).map((e) => (e.servedAt === s.turn && String(e.topic) === t0 ? { ...e, servedAt: undefined } : e));
   // (her one line to an aside the child said again — asideAgain, a taste question, a sad aside — answers what the child said on this
@@ -6084,6 +6098,7 @@ function replyPoint(prev, input, out) {
   return sp;
 }
 export const _replyPointForTest = (prev, input, out) => replyPoint(prev, input, out);
+export const _ledGoOnForTest = (s, input) => ledGoOn(s, input);
 /** D2, the turn after her reply's point turn: a side-topic at that check-in — her park line, her said-again line, her reply — leads into the
  *  card with no joint of its own. Her point turn said "back to work" (afterAside, afterPark, afterAiLine) one turn ago; it is never said in two
  *  turns running (main's second ruling fix 3, gated goOnJointTwice, kept by the fifth ruling item 2). Main's sixth ruling item 7 rules it so:
@@ -6241,7 +6256,12 @@ function heldTurn(prev, input) {
   // P1 (dc-r8-director20, c4 offtopic: a park on a card that ended in a key was never returned while the key's split held the next
   // part): the held half is a boundary too — an aside due now is returned on a turn of its own, and the held half waits for the next
   // (dc-r8-director26 C1: the worked problem held with its first step is the problem — a return due comes before it, as before it)
-  if (scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && (!/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? "")) || !!h.move?.problemLines)) {
+  // (to-brain 054 D1, with A(i)'s D2: the card held behind her reply's point and its check-in is said next whatever is due — a return there
+  // took the card's turn, dry offtopic c5-t01 60, replyPointCardNext; the return comes at the next boundary)
+  // (and so after her reply to the AI line's answer that said the held point and ended on its check-in — E1's reply turn carrying the point:
+  // dry offtopic c5-t01 58 → 60)
+  const pointCheckin = !!prev.lastMove?.replyPoint || (!!prev.lastMove?.leadAlone && (prev.lastMove?.heldSaid ?? []).length > 0 && !!h.ui?.ask?.itemId);
+  if (scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && !pointCheckin && (!/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? "")) || !!h.move?.problemLines)) {
     const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && (h.activeItemId !== e.onItem || parkOverdue(s, e)));
     if (due) {
       s.later = serveLater(s.later, due.id, s.turn);
