@@ -184,7 +184,18 @@ export function turnsAtQuestion(script, texts, path) {
   }
   return n;
 }
-const dropB4 = (m) => { if (!m || typeof m !== "object") return m; const o = { ...m }; for (const k of B4_FIELDS) delete o[k]; return o; };
+/** RULING-C2 item 1 (main's R2: a short ask or an invitation is no hearing): of the turns `turnsAtQuestion` counts, how many said the
+ *  question itself (any form the script writes for it). */
+export function hearingsInRun(script, texts, path) {
+  let n = 0;
+  for (let j = texts.length - 1; j >= 0; j--) {
+    const t = texts[j], a = atQuestionOf(script, t);
+    if (a === path) n++;
+    else if (!(a === "?short" || endsOnYourTurn(script, t) || endsOnAnswerFirst(script, t))) break;
+  }
+  return n;
+}
+const dropB4 =(m) => { if (!m || typeof m !== "object") return m; const o = { ...m }; for (const k of B4_FIELDS) delete o[k]; return o; };
 /** The walk's B4 pass over one turn (state.js step, last): the turn's move is marked
  *  - `yourTurn` (the form, rotated) on the third turn running at one question — brain/say.js ends the turn on it in place of the question;
  *    `yourTurnAfter` keeps the question sentence said last, and an asked step keeps the wording said last (so the fourth turn's
@@ -291,7 +302,14 @@ export function yourTurnPass(prev, out, script, childText = "") {
     const her1 = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
     // (d35 follow-up 4: the closing question too — graded as a card since 052 B2, its aside parked as a card's: the invitation is put in the
     // question's place among the walk's rendered lines)
-    if (p1 && (!tbQ || lm.endAside) && turnsAtQuestion(script, her1, p1) >= 2) {
+    // (to-brain 054 C, step 0 — the as-heard read of cause B, walk 11: a side-topic raised straight after her short ask or her invitation
+    // (her turn before at the question said no question) gets a park that ends on the question — the park, its joint and the question's
+    // reask, as a park does when the side-topic comes first — never the pointed invitation alone: never two turns running with no question)
+    // (main's second ruling on cause C, item 1: only where the question has been heard once since it was posed — the park's re-ask is then
+    // its second hearing, a short ask or an invitation being none; with two or more hearings the park ends on 049 B4's pointed invitation)
+    const lastNoQ = her1.length > 0 && atQuestionOf(script, her1.at(-1)) !== p1 && (endsOnShortAsk(script, her1.at(-1)) || endsOnYourTurn(script, her1.at(-1)))
+      && hearingsInRun(script, her1, p1) < 2;
+    if (p1 && (!tbQ || lm.endAside) && !lastNoQ && turnsAtQuestion(script, her1, p1) >= 2) {
       const forms = answerFirstForms(script, s.ctx?.lang === "english" ? "english" : "hinglish");
       const n = s.answerFirstN ?? 0;
       s.answerFirstN = n + 1;

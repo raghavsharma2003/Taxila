@@ -185,3 +185,103 @@ describe("C6: at a keyed card's check-in, a give-up or clarify with nothing unsa
     assert.deepEqual(flagsOf([key, C("pata nahi"), T(`${then.whyShort.hi}. Ab samjhe?`, part, "give_up", ["help", "checkin"]), C("pata nahi"), spent], "spentWithShortUnsaid", script), []);
   });
 });
+
+// Main's second ruling on cause C (RULING-C2), item 1 — step 0, the park after a short ask: a side-topic raised where the question has been
+// heard once since it was posed and her last turn said no question gets the park, its joint and the question's reask (its second hearing);
+// with two or more hearings the park ends on 049 B4's pointed invitation, as built. The four readings re-pinned by main, each both sides.
+describe("RULING-C2 item 1: the park after a short ask ends on the question's reask; with two hearings, on the pointed invitation", async () => {
+  const { reaskOf, SHORT_ASK_FORMS, endsOnAnswerFirst, questionObjectAt } = await import("../server/director/question-run.js");
+  /** The lesson walked to its first card (every question before answered right), then `seq` played: haan and the side-topic read by the real
+   *  code read first, the walk driver's stub where code cannot read the line. */
+  async function walkCard(TOPIC, seq) {
+    const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
+    replyDeps.chat = async () => ({ text: STUB }); replyDeps.chatStream = replyDeps.chat;
+    const kit = kitFromFile(getTopic(TOPIC));
+    const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
+      interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: TOPIC, classLevel: 4, sessionId: "d37-c2", lessonKey: "d37-c2", teacher: "director" };
+    let r = step(initLessonState({ topicId: TOPIC, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+    const say = async (text) => textReply({ instructions: "x", state: r.state, kit, childText: text, history: r.state.recent ?? [], ui: r.ui, module: null });
+    r.state.recent = [...(r.state.recent ?? []), { who: "teacher", text: (await say("")).reply }];
+    const realRead = (s, text) => { const it = s.activeItemId ? findItem(s, kit, s.activeItemId) : null; return classifyFast({ target: targetFor(s, kit, it), childText: text, lang: s.ctx?.lang, classLevel: 4, typed: true }).result ?? null; };
+    const turn = async (text, cls) => {
+      const s = r.state;
+      r = step({ ...s, recent: [...(s.recent ?? []), { who: "child", text }] }, { event: "turn", kit, text, cls: { confidence: 0.9, flags: {}, ...cls }, now: (s.turn + 1) * 20_000 });
+      const t = await say(text);
+      r.state.recent = [...(r.state.recent ?? []), { who: "teacher", text: t.reply }];
+      return { text: norm(t.reply), lm: r.state.lastMove ?? {}, seams: (t.guard?.seams ?? []).map((x) => x.right) };
+    };
+    for (let i = 0; i < 300; i++) {
+      const s = r.state;
+      const isStep = !!(s.lastMove?.stepAsk?.prompt && !s.lastMove.splitClose);
+      if (String(s.lastUi?.ask?.itemId ?? "").startsWith("script:") && !isStep) break;
+      const it = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+      await turn(it ? String(it.answer) : "haan", { outcome: it ? "correct" : "no_evidence" });
+    }
+    const LINES = { haan: ["haan", { outcome: "no_evidence" }], aside: ["kal maine cricket khela, sixer maara", { outcome: "no_evidence", request: { type: "uptake" } }] };
+    const out = [];
+    for (const k of seq) { const [text, stub] = LINES[k]; out.push(await turn(text, realRead(r.state, text) ?? stub)); }
+    replyDeps.chat = chat0; replyDeps.chatStream = stream0;
+    return out;
+  }
+  const P = ".skills[0].explain[0].ask";
+  test("walk 11 (c4-maths-ch05-t01: haan, side-topic): the park ends on the card's reask; wait two is help ending on the question", async () => {
+    const sc = scriptOf("c4-maths-ch05-t01");
+    const t = await walkCard("c4-maths-ch05-t01", ["haan", "aside", "haan", "haan"]);
+    assert.ok(SHORT_ASK_FORMS.some((f) => t[0].text.endsWith(f)), t[0].text);
+    assert.ok(t[1].text.endsWith(reaskOf(sc, P)), t[1].text);
+    assert.ok(!endsOnAnswerFirst(sc, t[1].text), t[1].text);
+    assert.equal(t[2].lm.waitN, 2);
+    assert.ok(t[2].seams.includes("help"), t[2].seams.join(">"));
+    assert.ok(!t[2].text.endsWith(reaskOf(sc, P)), "wait two does not say the reask the park has just said");
+  });
+  test("walk 12 (c6-maths-ch07-t01: haan, haan, side-topic — the question heard twice since posed): the park ends on the pointed invitation", async () => {
+    const sc = scriptOf("c6-maths-ch07-t01");
+    const t = await walkCard("c6-maths-ch07-t01", ["haan", "haan", "aside"]);
+    assert.ok(endsOnAnswerFirst(sc, t[2].text), t[2].text);
+  });
+  test("walk 10 (side-topic first): as built — the park ends on the question", async () => {
+    const t = await walkCard("c4-maths-ch05-t01", ["aside"]);
+    assert.ok(t[0].text.endsWith(reaskOf(scriptOf("c4-maths-ch05-t01"), P)), t[0].text);
+  });
+
+  // made rows on the live c4-maths-ch05-t01 script, its first card
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const { D34C_PREDICATES } = await import("../evals/hybrid-side-by-side/d34c-predicates.mjs");
+  const sc = scriptOf("c4-maths-ch05-t01");
+  const q = questionObjectAt(sc, P);
+  const prompt = norm(q.prompt.hi), reask = norm(q.reask.hi);
+  const part = "c4-maths-ch05-t01-s1:explain:1:ask";
+  const R = (text, column, seams) => ({ who: "teacher", text, cell: { part, column }, seams: seams.map((right, n) => ({ left: n ? seams[n - 1] : "start", right, joint: null })) });
+  const card = R(`Kitchen mein Maa ne garam roti banayi. ${prompt}`, "right", ["verdict", "card"]);
+  const shortY = R(SHORT_ASK_FORMS[0], "yes", ["reaskShort"]);
+  const parkQ = R(`Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Chalo, pehle yahan se aage badhte hain. ${reask}`, "aside", ["park", "card"]);
+  const parkInv = R("Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Pehle is sawaal ka jawab do.", "aside", ["park", "answerFirst"]);
+  const help1 = R(`Roti ke saare tukde ungli se gino, phir sirf rang wale. ${prompt}`, "yes", ["help", "card"]);
+  const help2 = R(`Board ki roti ko aise socho: jitne tukdon mein rang bhara hai, woh ginti upar likhte hain. ${reask}`, "yes", ["help", "card"]);
+  const reaskY = R(reask, "yes", ["card"]);
+  const flags = (rows, name) => lessonFlags({ rows, script: sc }).filter((f) => f.predicate === name).map((f) => f.row);
+  const C = (text) => ({ who: "child", text });
+  const nowRows = [card, C("haan"), shortY, C("sixer maara"), parkQ, C("haan"), help1, C("haan"), help2];
+  test("answerFirstThird counts hearings: the park's re-ask at the second hearing passes; after two hearings it is flagged, as before", () => {
+    assert.ok(D34C_PREDICATES.answerFirstThird({ rows: nowRows }, parkQ, 4, { script: sc }), "d34c's reading flagged it");
+    assert.deepEqual(flags(nowRows, "answerFirstThird"), []);
+    const twice = [card, C("haan"), reaskY, C("haan"), shortY, C("sixer maara"), parkQ];
+    assert.deepEqual(flags(twice, "answerFirstThird"), [6]);
+    assert.deepEqual(flags([card, C("haan"), reaskY, C("sixer maara"), parkQ], "answerFirstThird"), [4]);
+  });
+  test("questionThreeRunning treats the park's re-ask inside a wait as the wait's own re-ask; flagged as before without it", () => {
+    assert.deepEqual(flags(nowRows, "questionThreeRunning"), []);
+    const noPark = [card, C("haan"), reaskY, C("haan"), help1, C("haan"), R(`Board ki roti ko aise socho. ${prompt}`, "give_up", ["help", "card"])];
+    assert.ok(flags(noPark, "questionThreeRunning").length > 0);
+  });
+  test("waitSecondNotReask allows help at wait two where the re-ask was heard in that wait's park; flagged where the park said no question", () => {
+    assert.deepEqual(flags(nowRows, "waitSecondNotReask"), []);
+    assert.deepEqual(flags([card, C("haan"), shortY, C("sixer maara"), parkInv, C("haan"), help1], "waitSecondNotReask"), [6]);
+  });
+  test("waitNoQuestion flags the old park (no question straight after a wait turn with no question) and reads 0 on the new", () => {
+    assert.deepEqual(flags([card, C("haan"), shortY, C("sixer maara"), parkInv, C("haan"), reaskY], "waitNoQuestion"), [4]);
+    assert.deepEqual(flags(nowRows, "waitNoQuestion"), []);
+    // (a park with no question after a turn that said it is not flagged: walk 12)
+    assert.deepEqual(flags([card, C("haan"), reaskY, C("sixer maara"), parkInv], "waitNoQuestion"), []);
+  });
+});

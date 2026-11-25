@@ -18,7 +18,7 @@
 //                       give-up's help at a card ends on the card's own ask, which is the card whole where the ask is the card's sentences)
 //   stepToldEarly       also allows the step told on a wait's third-or-later turn where the give-up path had nothing left unsaid (the
 //                       step's own simpler said before the turn, as help.js reads an asked step's give-up)
-import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion, questionObjectAt, endsOnReaskOf } from "../../server/director/question-run.js";
+import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion, questionObjectAt, endsOnReaskOf, hearingsInRun } from "../../server/director/question-run.js";
 import { asideTurn, helpTurn } from "./d34b-predicates.mjs";
 import { D34C_PREDICATES } from "./d34c-predicates.mjs";
 import { D30_PREDICATES } from "./d30-predicates.mjs";
@@ -112,6 +112,19 @@ export function waitAt(L, i, script) {
 }
 /** Whether row i is the wait's re-ask: the wait's second turn, ending on the question's own `reask`. */
 const waitReaskAt = (L, i, ctx) => { const w = waitAt(L, i, ctx?.script); return !!w && w.turns.length === 2 && D37B_PREDICATES.waitSecondNotReask(L, L.rows[i], i, ctx) === null; };
+/** RULING-C2 item 1: whether row i is a side-topic's park that ends on its question's own `reask` where that question was heard once since it
+ *  was posed and her turn before said no question (a short ask or an invitation, no hearing: main's R2) — the question's second hearing. */
+function parkReaskAt(L, i, script) {
+  const r = L.rows[i];
+  if (!script || r?.who !== "teacher" || !asideTurn(r) || waitCue(r)) return false;
+  const P = atQuestionOf(script, r.text);
+  if (!P || P === "?short" || !endsOnReask(script, P, r.text)) return false;
+  const j = prevTeacher(L, i);
+  if (j < 0 || !standsForOnly(script, L.rows[j].text) || stoodFor(L, j, script) !== P) return false;
+  const her = L.rows.slice(0, i).filter((x) => x.who === "teacher").map((x) => String(x.text ?? ""));
+  return hearingsInRun(script, her, P) < 2;
+}
+export { parkReaskAt };
 /** Whether a text ends on the question's own `reask` (its closing question, {slots} matching any words). */
 function endsOnReask(script, P, text, lang = "hinglish") {
   const reask = reaskOf(script, P, lang);
@@ -191,6 +204,14 @@ function stepHelpSpent(L, r, i, script) {
 export const D37B_PREDICATES = {
   /** B.5: three of her turns at one question after a try-first or a bare yes, none saying the question or help. Gated. */
   waitNoQuestion(L, r, i, ctx) {
+    // (to-brain 054 C step 0, the as-heard read of cause B, walk 11: a side-topic's park inside a wait is passed over for the count, but a
+    // park with no question straight after a wait turn with no question is two turns running with no question — the second a park)
+    if (ctx?.script && r.who === "teacher" && asideTurn(r) && !waitCue(r) && !helpTurn(r)) {
+      const j = prevTeacher(L, i);
+      const w0 = j >= 0 ? waitAt(L, j, ctx?.script) : null;
+      if (w0 && atQuestionOf(ctx.script, r.text) !== w0.P && !saysOrHelps(ctx.script, L.rows[j], w0.P))
+        return `two turns of a wait at ${w0.P} running (rows ${j}, ${i}, the second a park) and neither says the question or help`;
+    }
     const w = waitAt(L, i, ctx?.script);
     // (RULING-B5 item 3: tightened from three turns to two — never two turns running with no question; the wait counted from her turns)
     if (!w || w.turns.length < 2) return null;
@@ -214,6 +235,8 @@ export const D37B_PREDICATES = {
     // is what wait three is: help ending on the question (a told step or a key ends on another question, so waitAt never reads it))
     // (main's sixth ruling, item 5 — pr3's B: help that ends on the wait's own question; help ending on "Ab tum batao." is no question)
     if (helpTurn(r) && atQuestionOf(ctx.script, r.text) === w.P && reaskHeardBefore(L, w.turns[0], ctx.script, w.P)) return null;
+    // (RULING-C2 item 1: or where the re-ask was heard in that wait's park — a side-topic's park between its turns that ended on the reask)
+    if (helpTurn(r) && atQuestionOf(ctx.script, r.text) === w.P) { for (let k = prevTeacher(L, i); k > w.turns[0]; k = prevTeacher(L, k)) if (parkReaskAt(L, k, ctx.script)) return null; }
     return endsOnReask(ctx.script, w.P, r.text, lang) ? null : `the wait's second turn at ${w.P} does not end on its reask: "${sentencesOf(r.text).at(-1) ?? ""}"`;
   },
   /** B.4 (main's ruling on question 3): 049 B4's count with the wait's re-ask exempt — the re-ask overrides the third-turn invitation, so it
@@ -225,8 +248,17 @@ export const D37B_PREDICATES = {
     const n = m ? Number(m[1]) : 3;
     const her = [];
     for (let j = i; j >= 0 && her.length < n; j--) if (L.rows[j].who === "teacher") her.push(j);
-    const k = her.findIndex((j) => waitReaskAt(L, j, ctx));
+    // (RULING-C2 item 1: the park's re-ask inside a wait is treated as the wait's own re-ask)
+    const k = her.findIndex((j) => waitReaskAt(L, j, ctx) || parkReaskAt(L, j, ctx?.script));
     return k < 0 || k >= 3 ? was : null;
+  },
+  /** RULING-C2 item 1 (049 B4, d34c's gated reading, re-pinned by name): the run counts hearings — a short ask or an invitation is none — so
+   *  the park's re-ask at the question's second hearing (heard once since posed, her turn before said no question) is allowed; flagged
+   *  everywhere it flagged before. */
+  answerFirstThird(L, r, i, ctx) {
+    const was = D34C_PREDICATES.answerFirstThird(L, r, i, ctx);
+    if (!was || !/^the question said again on an aside turn/.test(was)) return was;
+    return parkReaskAt(L, i, ctx?.script) ? null : was;
   },
   /** B.4 (main's ruling on question 3): d30's stepToldEarly, with the cap's turn at a wait allowed — the step told on its fifth hearing (the
    *  record's heardCap) after a try-first or a bare yes. Gated, as d30's. */
