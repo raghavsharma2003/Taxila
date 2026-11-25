@@ -100,3 +100,32 @@ describe("item 4: replyPointCardNext, gated — after her reply's point turn the
     assert.equal(PREDICATES.replyPointCardNext({ rows: again }, rp, 2, {}), null);
   });
 });
+
+describe("the walk, where D2 put a third clarify at a point's check-in (dry stuck c4-ch06-t01 62): the help's two lines are recorded as said", () => {
+  test("nothing easier, then helpToCard, then the card: the help joint is helpToCard with the helpSpent line spent before it; the seam pass marks both", async () => {
+    const { initLessonState, step } = await import("../server/director/state.js");
+    const { classifyFast, targetFor } = await import("../server/director/classify.js");
+    const { kitFromFile } = await import("../server/content/kits.js");
+    const { getTopic } = await import("../server/content/curriculum.js");
+    const { findItem } = await import("../server/director/items.js");
+    const { dryReading } = await import("../evals/hybrid-side-by-side/dry-reader.mjs");
+    const { applySeams } = await import("../server/brain/seams.js");
+    const topicId = "c5-maths-ch02-t01", kit = kitFromFile(getTopic(topicId));
+    const ctx = { firstName: "Riya", teacherName: "Asha", lang: "hinglish", interests: ["cricket"], classLevel: 5, sessionId: "s-054a4", teacher: "director" };
+    let s = step(initLessonState({ topicId, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 }).state;
+    // (the steady child's lines of the dry matrix to D2's park and point turn at s2 e1, then three clarifies)
+    const LINES = ["haan, samajh aaya", "3", "6 kilometre", "pata nahi", "one sixth", "1 upon 3", "eight", "1/8", "picture dikhao", "between 0 and 1/5 hai na", "1/10 wala", "chaar gap", "dhai sau metre", "pehle main try karun?", "1 upon 11", "1/12", "pehle mark par", "kal maine cricket khela, sixer maara", "samajh nahi aaya", "samajh nahi aaya", "samajh nahi aaya"];
+    let r;
+    LINES.forEach((text, n) => {
+      const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+      const target = targetFor(s, kit, item);
+      const fast = classifyFast({ target, childText: text, lang: "hinglish", classLevel: 5, typed: true });
+      r = step({ ...s, recent: [...(s.recent ?? []), { who: "child", text }] }, { event: "turn", kit, text, cls: fast.result ?? dryReading(target), now: n + 1 }); s = r.state;
+    });
+    const hj = r.state.lastMove.helpJoint;
+    assert.equal(hj?.kind, "helpToCard"); assert.equal(hj.spent?.kind, "helpSpent"); assert.equal(r.ui.ask?.itemId, "script:c5-maths-ch02-t01-s2:ask:e1");
+    const list = [{ part: "simpler", text: hj.spent.form }, { part: "simpler", text: hj.form }, { part: "card", text: r.ui.ask.text }];
+    const sp = applySeams(list.map((p) => p.text).join(" "), list, { kit, state: r.state, lang: "hinglish", info: { helpJoint: hj } });
+    assert.deepEqual(sp.seams.map((x) => [x.right, x.joint ?? null]).slice(0, 2), [["helpSpent", "helpSpent"], ["helpToCard", "helpToCard"]]);
+  });
+});

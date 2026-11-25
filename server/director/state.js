@@ -3826,6 +3826,13 @@ const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
 const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, ...(d.bridgeOn ? { bridgeOn: true } : {}), ...(d.bridgeHelp ? { bridgeHelp: true } : {}), ...(d.rung?.path ? { rungPath: d.rung.path } : {}), card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}), ...(d.hindiForm ? { hindiForm: true } : {}), ...(d.hindiWhole ? { hindiWhole: true } : {}), ...(d.hindiAsked ? { hindiAsked: true } : {}),
   ...(d.request === "picture" ? { picture: d.hintBoard ? "hintBoard" : d.rung ? "hint" : "none", ...(d.pictureLine ? { pictureLine: d.pictureLine.text } : {}) } : {}),
   board: helpBoardOf(d) });
+/** The help joint a help turn records. A point with nothing unsaid (help.js, Brain 044 T5) says the "nothing easier" line, then helpToCard, then
+ *  its card: both are recorded, helpToCard the joint and the first its spent line, as helpAfter records a key's two lines — the seam pass
+ *  then marks each (to-brain 054 A, the dry stuck c4-ch06-t01 62 once D2 put a third clarify at a point's check-in: the helpToCard line was
+ *  recorded as help, and clarifyCard read the card it leads to as no answer to the clarify). */
+const helpJointOf = (d) => (d.then?.text && !d.rung && !d.key
+  ? { kind: d.then.kind, form: fillFriend(d.then.text, d.friend ?? "").trim(), by: d.then.by, spent: { form: fillFriend(d.joint.text, d.friend ?? "").trim(), by: d.joint.by, kind: d.joint.kind } }
+  : { kind: d.joint.kind, form: d.joint.text, by: d.joint.by });
 function helpFields(kit, d) {
   const words = helpWords(d);
   const board = helpBoardOf(d);
@@ -3834,7 +3841,7 @@ function helpFields(kit, d) {
   // (Brain 049 B2: a picture request with nothing left: the noPicture line, if the script has one, and the card's question)
   if (!words) return { help: helpMark(d), ...pictureLineFields(d) };
   return { simpler: words.charAt(0).toUpperCase() + words.slice(1), smaller: true, helpNew: true, help: helpMark(d),
-    simplerBeat: helpBeat(kit, d, board), ...(d.joint ? { helpJoint: { kind: d.joint.kind, form: d.joint.text, by: d.joint.by } } : {}), ...(d.hindiForm ? { hindiForm: d.hindiForm } : {}), ...pictureLineFields(d) };
+    simplerBeat: helpBeat(kit, d, board), ...(d.joint ? { helpJoint: helpJointOf(d) } : {}), ...(d.hindiForm ? { hindiForm: d.hindiForm } : {}), ...pictureLineFields(d) };
 }
 /**
  * A help turn that stays on the part (the card stays live, or no card is asked yet, or the card is closed with its key): built from the
