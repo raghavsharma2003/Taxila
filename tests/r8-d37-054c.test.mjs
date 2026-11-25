@@ -117,6 +117,8 @@ describe("C3: at the cap, the named wrong answer's unsaid reason first — the m
     assert.deepEqual(flagsOf([C("10"), T(key, part, "misconception", ["missVerdict", "key", "checkin"])], "capBeforeOwnReason", script), [1]);
     assert.deepEqual(flagsOf([T(`Nahi. ${whyAlt}`, part, "misconception", ["missVerdict", "help"]), C("10"), T(key, part, "misconception", ["missVerdict", "key", "checkin"])], "capBeforeOwnReason", script), []);
     assert.deepEqual(flagsOf([C("7"), T(key, part, "wrong", ["missVerdict", "key", "checkin"])], "capBeforeOwnReason", script), []);
+    // (RULING-C3 item 7: the reason said inside the key's own turn does not count — reason and key in one turn is flagged)
+    assert.deepEqual(flagsOf([C("10"), T(`Nahi. ${whyAlt} ${key}`, part, "misconception", ["missVerdict", "help", "key", "checkin"])], "capBeforeOwnReason", script), [1]);
   });
 });
 

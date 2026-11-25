@@ -106,7 +106,8 @@ export const D37C_PREDICATES = {
     const child = childBefore(L, i);
     const reason = namedReason(n, child);
     if (!reason) return null;
-    const said = [...before(L, i), String(r.text ?? "")].some((t) => saysAny(t, reason));
+    // (RULING-C3 item 7: the key turn's own text is not "the reason said" — reason and key in one turn is two new things, flagged)
+    const said = before(L, i).some((t) => saysAny(t, reason));
     return said ? null : `the key at the named wrong answer "${child}" with its reason never said ("${reason.slice(0, 50)}…")`;
   },
   ownStepWorkedHelp(L, r, i, ctx) {
