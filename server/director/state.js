@@ -1070,6 +1070,16 @@ function currentBeatRef(s, kit) {
 }
 // v4 W6 (director6: 0 of 6 cricket / Virat asides parked): an aside about a world of theirs (an interest, a sport, a star) is
 // kept on the Later list in script mode, so it is promised now and returned to before the wrap
+/** d37 close item 11 (pr5 section 5): whether the child's question about her taste NAMED a favourite — a person or thing of theirs, read
+ *  as the walk and the check (evals d37d aiAsksTold) both read it. A word of their line names one when it is none of the asking and liking
+ *  words (TASTE_ASK_WORDS) and no interest's own name or a kind of thing (TASTE_KINDS: "cricket", "football", "match", "game", …): so
+ *  "aapko virat pasand hai?" names Virat, while "aapko cricket pasand hai?" and "aapko kya pasand hai?" name no favourite and may be asked
+ *  "Tumhara favourite kaun hai?". → the word, or null. */
+export const TASTE_ASK_WORDS = new Set(["aapko", "aap", "aapka", "aapki", "tumhe", "tum", "tumhara", "tumhari", "ko", "bhi", "kya", "pasand", "hai", "ho", "hain", "do", "you", "like", "your", "favourite", "favorite", "is", "who", "kaun", "kon", "sabse", "zyada", "achha", "lagta", "lagti", "acha"]);
+export const TASTE_KINDS = new Set([...Object.keys(PERSONA_INTERESTS ?? {}), "match", "game", "games", "ipl", "cartoon", "cartoons", "movie", "movies", "film", "song", "songs", "gaana", "dance", "sport", "sports", "khel", "woh", "that", "isme", "what", "the"]);
+export function tasteNamedIn(text) {
+  return (String(text ?? "").toLowerCase().match(/\p{L}+/gu) ?? []).find((w) => w.length > 2 && !TASTE_ASK_WORDS.has(w) && !TASTE_KINDS.has(w)) ?? null;
+}
 const ASIDE_WORDS = /\b(cricket|virat|kohli|dhoni|rohit|football|messi|ronaldo|ipl|match|sixer|six|game|games|cartoon|movie|film|song|gaana|dance|kabaddi|chess|badminton|cycle|dog|kutta|billi|cat)\b/i;
 export function asideTopic(text, interests = []) {
   const t = String(text ?? "");
@@ -1130,7 +1140,7 @@ function parkGate(s, kit, input, e) {
   // (v6.11 J2: their answer to her return question is not a new aside — nor, asking her back, a taste question: R1 rule 4, a plain
   // reply form, then the lesson)
   if (s.returnAnswer) return s.later ?? [];
-  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1, ...(tasteAskedSoon(s) ? { alone: true } : {}) }; if (tasteServesPark(s, e.topic)) s.tasteAsked.served = true; return s.later ?? []; }
+  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1, named: !!tasteNamedIn(input?.text), ...(tasteAskedSoon(s) ? { alone: true } : {}) }; if (tasteServesPark(s, e.topic)) s.tasteAsked.served = true; return s.later ?? []; }
   // (dc-r8-director20 R1 rule 3: a sad aside is not parked for a return that assumes liking or fun — brain/say.js says one sad line
   // now, and the lesson goes on)
   if (isSadAside(input?.text)) { s.sadAside = { turn: s.turn }; return s.later ?? []; }
@@ -5041,7 +5051,7 @@ function step0(prev, input) {
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
-  if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, ...(s.tasteAsked.served ? { served: true } : {}), ...(s.tasteAsked.alone ? { alone: true } : {}) };
+  if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, ...(s.tasteAsked.named != null ? { named: s.tasteAsked.named } : {}), ...(s.tasteAsked.served ? { served: true } : {}), ...(s.tasteAsked.alone ? { alone: true } : {}) };
   if (s.sadAside?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.sadAside = true;
   if (s.asideAgain?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.asideAgain = { topic: s.asideAgain.topic, ...(s.asideAgain.returned ? { returned: true } : {}) };
   if (s.servedNow?.topic) {
@@ -6182,7 +6192,7 @@ function heldTurn(prev, input) {
     s.returnAsked = undefined;
     if (s.returnAnswer) { m.returnReply = s.returnAnswer; m.asideAck = true; }
     const topic0 = asideTopic(text, s.ctx?.interests);
-    if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1, ...(tasteAskedSoon(s) ? { alone: true } : {}) }; if (tasteServesPark(s, topic0)) s.tasteAsked.served = true; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, ...(s.tasteAsked.served ? { served: true } : {}), ...(s.tasteAsked.alone ? { alone: true } : {}) };
+    if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1, named: !!tasteNamedIn(text), ...(tasteAskedSoon(s) ? { alone: true } : {}) }; if (tasteServesPark(s, topic0)) s.tasteAsked.served = true; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, named: s.tasteAsked.named, ...(s.tasteAsked.served ? { served: true } : {}), ...(s.tasteAsked.alone ? { alone: true } : {}) };
       // (dc-r8-director23 A2, c6 stuck 38, steering 30: the AI line always ends with her question back — on a worked step the step is held
       // for the turn after her reply, as a return holds its half; never two steps in one turn)
       if (h.move?.kind === "worked_example" && !m.tasteAsked.alone) {

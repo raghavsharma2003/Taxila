@@ -17,7 +17,7 @@ import { altCall, QUIET_PICTURE_LINES } from "../stagecraft/board-first.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
-import { upcomingItem, hintShapeWords, l2On } from "../director/state.js";
+import { upcomingItem, hintShapeWords, l2On, tasteNamedIn } from "../director/state.js";
 import { characterForState } from "../compiler/characters/index.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
@@ -117,7 +117,7 @@ const TASTE_QS = {
   hinglish: [(t) => `Tumhara favourite kaun hai?`, (t) => `${capT(t)} ko tum kiske saath dekhte ho?`, (t) => `Tumne pehli baar ${t} ko kab dekha tha?`],
   english: [(t) => `Who is your favourite?`, (t) => `Who do you watch ${t} with?`, (t) => `When did you first watch ${t}?`],
 };
-export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = [], told = false, alone = false) {
+export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = [], told = false, alone = false, named = null) {
   const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "isme");
   const L = lang === "english" ? "english" : "hinglish";
   // (to-brain 054 D3, main's added item: asked again straight after the first exchange, the honest line alone — no question back; the lesson's
@@ -138,8 +138,10 @@ export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = [], tol
   const said = (asked ?? []).map((x) => String(x ?? "").toLowerCase()).join(" | ");
   // (to-brain 054 D3, director36 c5-t02 and c6 offtopic 28: "Tumhara favourite kaun hai?" to "aapko virat pasand hai?" — the AI line never asks a
   // favourite the child's question named: with a topic named, the favourite form is not asked)
-  const named = !!String(topic ?? "").trim();
-  const q = TASTE_QS[L].map((f) => f(t)).filter((x, i) => !(named && i === 0)).find((x) => !said.includes(x.toLowerCase().replace(/[?？]$/, "")));
+  // (d37 close item 11, pr5 section 5: "named" was always true — the topic falls back to "woh". It is the child's own line naming a
+  // favourite (state.js tasteNamedIn, the walk's record tasteAsked.named); without the record, the topic read the same way)
+  const isNamed = named ?? !!tasteNamedIn(topic);
+  const q = TASTE_QS[L].map((f) => f(t)).filter((x, i) => !(isNamed && i === 0)).find((x) => !said.includes(x.toLowerCase().replace(/[?？]$/, "")));
   const head = L === "english" ? (n % 2 ? "No favourites for me, I'm an AI." : "I'm an AI, so no favourites for me.") : (n % 2 ? "Meri apni pasand nahi hoti, main AI hoon." : "Main AI hoon, meri koi pasand nahi hoti.");
   return q ? `${head} ${q}` : head;
 }
@@ -3232,7 +3234,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
       // (to-brain 054 D1: a return the walk put after a right verdict — state.js returnApart's returnLed — opens on a back-to word)
       const led = state.lastMove?.returnLed ? returnQuestion(ret.topic, lang, state, { said: ret.said, kit, lead: "verdict" }) : null;
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : led ?? returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state), false, !!tasteNamedIn(said0)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : led ?? returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       { const k = String(ret.topic ?? "").toLowerCase(); ss = ss.filter((x) => !k || !x.toLowerCase().includes(k)); }
       if (line && sad) { aside.push(line); guard.returnSaid = true; guard.returnSad = true; }
@@ -3692,7 +3694,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (to-brain 054 D3: her first AI line asks nothing the child told — after they answered her question what they like in it, "batting sabse
     // achhi lagti hai" to a return, the line's told form: dry offtopic c6-ch07-t01 48, returnAsksAgain)
     const tasteN = state.lastMove?.tasteAsked?.n ?? honestN(state);
-    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, tasteN, herLines(state), !!toldOf(state.lastMove.tasteAsked.topic, null, state) || (tasteN <= 1 && likeToldBefore(state)), !!state.lastMove.tasteAsked.alone) : null;
+    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, tasteN, herLines(state), !!toldOf(state.lastMove.tasteAsked.topic, null, state) || (tasteN <= 1 && likeToldBefore(state)), !!state.lastMove.tasteAsked.alone, state.lastMove.tasteAsked.named ?? null) : null;
     if (honestLine) guard.honestNow = true;
     // (with the honest line said now, no other line of hers about being an AI or her taste rides beside it)
     // (the return line itself — the honest line ends on its question to them — is never cut as a second question)
@@ -4143,7 +4145,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const said0 = ret.said ?? "";
       // (v6.7 A3: code's line, as on an assembled turn — the honest line or one question about their thing)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state), false, !!tasteNamedIn(said0)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; if (sad) guard.returnSad = true; else guard.returnLine = line; } else guard.returnMissed = true;
     }
   }

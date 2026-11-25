@@ -287,3 +287,42 @@ describe("item 10: ownKeyNoReason's exemption takes the worked example's why onl
     assert.deepEqual(flagsOf([C("Rahul"), told, C("yeh step samajh nahi aaya"), row(`${we.answer.hi}. Yahan tak saaf hai?`, "clarify", ["help", "checkin"])]), [3]);
   });
 });
+
+describe("item 11: D3's named is the child's own line naming a favourite, read the same by the walk and by aiAsksTold (pr5 sections 2 and 5)", async () => {
+  const { tasteNamedIn } = await import("../server/director/state.js");
+  const { honestTasteLine } = await import("../server/brain/say.js");
+  const { PREDICATES } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const first = "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe woh ke baare mein sabse achha kya lagta hai?";
+  test("the reading: 'virat' is named; 'cricket' (an interest's own name) and a question naming nothing are not", () => {
+    assert.equal(tasteNamedIn("aapko virat pasand hai?"), "virat");
+    assert.equal(tasteNamedIn("aapko cricket pasand hai?"), null);
+    assert.equal(tasteNamedIn("aapko kya pasand hai?"), null);
+    assert.equal(tasteNamedIn("aapka favourite kaun hai?"), null);
+  });
+  test("the walk: with the fallback topic 'woh' and nothing named, 'Tumhara favourite kaun hai?' may be asked once; with a name, never", () => {
+    assert.match(honestTasteLine("woh", "hinglish", 2, [first], false, false, false), /Tumhara favourite kaun hai\?$/);
+    assert.match(honestTasteLine("woh", "hinglish", 2, [first]), /Tumhara favourite kaun hai\?$/, "no record: the topic read the same way ('woh' names nothing)");
+    assert.doesNotMatch(honestTasteLine("woh", "hinglish", 2, [first, "Meri apni pasand nahi hoti, main AI hoon. Tumhara favourite kaun hai?"], false, false, false), /favourite/, "asked once");
+    assert.doesNotMatch(honestTasteLine("Virat", "hinglish", 2, [first], false, false, true), /favourite/);
+    assert.match(honestTasteLine("cricket", "hinglish", 2, [first], false, false, false), /Tumhara favourite kaun hai\?$/);
+  });
+  test("the check agrees: the favourite question after 'aapko virat pasand hai?' flagged; after 'aapko cricket pasand hai?' or 'aapko kya pasand hai?' not", () => {
+    const fav = { who: "teacher", text: "Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?", seams: [{ right: "aiQuestion" }] };
+    const at = (kid) => PREDICATES.aiAsksTold({ rows: [{ who: "child", text: kid }, fav] }, fav, 1);
+    assert.ok(at("aapko virat pasand hai?"));
+    assert.equal(at("aapko cricket pasand hai?"), null);
+    assert.equal(at("aapko kya pasand hai?"), null);
+  });
+  test("the walk records it: a step on 'aapko cricket pasand hai?' marks the move's tasteAsked.named false; on 'aapko virat pasand hai?' true", async () => {
+    const { initLessonState, step } = await import("../server/director/state.js");
+    const { kitFromFile } = await import("../server/content/kits.js");
+    const { getTopic } = await import("../server/content/curriculum.js");
+    const kit = kitFromFile(getTopic("c5-maths-ch02-t01"));
+    const ctx = { firstName: "Riya", teacherName: "Asha", lang: "hinglish", interests: ["cricket"], classLevel: 5, sessionId: "s11", teacher: "director" };
+    const run = (text) => { let s = step(initLessonState({ topicId: "c5-maths-ch02-t01", kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 }).state;
+      for (const h of ["haan", "haan"]) s = step({ ...s, recent: [...(s.recent ?? []), { who: "child", text: h }] }, { event: "turn", kit, text: h, cls: { outcome: "no_evidence", confidence: 0.9, flags: {} }, now: 1 }).state;
+      return step({ ...s, recent: [...(s.recent ?? []), { who: "child", text }] }, { event: "turn", kit, text, cls: { outcome: "no_evidence", confidence: 0.9, flags: {} }, now: 2 }).state; };
+    const a = run("aapko cricket pasand hai?"), b = run("aapko virat pasand hai?");
+    assert.equal(a.lastMove?.tasteAsked?.named, false); assert.equal(b.lastMove?.tasteAsked?.named, true);
+  });
+});

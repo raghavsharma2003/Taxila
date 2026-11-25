@@ -14,13 +14,12 @@
 //                           say ("… kya kehna tha?", "… kya bata rahe the?") after a side-topic that told its thing ("kal maine cricket
 //                           khela, sixer maara": c4-ch01-t02 offtopic 22).
 import { BACK_TO_LEAD, toldOf } from "../../server/brain/say.js";
+import { tasteNamedIn } from "../../server/director/state.js";
 
 const seamsOf = (r) => (r?.seams ?? []).map((x) => x.right);
 const sentencesOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+/).filter(Boolean);
 const lastQ = (t) => sentencesOf(t).filter((x) => /[?？]\s*$/.test(x)).at(-1) ?? "";
 const wordsOf = (t) => String(t ?? "").toLowerCase().match(/\p{L}+/gu) ?? [];
-/** The words of a child's question about her taste that name nothing (the asking and the liking). */
-const TASTE_WORDS = new Set(["aapko", "aap", "aapka", "aapki", "tumhe", "tum", "tumhara", "tumhari", "ko", "bhi", "kya", "pasand", "hai", "ho", "hain", "do", "you", "like", "your", "favourite", "favorite", "is", "who", "kaun", "kon", "sabse", "zyada", "achha", "lagta", "lagti", "acha"]);
 const ENDS = (r) => r?.who === "teacher" && (["wrap", "break"].includes(String(r.move ?? "")) || seamsOf(r).some((k) => ["goodbye", "stopLine", "wrapAsk", "tiredBye"].includes(k)));
 const ASKS_SAID = /(?<![\p{L}])(?:kya\s+kehna\s+tha|kya\s+bata\s+rahe\s+the|what\s+you\s+wanted\s+to\s+say|what\s+were\s+you\s+saying)(?![\p{L}])/iu;
 
@@ -50,8 +49,10 @@ export const D37D_PREDICATES = {
     if (!q) return null;
     const kid = [...rows.slice(0, i)].reverse().find((x) => x.who === "child");
     if (seamsOf(r).includes("aiQuestion") && /favou?rite/i.test(q) && kid) {
-      const named = wordsOf(kid.text).filter((w) => w.length > 2 && !TASTE_WORDS.has(w));
-      if (named.length) return `her AI line asks a favourite the child's question named ("${String(kid.text).slice(0, 40)}"): "${q}"`;
+      // (d37 close item 11: a named favourite is read as the walk reads it — state.js tasteNamedIn: "virat" in "aapko virat pasand hai?" is
+      // one; "cricket" in "aapko cricket pasand hai?" is an interest's own name, a kind of thing, and is none)
+      const named = tasteNamedIn(kid.text);
+      if (named) return `her AI line asks a favourite the child's question named ("${String(kid.text).slice(0, 40)}"): "${q}"`;
     }
     if (r.returnSaid && ASKS_SAID.test(q)) {
       const qw = new Set(wordsOf(q));
