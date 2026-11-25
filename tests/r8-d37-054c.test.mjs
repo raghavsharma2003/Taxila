@@ -409,3 +409,21 @@ describe("RULING-C3 item 9: ownKeyNoReason reads a worked close said in place of
     assert.deepEqual(flagsOf([C("1/6"), row(`Nahi. ${ys.simpler.hi} Ab tum batao.`, "wrong", ["missVerdict", "help", "yourTurn"])], "ownKeyNoReason", sc), []);
   });
 });
+
+// RULING-C4 item 3 (checked, nothing changed): steering c5-maths-ch02-t01 row 40, a right answer at the own step, reads "Sahi jawab. Toh poora
+// jawab: …, kyunki …" in c3/dry3 where b3/dry5 read "Sahi jawab. <why>. Toh poora jawab: …". C1's give-up-over-worked-close branch is not
+// it (switched off, the walk is word for word the same); C2's why-alone key at row 22 is (switched off, the lesson is b3/dry5's): row 22 no
+// longer says ", kyunki ", so rightWhyLead's rotation (it skips a joint her last two turns used) picks other joints from row 26 on, and at
+// row 40 "<frame>, kyunki <why>", which the one-close rule (v6.4 T1″) says as the bare verdict then "Toh poora jawab: …, kyunki …".
+describe("RULING-C4 item 3: a right answer's reason joint follows rightWhyLead's rotation over her last two turns", async () => {
+  const { rightWhyLead } = await import("../server/brain/say.js");
+  const { seamStart, lessonKeyOf } = await import("../server/brain/seams.js");
+  test("with no ', kyunki ' in her last two turns the 'kyunki' joint is said; with one there, the reason is its own sentence", () => {
+    const ctx = { lessonKey: "d37-c4-item3" };
+    const k0 = seamStart(lessonKeyOf({ ctx }), "whyOpener") % 3;
+    const n = (3 - k0) % 3; // the rotation's turn for joint 0 ("<frame>, kyunki <why>")
+    const at = (texts) => rightWhyLead("Sahi jawab", "4 barabar gaps mein har gap 1/4 kilometre ka hai", { ctx, whyJoint: { n, last: null }, recent: texts.map((text) => ({ who: "teacher", text })) });
+    assert.equal(at(["Nahi, yeh jawab nahi hai. Yeh sadak 6 barabar gaps mein kati hai. Yahan tak theek hai?"]).text, "Sahi jawab, kyunki 4 barabar gaps mein har gap 1/4 kilometre ka hai");
+    assert.equal(at(["Nahi, yeh jawab nahi hai. Is sawaal ka jawab 1/6 kilometre par hai, kyunki yeh sadak 6 barabar gaps mein kati hai. Yahan tak theek hai?"]).text, "Sahi jawab. 4 barabar gaps mein har gap 1/4 kilometre ka hai");
+  });
+});
