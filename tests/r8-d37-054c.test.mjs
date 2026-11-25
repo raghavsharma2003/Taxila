@@ -67,3 +67,55 @@ describe("C1: an own step's key after misses is the step's own key with its why,
     });
   }
 });
+
+const { pickHelp, addSaid, KEY_AFTER_MISSES } = await import("../server/director/help.js");
+const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+/** The flags of one predicate over made rows (a fresh ctx per lesson, as lessonFlags builds it). */
+const flagsOf = (rows, name, script) => { const ctx = { script, o: {} }; return rows.map((r, i) => (r.who === "teacher" && PREDICATES[name]({ rows }, r, i, ctx) ? i : null)).filter((x) => x != null); };
+const T = (text, part, column, seams = []) => ({ who: "teacher", text, cell: { part, column }, seams: seams.map((right) => ({ right })) });
+const C = (text) => ({ who: "child", text });
+
+describe("C3: at the cap, the named wrong answer's unsaid reason first — the miss verdict, the reason, the question; the cap on the turn after", () => {
+  const script = scriptOf("c6-maths-ch07-t01");
+  const part = "c6-maths-ch07-t01-s1:check:c2";
+  const whyAlt = script.skills[0].checks[1].whyAlt.hi;
+  const named = { outcome: "misconception", wrongListed: true };
+  test("the cap at the named answer with its reason unsaid: the reason, the card kept, no key", () => {
+    const d = pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES, last: named });
+    assert.equal(d.card, "keep"); assert.equal(d.key, null); assert.ok(d.capReason);
+    assert.equal(nk(d.rung.text), nk(whyAlt));
+  });
+  test("once a card: with the reason said, the cap is the key", () => {
+    const said = addSaid([], whyAlt, 3);
+    const d = pickHelp({ script, part, request: "hint", said, misses: KEY_AFTER_MISSES, last: named });
+    assert.equal(d.card, "close"); assert.ok(d.key);
+  });
+  test("another answer (not the named one) at the cap: the key, as built", () => {
+    const d = pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES, last: { outcome: "incorrect", wrongListed: false } });
+    assert.equal(d.card, "close");
+  });
+  test("questionFiveTimes re-pinned: a fifth hearing passes only on the turn whose body is the named reason said for the first time at the card", () => {
+    const card = "Jo hissa lamba nikla, woh doosre se kitne cm lamba hai?";
+    const q = script.skills[0].checks[1].prompt.hi;
+    const lead = [T(q, "c6-maths-ch07-t01-s1:e3:card", "right", ["card"]), C("7"), T(`Nahi. ${q}`, part, "wrong", ["missVerdict", "card"]), C("8"), T(`Nahi. ${q}`, part, "wrong", ["missVerdict", "card"]), C("9"), T(`Nahi. ${q}`, part, "wrong", ["missVerdict", "card"]), C("das")];
+    const ok = [...lead, T(`Nahi, das theek nahi. ${whyAlt} ${q}`, part, "misconception", ["missVerdict", "help", "card"])];
+    const was = PREDICATES.questionFiveTimes; void card;
+    assert.ok(was);
+    const n0 = flagsOf(ok, "questionFiveTimes", script);
+    const bare = [...lead, T(`Nahi, das theek nahi. ${q}`, part, "misconception", ["missVerdict", "card"])];
+    const n1 = flagsOf(bare, "questionFiveTimes", script);
+    // (the same fifth hearing without the reason, or with the reason already said before, is flagged as before)
+    const again = [...lead.slice(0, 2), T(`Nahi. ${whyAlt} ${q}`, part, "wrong", ["missVerdict", "help", "card"]), ...lead.slice(3), T(`Nahi, das theek nahi. ${whyAlt} ${q}`, part, "misconception", ["missVerdict", "help", "card"])];
+    const n2 = flagsOf(again, "questionFiveTimes", script);
+    assert.ok(n1.includes(8), `bare: ${n1}`);
+    assert.ok(!n0.includes(8), `with the reason: ${n0}`);
+    assert.ok(n2.includes(8), `reason said before: ${n2}`);
+  });
+  test("capBeforeOwnReason (gated) trips on a key at the named answer with its reason never said, not where it was said", () => {
+    assert.ok(!PENDING.has("capBeforeOwnReason"));
+    const key = "Yeh jawab sahi nahi hai. Is sawaal ka jawab 5 cm hai, kyunki Rahul ka hissa 60 ÷ 3 = 20 cm, Sana ka 30 ÷ 2 = 15 cm; 20 − 15 = 5. Yahan tak theek hai?";
+    assert.deepEqual(flagsOf([C("10"), T(key, part, "misconception", ["missVerdict", "key", "checkin"])], "capBeforeOwnReason", script), [1]);
+    assert.deepEqual(flagsOf([T(`Nahi. ${whyAlt}`, part, "misconception", ["missVerdict", "help"]), C("10"), T(key, part, "misconception", ["missVerdict", "key", "checkin"])], "capBeforeOwnReason", script), []);
+    assert.deepEqual(flagsOf([C("7"), T(key, part, "wrong", ["missVerdict", "key", "checkin"])], "capBeforeOwnReason", script), []);
+  });
+});

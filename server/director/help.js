@@ -401,6 +401,17 @@ export function namedReasonOf(node, last, path) {
   if (!v || typeof v !== "object" || !(v.hi || v.en)) return null;
   return { field: "whyAltHelp", path: `${path}.wrongAnswers[${k - 1}].why`, value: v, present: true, named: k };
 }
+/** to-brain 054 C3: the named wrong answer's reason the cap waits for — the card's marked whyAlt where the child's last answer there was its
+ *  named answer, or another named answer's own reason — as a rung { field, path, text, board }, where no sentence of it is said; else null. */
+export function capReasonOf(script, part, last, said = [], lang = "hinglish") {
+  if (!script || !part || !CARD_KINDS.has(part.kind) || !last) return null;
+  const node = at(script, part.path);
+  const r = ownReasonFits(node, last) && node?.whyAlt ? { field: "whyAltHelp", path: `${part.path}.whyAlt`, value: node.whyAlt } : namedReasonOf(node, last, part.path);
+  const t = r ? saidIn(r.value, lang) : null;
+  if (!t || !String(t).trim() || sentencesOf(t).some((x) => inSaid(x, said))) return null;
+  const t0 = String(t).trim();
+  return { field: r.field, path: r.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: part.board ?? null };
+}
 export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null, explain = false, boardUp = null, heldCard = false }) {
   if (!HELP_REQUESTS.includes(asked)) return null;
   const part = helpPart(script, partId);
@@ -419,6 +430,12 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   if (request === "hint" && !isCard) return null;
   // (dc-r8-director27 P3: a card closed by a right answer — its why's other wording first, as after a key; it is not keyed)
   if (request === "hint" && isCard && misses >= KEY_AFTER_MISSES) {
+    // (to-brain 054 C3, main's ruling on question 5 — director36 c6-ch07-t01 offtopic 34, c6-ch07-t03 offtopic 34: where the child's answer
+    // at the cap is the card's named wrong answer — its marked whyAlt's (ownReasonFits) or another named answer's (namedReasonOf) — and that
+    // reason is unsaid, the turn is the miss verdict, that reason and the question: one hearing more, once a card; the cap comes on the
+    // turn after, the reason then said)
+    const capReason = capReasonOf(script, part, last, said, L);
+    if (capReason) return { part: part.id, kind: part.kind, keyed: false, request, rung: capReason, board: capReason.board, card: "keep", key: null, joint: null, capReason: true };
     const key = keyLine(part, L);
     if (key) return { part: part.id, kind: part.kind, keyed: false, request, rung: null, board: key.board, card: "close", key, joint: null, missCap: misses };
   }

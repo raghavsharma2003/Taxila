@@ -3738,9 +3738,11 @@ function heardCap(prev, input, heard, said) {
     const part = cardPartOf(input.kit, { itemId: liveId });
     if (!part) return null;
     const d0 = pickHelp({ script, part, request: "hint", said, misses: KEY_AFTER_MISSES, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
-      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: prev.answerAt?.[part] ?? null });
-    if (d0?.card !== "close") return null;
+      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: col === "wrong" || col === "misconception" ? prev.answerAt?.[part] ?? null : null });
     const wrong = col === "wrong" || col === "misconception";
+    // (to-brain 054 C3: at the named wrong answer, its unsaid reason first — the miss verdict, the reason and the question; no cap this turn)
+    if (d0?.capReason && wrong) { const d = { ...d0, friend: friendOf, liveId }; return { P, noCap: true, pre: { decision: d, input: helpInput(input, d, liveId), hint: true } }; }
+    if (d0?.card !== "close") return null;
     const d = { ...d0, request: wrong ? "hint" : "give_up", friend: friendOf, liveId, heardCap: P };
     return { P, pre: { decision: d, input: helpInput(input, d, liveId), hint: true } };
   }
@@ -4232,7 +4234,7 @@ export function step(prev, input) {
   let out = tryAgain ?? (pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input));
   if (!tryAgain && !pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre);
   if (heard && out?.state) out.state.qHeard = heard;
-  if (cap?.P && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, heardCap: cap.P }; if (out.move) out.move = { ...out.move, heardCap: cap.P }; }
+  if (cap?.P && !cap.noCap && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, heardCap: cap.P }; if (out.move) out.move = { ...out.move, heardCap: cap.P }; }
   // (Brain 044: a picture asked for at an asked step is the step's picture — its caption, then the step's question again, the step still asked;
   // never a check-in inside the worked example: dry steady c6 18 once T1 moved the lesson there)
   if (input?.event === "turn" && scriptOn() && !recordedNow && prev?.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose && columnName(input0, prev) === "picture"
