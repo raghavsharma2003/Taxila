@@ -3730,7 +3730,11 @@ function waitOf(prev, input) {
   // keeps it over a try-first as over a side-topic)
   if (col === "try_first") return null;
   const yes = !col && (YES_REPLY.test(t) || (/(?<![\p{L}])(?:haan|han|yes|ji)(?![\p{L}])/iu.test(t) && !/\d/.test(t)));
-  if (!yes) return null;
+  // (d37 RULING-H item 18a: straight after the go-ahead alone, any line that is no answer, no request and no side-topic — "hmm, achha" — is
+  // the wait's turn as a bare yes is; step() reads it as "haan", the child's own words kept)
+  const ack = !yes && !col && String(prev.lastMove?.cell?.column ?? "") === "try_first" && !c.request?.type && !c.asideReply && !/\d/.test(t) && !!t
+    && [undefined, null, "no_evidence"].includes(c.outcome) && !Object.values(c.flags ?? {}).some(Boolean);
+  if (!yes && !ack) return null;
   const lm = prev.lastMove ?? {};
   if (["teachback", "wrap", "safeguard", "break"].includes(String(lm.kind ?? ""))) return null;
   const script = scriptFor(input.kit)?.script;
@@ -3742,17 +3746,21 @@ function waitOf(prev, input) {
   const aL = atQuestionOf(script, last);
   // (main's sixth ruling, item 1: the count goes on over a try-first — her go-ahead at a card held for the try, "Haan, pehle tum try karo."
   // alone, keeps the wait it came in)
-  const goAhead = prev.waitQ?.P === P && String(lm.cell?.column ?? "") === "try_first";
+  // (d37 RULING-H item 15 and item 18a: the go-ahead is "Haan, pehle tum try karo." alone and is no wait turn — the turn after it is counted
+  // as the wait would be: with no wait running, a bare yes there is wait one (never the question in full again); with one running, or her
+  // turn before the try-first a short ask or an invitation that stood for the question (RULING-B5 item 1), the count carries on from it)
+  const goAhead = String(lm.cell?.column ?? "") === "try_first";
   if (!(aL === P || aL === "?short" || endsOnYourTurn(script, last) || endsOnAnswerFirst(script, last) || goAhead)) return null;
   // (RULING-B5 item 1: a wait is counted from her turns — never two turns running with no question. Where no wait is kept at this question
   // and her turn before ended on a short ask or an invitation without saying the question, whatever led to it (a help turn that ended on
   // "Ab tum batao.", 049 B4's third-turn invitation), that turn was wait one: this turn is wait two)
-  const standIn = aL !== P;
+  const before = goAhead && aL !== P ? String((prev.recent ?? []).filter((x) => x.who === "teacher").at(-2)?.text ?? "") : null;
+  const standIn = before !== null ? (atQuestionOf(script, before) === "?short" || endsOnYourTurn(script, before) || endsOnAnswerFirst(script, before)) : aL !== P;
   const n = (prev.waitQ?.P === P ? prev.waitQ.n ?? 0 : standIn ? 1 : 0) + 1;
   // (RULING-B3: wait two never says a reask the child has just heard — where the turn that last said the question ended on its reask, wait
   // two is what wait three is)
   const lastQ = n === 2 ? (prev.recent ?? []).filter((x) => x.who === "teacher").map((x) => String(x.text ?? "")).reverse().find((x) => atQuestionOf(script, x) === P) : null;
-  return { P, n, ...(lastQ && endsOnReaskOf(script, P, lastQ) ? { reaskHeard: true } : {}) };
+  return { P, n, ...(lastQ && endsOnReaskOf(script, P, lastQ) ? { reaskHeard: true } : {}), ...(ack ? { ack: true } : {}) };
 }
 /** The columns never capped (and see capCueOf, R1: only a miss, a give-up or no answer is). Was: an answer that is not right, a give-up, a request to hear it again or in Hindi,
  *  a yes or a try-first, an aside (her turn would come back to the question). Never a picture request (director32: a picture request never
@@ -4259,6 +4267,11 @@ export function step(prev, input) {
     childOwn = { text: input0.text, cls: input0.cls };
     const { request: _rq, ...restW } = input.cls ?? {};
     input = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P, ...(wait.n >= 4 ? { waitCap: true } : {}) };
+  } else if (wait?.ack) {
+    // (d37 RULING-H item 18a: an acknowledgement straight after the go-ahead is the wait's turn — read as the bare "haan" it stands for)
+    childOwn = { text: input0.text, cls: input0.cls };
+    const { request: _rq, ...restA } = input.cls ?? {};
+    input = { ...input, text: "haan", cls: { ...restA, outcome: "no_evidence", asideReply: false } };
   }
   // (RULING-G item 2: a plain no at a comprehension check-in is read as "samajh nahi aaya" — what she says, nothing else; the child's own
   // words and cue are kept, as the wait's rewrite above keeps them)

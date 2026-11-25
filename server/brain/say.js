@@ -3563,7 +3563,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
     // (dc-r8-director28 Brain 044 T7: "let me try" at an asked step — the try-first line, then the step's question again; no step is skipped)
-    else if (!card && state.lastMove?.stepAgain && state.lastMove?.stepAsk?.prompt) { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
+    // (d37 RULING-H item 15: the step's question is not said after it — the go-ahead alone; the step stays asked, unsaid, as a card held for the try)
+    else if (!card && state.lastMove?.stepAgain && state.lastMove?.stepAsk?.prompt) { body = tryFirstLead(kit, lang, state, guard).map((x) => x.replace(/\s*[—–-]\s*$/, ".")); codeLines.push(...body); guard.reposeFrame = "selftry"; if (tail && tail === guard.stepAsk) { tail = null; guard.stepAsk = undefined; guard.cardHeldForTry = true; } }
     // v6.5 B1 (main, director13 c5-t02 offtopic 4: "2/5 aur 2/3 mein kaunsa bada hai?" with no card): in a scripted lesson, a turn
     // with no card asks no question of hers — only code's own check-in may ask
     // (the worked example's own authored question is code's, not hers: a code-rendered turn keeps it)
@@ -3801,7 +3802,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (main's 034, c4 steering 34: a give-up at a check-in is turned into a "repeat" by the walk to bring the card — the child asked for
       // nothing; she asks for the card only in her own words)
       const askedForIt = ["repeat", "which"].includes(rqNow) && /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu.test(String(childText ?? ""));
-      if (saidIn2 && rqNow === "selftry" && !missedTwice) {
+      // (d37 RULING-H item 15: every reply to a try-first at a card the child has heard is the go-ahead alone — whatever her turn before ended
+      // on and however many misses came before; was: card said in her last two turns and fewer than two misses, else the card's question,
+      // which the wait and invitation passes below turned into a short ask or an invitation after the go-ahead)
+      if (rqNow === "selftry" && (saidIn2 || posedBefore || saidBeforeNow)) {
         // (W: "ruko, main khud karti hoon" — a short go-ahead, and she waits; the card stays live, unsaid)
         tail = null; guard.cardHeldForTry = true;
         body = body.map((x) => x.replace(/\s*[—–-]\s*$/, ".")).filter((x) => !REPOSE_FRAME.test(x));

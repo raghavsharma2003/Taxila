@@ -1063,7 +1063,7 @@ Object.assign(PREDICATES, D37D_PREDICATES);
 import { D37G_PREDICATES } from "./d37g-predicates.mjs";
 Object.assign(PREDICATES, D37G_PREDICATES);
 // (d37 builder H, RULING-H item 15: every reply to a try-first is the go-ahead alone — d37h-predicates.mjs, gated)
-import { D37H_PREDICATES } from "./d37h-predicates.mjs";
+import { D37H_PREDICATES, goAheadAloneAt } from "./d37h-predicates.mjs";
 Object.assign(PREDICATES, D37H_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
@@ -1269,6 +1269,8 @@ PREDICATES.endsOnQuestion = (L, r, i, ctx) => {
   if (!(L.rows ?? []).slice(i + 1).some((x) => x.who === "child")) return null;
   const t = String(r.text ?? "").trim();
   if (!t || /[?？]\s*$/.test(t)) return null;
+  // (d37 RULING-H item 15: the go-ahead alone answering a try-first — "Haan, pehle tum try karo." — is theirs to answer, at a card or a step)
+  if (goAheadAloneAt(L, r, i)) return null;
   // (Brain 049 B4: the third turn running at one question ends on the script's invitation, joints.yourTurn — an allowed ending, read where it
   // stands by d32's yourTurnNotThird)
   if (endsOnYourTurn(ctx?.script ?? null, t)) return null;

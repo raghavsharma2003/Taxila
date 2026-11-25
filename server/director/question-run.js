@@ -244,12 +244,16 @@ export function yourTurnPass(prev, out, script, childText = "") {
   }
   { const col = String(lm.cell?.column ?? "");
     const qT = lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null;
-    const a0 = (col === "try_first" || col === "yes") && qT && lm.kind !== "teachback" ? atQuestionOf(script, qT) : null;
+    // (d37 RULING-H item 15: a try-first is answered with the go-ahead alone — no short ask, no invitation is set on its turn; the bare yes
+    // after that go-ahead is the wait's first turn, state.js waitOf: the short ask)
+    // (item 18a: an acknowledgement straight after the go-ahead — "hmm, achha", recorded as said, column "other" — is the wait's first turn too)
+    const a0 = (col === "yes" || (lm.waitN === 1 && String(pl0.cell?.column ?? "") === "try_first")) && qT && lm.kind !== "teachback" ? atQuestionOf(script, qT) : null;
     const P = a0 && a0 !== "?short" ? a0 : null;
     const her = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
     const last = her.at(-1) ?? "";
     const aL = P ? atQuestionOf(script, last) : null;
-    if (P && (aL === P || aL === "?short" || endsOnYourTurn(script, last) || endsOnAnswerFirst(script, last))) {
+    const goAheadLast = String(pl0.cell?.column ?? "") === "try_first";
+    if (P && (aL === P || aL === "?short" || endsOnYourTurn(script, last) || endsOnAnswerFirst(script, last) || goAheadLast)) {
       const lang = s.ctx?.lang === "english" ? "english" : "hinglish";
       const forms = yourTurnForms(script, lang);
       const second = !!pl0.waitShort || endsOnShortAsk(script, last) || runOfTwo(script, her.slice(-2), P) === P;

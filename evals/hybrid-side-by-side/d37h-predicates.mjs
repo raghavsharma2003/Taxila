@@ -33,6 +33,10 @@ export function goAheadOf(t) {
 }
 const ENDS = (r) => ["safeguard", "goodbye"].includes(String(r?.move ?? "")) || (r?.seams ?? []).some((x) => ["goodbye", "stopLine", "tiredBye", "safety"].includes(x.right));
 
+/** RULING-H item 15's one reading change: a turn that is exactly the go-ahead answering a try-first is not "a turn with no question" for a gated
+ *  check that would otherwise demand a question or an invitation of it (named where it is read: endsOnQuestion, stepTryFirst). */
+export const goAheadAloneAt = (L, r, i) => r?.who === "teacher" && i > 0 && L.rows?.[i - 1]?.who === "child" && isTryFirst(L.rows[i - 1].text) && goAheadOf(r.text)?.rest === "";
+
 export const D37H_PREDICATES = {
   tryFirstNotAlone(L, r, i) {
     if (r.who !== "teacher" || i < 1) return null;

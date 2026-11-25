@@ -30,6 +30,7 @@
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
+import { goAheadAloneAt } from "./d37h-predicates.mjs";
 import { partStartOf, helpOtherFigure, reaskNoFormAt } from "./d30-predicates.mjs";
 import { newPointBeforeCheckin, REPLY_SEAMS } from "./d37a-predicates.mjs";
 
@@ -135,6 +136,8 @@ export const D29_PREDICATES = {
     if (!ask || String(ctx.prevIntent ?? "") !== "try_first" && !/selftry/.test(String(ctx.prevRead ?? ""))) return null;
     // (Brain 049 B1: the step's question may come in its other authored wording — the reask — not the sentence said the turn before)
     if ((r.pageParts ?? []).some((p) => p.part === "stepAsk")) return null;
+    // (d37 RULING-H item 15: every reply to a try-first is the go-ahead alone — the step stays asked, unsaid; d37h-predicates.mjs)
+    if (goAheadAloneAt(L, r, i)) return null;
     // (to-brain 053 B2: try-first at a step just asked is waited on — the short ask, never the step whole again)
     // (narrowly: the wait's own shapes — the short ask, the invitation; a turn that asks some other question is still read: director28 stuck c4 28)
     if ((r.seams ?? []).some((x) => ["reaskShort", "yourTurn"].includes(x.right) || ["reaskShort", "yourTurn"].includes(x.joint))) return null;
