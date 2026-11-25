@@ -217,10 +217,7 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
     case "your_step": { const wb = boardAt(script, `${part.worked}.board`) ?? part.board;
       // (Brain 049 B3: a problem restated is not help at the child's own step — problemAlt is said at an asked step only; c4 stuck 46, c5-t02
       // stuck 36, offtopic 24, c4-ch01 stuck 36, 38 restated the problem to a child giving the same wrong answer)
-      // (to-brain 054 C4 — director36 c5-t03 stuck 32, c6-ch07-t03 stuck 40, c5-t01 stuck 40: help at an own step is the step's — its own
-      // simpler, then its key (C1); the worked problem's simpler, written about the problem, is not said there)
-      void wb;
-      rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break; }
+      rungs = [rung("simpler", `${part.path}.simpler`, part.board), rung("simpler", `${part.worked}.simpler`, wb)]; break; }
     // (a worked step: its own simpler, then the worked problem's ladder — problemAlt, simpler (Brain 039 A2: "a worked problem or step:
     // problemAlt, simpler"). Main's R3 on the merged tree, c5-t01 stuck 44: a step's ladder of one rung left a second "samajh nahi aaya"
     // on the step with nothing — the walk went on to the your-step card unhelped while the problem's two other wordings were unsaid)
@@ -233,11 +230,9 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
   }
   return rungs;
 }
-/** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole).
- *  (RULING-C2 item 5: your_step as to-brain 054 C4 built it — the step's own simpler, then the key. then_card as at a23e5c45d: C5 is
- *  undone, main's third ruling on cause C item 1) */
+/** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole). */
 export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], checkin: ["pointAlt", "simpler"], card: ["ask.simpler", "pointAlt", "simpler"], check: ["simpler"],
-  then_card: ["simpler", "sayAlt", "simpler"], your_step: ["simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
+  then_card: ["simpler", "sayAlt", "simpler"], your_step: ["simpler", "simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
 
 /** The script-level joints help needs that a script lacks (Learning 014): helpSpent, afterKeyGoOn; and a hindiSwitch whose forms still
  *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */

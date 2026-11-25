@@ -10,7 +10,9 @@
 //                       (RULING-C2 item 2), GATED; teachbackKeyValueTwice reads the teach-back's, pending.
 //   capBeforeOwnReason  C3: a key at a card where the child's answer was the card's named wrong answer (`wrongIfMis` with `whyAltAsHelp`, or a
 //                       `wrongAnswers` entry with its `why`) and that answer's reason was never said at the card.
-//   ownStepWorkedHelp   C4: help at an own step (her turn's cell at the your-step) that says the worked problem's `simpler`.
+//   ownStepWorkedHelp   C4: help at an own step (her turn's cell at the your-step) that says the worked problem's `simpler`. PENDING
+//                       (main's fourth ruling on cause C, item 1: C4 undone): a count of rows for Learning to read, an own step that needs
+//                       a second wording of its own, or a worked problem's wording that is about one step.
 //   thenHelpOtherBoard  C5: help at a follow-up card (her turn's cell at a remediation's `then`) that says that remediation's `sayAlt` or
 //                       `simpler` — a remediation's wording is written about its own board. PENDING (main's third ruling on cause C, item 1:
 //                       C5 undone): a count of rows for Learning to read, a remediation wording untrue of its follow-up card.

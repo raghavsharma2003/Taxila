@@ -122,20 +122,26 @@ describe("C3: at the cap, the named wrong answer's unsaid reason first — the m
   });
 });
 
-describe("C4: help at an own step is the step's simpler, then the key — never the worked problem's simpler", () => {
-  for (const TOPIC of ["c5-maths-ch02-t01", "c6-maths-ch06-t01", "c6-maths-ch07-t01"]) {
+// (main's fourth ruling on cause C, item 1: C4 is UNDONE — the own step's ladder is exactly as at a23e5c45d: the step's simpler, then the
+// worked problem's simpler, then the key (C1's: the step's own key with its own reason). wr-c2: stuck c5-ch02-t02 46, the worked problem's
+// wording about Sana and Rahul is about the very problem the step belongs to. ownStepWorkedHelp is a pending count for Learning)
+describe("C4 undone (RULING-C4 item 1): help at an own step is the step's simpler, then the worked problem's simpler, then the key", () => {
+  for (const TOPIC of ["c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c6-maths-ch07-t01"]) {
     const script = scriptOf(TOPIC), sk = script.skills[0], part = `${sk.skillId}:worked:yourStep`;
-    test(`${TOPIC}: a give-up gets yourStep.simpler; with it said, the key (not workedExample.simpler)`, () => {
+    test(`${TOPIC}: a give-up gets yourStep.simpler, then workedExample.simpler, then the key`, () => {
+      const ys = sk.workedExample.yourStep.simpler.hi, ws = sk.workedExample.simpler.hi;
       const d1 = pickHelp({ script, part, request: "give_up", said: [] });
-      assert.equal(nk(d1.rung.text), nk(sk.workedExample.yourStep.simpler.hi));
-      const d2 = pickHelp({ script, part, request: "give_up", said: addSaid([], sk.workedExample.yourStep.simpler.hi, 1) });
-      assert.equal(d2.card, "close", JSON.stringify(d2.rung));
-      assert.ok(d2.key);
+      assert.equal(nk(d1.rung.text), nk(ys));
+      const d2 = pickHelp({ script, part, request: "give_up", said: addSaid([], ys, 1) });
+      assert.equal(nk(d2.rung?.text), nk(ws), JSON.stringify(d2.rung));
+      const d3 = pickHelp({ script, part, request: "give_up", said: addSaid(addSaid([], ys, 1), ws, 2) });
+      assert.equal(d3.card, "close", JSON.stringify(d3.rung));
+      assert.ok(d3.key);
     });
   }
-  test("ownStepWorkedHelp (gated) trips on the worked problem's simpler said at the your-step, not on the step's own", () => {
+  test("ownStepWorkedHelp is PENDING (a count for Learning); it still reads the worked problem's simpler at the your-step, not the step's own", () => {
     const script = scriptOf("c5-maths-ch02-t01"), sk = script.skills[0], part = `${sk.skillId}:worked:yourStep`;
-    assert.ok(!PENDING.has("ownStepWorkedHelp"));
+    assert.ok(PENDING.has("ownStepWorkedHelp"));
     assert.deepEqual(flagsOf([C("1/3 km"), T(`Nahi. ${sk.workedExample.simpler.hi} Ab tum batao.`, part, "wrong", ["missVerdict", "help", "yourTurn"])], "ownStepWorkedHelp", script), [1]);
     assert.deepEqual(flagsOf([C("1/3 km"), T(`Nahi. ${sk.workedExample.yourStep.simpler.hi} Ab tum batao.`, part, "wrong", ["missVerdict", "help", "yourTurn"])], "ownStepWorkedHelp", script), []);
   });
@@ -345,13 +351,13 @@ describe("RULING-C2 item 2: C2, the key said as its why alone where the why name
   });
 });
 
-// RULING-C2 item 5: LADDER_FIELDS lists the help fields the ladder uses for your_step (C4); then_card is back as at a23e5c45d (RULING-C3
-// item 1: C5 undone).
-describe("RULING-C2 item 5 / RULING-C3 item 1: LADDER_FIELDS names the then-card's and the your-step's ladders as built", async () => {
+// RULING-C2 item 5: LADDER_FIELDS lists the help fields the ladder uses; then_card and your_step are back as at a23e5c45d (RULING-C3
+// item 1: C5 undone; RULING-C4 item 1: C4 undone).
+describe("RULING-C2 item 5 / RULING-C3 item 1 / RULING-C4 item 1: LADDER_FIELDS names the then-card's and the your-step's ladders as built", async () => {
   const { LADDER_FIELDS, ladderSpec, helpPart } = await import("../server/director/help.js");
-  test("then_card: its simpler, the remediation's sayAlt and simpler; your_step: its own simpler only — the fields ladderSpec gives on three scripts", () => {
+  test("then_card: its simpler, the remediation's sayAlt and simpler; your_step: its own simpler, then the worked problem's — the fields ladderSpec gives on three scripts", () => {
     assert.deepEqual(LADDER_FIELDS.then_card, ["simpler", "sayAlt", "simpler"]);
-    assert.deepEqual(LADDER_FIELDS.your_step, ["simpler"]);
+    assert.deepEqual(LADDER_FIELDS.your_step, ["simpler", "simpler"]);
     for (const t of ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c6-maths-ch06-t01"]) {
       const sc = scriptOf(t), S = sc.skills[0].skillId;
       for (const [id, kind] of [[`${S}:rem:0:then`, "then_card"], [`${S}:worked:yourStep`, "your_step"]]) {
