@@ -3661,8 +3661,13 @@ function waitOf(prev, input) {
   const c = input.cls ?? {};
   if (c.flags?.distress || c.flags?.wantsToStop) return null;
   const col = columnName(input, prev), t = String(input.text ?? "").trim();
+  // (main's sixth ruling on cause B, item 1: a try-first is a request and is always answered as one — "Haan, pehle tum try karo." with the
+  // short ask or the invitation after it, as before cause B (question-run.js yourTurnPass), wherever it comes: never help, the told step or
+  // the key in its place, and never counted as a turn with no answer. The wait's count goes on from the turns before and after it: step()
+  // keeps it over a try-first as over a side-topic)
+  if (col === "try_first") return null;
   const yes = !col && (YES_REPLY.test(t) || (/(?<![\p{L}])(?:haan|han|yes|ji)(?![\p{L}])/iu.test(t) && !/\d/.test(t)));
-  if (col !== "try_first" && !yes) return null;
+  if (!yes) return null;
   const lm = prev.lastMove ?? {};
   if (["teachback", "wrap", "safeguard", "break"].includes(String(lm.kind ?? ""))) return null;
   const script = scriptFor(input.kit)?.script;
@@ -3672,7 +3677,10 @@ function waitOf(prev, input) {
   if (!P) return null;
   const last = String((prev.recent ?? []).filter((x) => x.who === "teacher").at(-1)?.text ?? "");
   const aL = atQuestionOf(script, last);
-  if (!(aL === P || aL === "?short" || endsOnYourTurn(script, last) || endsOnAnswerFirst(script, last))) return null;
+  // (main's sixth ruling, item 1: the count goes on over a try-first — her go-ahead at a card held for the try, "Haan, pehle tum try karo."
+  // alone, keeps the wait it came in)
+  const goAhead = prev.waitQ?.P === P && String(lm.cell?.column ?? "") === "try_first";
+  if (!(aL === P || aL === "?short" || endsOnYourTurn(script, last) || endsOnAnswerFirst(script, last) || goAhead)) return null;
   // (RULING-B5 item 1: a wait is counted from her turns — never two turns running with no question. Where no wait is kept at this question
   // and her turn before ended on a short ask or an invitation without saying the question, whatever led to it (a help turn that ended on
   // "Ab tum batao.", 049 B4's third-turn invitation), that turn was wait one: this turn is wait two)
@@ -4458,7 +4466,7 @@ export function step(prev, input) {
   // (to-brain 054 B: the wait's count, kept on the state — a side-topic keeps it, any other turn ends it — and this turn's place in it on
   // the move, for yourTurnPass; never carried to the next move)
   if (input?.event === "turn" && out?.state && scriptOn() && !recordedNow) {
-    const keep = !wait && prev?.waitQ && ["aside", "aside_reply"].includes(String(columnName(input0, prev) ?? ""));
+    const keep = !wait && prev?.waitQ && ["aside", "aside_reply", "try_first"].includes(String(columnName(input0, prev) ?? ""));
     if (wait) out.state.waitQ = wait; else if (!keep) delete out.state.waitQ;
     const strip = (m) => { if (!m || typeof m !== "object" || !("waitN" in m || "waitP" in m)) return m; const { waitN: _n, waitP: _p, waitGive: _g, ...o } = m; return o; };
     out.state.lastMove = strip(out.state.lastMove);

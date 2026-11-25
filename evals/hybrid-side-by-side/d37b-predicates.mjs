@@ -32,6 +32,17 @@ const qKey = (t) => low(String(t ?? "").replace(/\{\w+\}/g, ` ${SLOT} `)).replac
 const sentencesOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+/).filter(Boolean);
 /** A wait turn's cue: the child's line before it read try-first or a bare yes. */
 const waitCue = (r) => ["try_first", "yes"].includes(String(r?.cell?.column ?? ""));
+/** Main's sixth ruling on cause B, item 1: a try-first is a request, answered as one ("Haan, pehle tum try karo."), never a turn of a wait;
+ *  the wait's count goes on from the turns before and after it (state.js waitOf). Her turn on a try-first is passed over, as a side-topic's. */
+const tryCue = (r) => String(r?.cell?.column ?? "") === "try_first";
+/** Whether her turn at row k, on a try-first, is passed over inside a wait: it stands for the question (a short ask or an invitation after
+ *  the go-ahead), or it is the go-ahead alone at a card held for the try with a wait turn before it (the count goes on, waitOf's goAhead). */
+function tryPassed(L, k, script) {
+  if (!tryCue(L.rows[k])) return false;
+  let b = prevTeacher(L, k);
+  while (b >= 0 && ((asideTurn(L.rows[b]) && !waitCue(L.rows[b])) || tryCue(L.rows[b]))) b = prevTeacher(L, b);
+  return b >= 0 && waitCue(L.rows[b]) && !seamsOf(L.rows[b]).some((x) => ENDS.has(x)) && !L.rows[b].heardCap;
+}
 /** Seams that end a question: its key or its told step (the cap, or help spent). */
 const ENDS = new Set(["key", "workedStep"]);
 const seamsOf = (r) => (r?.seams ?? []).map((x) => x.right);
@@ -46,7 +57,7 @@ function posesAt(L, j, script) {
   const a = atQuestionOf(script, L.rows[j].text);
   if (!a || a === "?short") return false;
   let k = prevTeacher(L, j);
-  while (k >= 0 && asideTurn(L.rows[k]) && !waitCue(L.rows[k])) k = prevTeacher(L, k);
+  while (k >= 0 && ((asideTurn(L.rows[k]) && !waitCue(L.rows[k])) || tryPassed(L, k, script))) k = prevTeacher(L, k);
   if (k < 0) return true;
   const t = L.rows[k].text;
   return !(atQuestionOf(script, t) === a || standsFor(script, t) || waitCue(L.rows[k]));
@@ -55,13 +66,17 @@ function posesAt(L, j, script) {
  *  teacher rows in order (side-topic turns passed over) — or null where row i is no wait turn. */
 export function waitAt(L, i, script) {
   const r = L.rows[i];
-  if (!script || r?.who !== "teacher" || !waitCue(r)) return null;
+  // (sixth ruling, item 1: her turn on a try-first is no wait turn; a turn that poses its question afresh is where a wait starts, not one of its
+  // turns — after the go-ahead alone at a card held for the try, with no wait before it, the card said again is no wait turn: waitOf's)
+  if (!script || r?.who !== "teacher" || !waitCue(r) || tryCue(r) || posesAt(L, i, script)) return null;
   const turns = [i];
   let j = prevTeacher(L, i);
   for (; j >= 0; j = prevTeacher(L, j)) {
     const y = L.rows[j];
-    if (waitCue(y) && !seamsOf(y).some((k) => ENDS.has(k)) && !posesAt(L, j, script)) { turns.unshift(j); continue; }
+    if (waitCue(y) && !tryCue(y) && !seamsOf(y).some((k) => ENDS.has(k)) && !posesAt(L, j, script)) { turns.unshift(j); continue; }
     if (asideTurn(y) && !waitCue(y)) continue;
+    // (sixth ruling, item 1: a try-first's turn is passed over — the count goes on from the turns before and after it)
+    if (tryCue(y)) continue;
     break;
   }
   // (the question: the last her turns said at or before the turn before the wait — a short ask or an invitation stands for it)
@@ -78,7 +93,12 @@ export function waitAt(L, i, script) {
   const at = turns.slice(from);
   // (RULING-B5 item 1: a wait is counted from her turns — her turn before the child's first cue, where it ended on a short ask or an
   // invitation without saying the question (a help turn that ended on "Ab tum batao.", 049 B4's third-turn invitation), is wait one)
-  if (!from && at.length && j >= 0 && !waitCue(L.rows[j]) && standsFor(script, L.rows[j].text) && [null, "?short"].includes(atQuestionOf(script, L.rows[j].text))) at.unshift(j);
+  // (sixth ruling, item 1: her turn on a try-first right before the wait's first turn, where it stands for the question without saying it, is
+  // that wait one — waitOf reads her last turn — and is no wait turn itself)
+  const k0 = at.length ? prevTeacher(L, at[0]) : -1;
+  const tryOne = !from && k0 >= 0 && tryCue(L.rows[k0]) && standsFor(script, L.rows[k0].text) && [null, "?short"].includes(atQuestionOf(script, L.rows[k0].text));
+  if (tryOne) at.unshift(k0);
+  else if (!from && at.length && j >= 0 && !waitCue(L.rows[j]) && standsFor(script, L.rows[j].text) && [null, "?short"].includes(atQuestionOf(script, L.rows[j].text))) at.unshift(j);
   return at.length && at.at(-1) === i ? { P, turns: at } : null;
 }
 /** Whether row i is the wait's re-ask: the wait's second turn, ending on the question's own `reask`. */
@@ -116,9 +136,14 @@ function waitRowOf(L, i, script) {
   if (w) return { n: w.turns.length, P: w.P, first: w.turns[0] };
   // (only a turn that ends the wait — the step told or the key — is read by the turn before it: a turn after it starts afresh)
   const r = L.rows[i];
-  if (!waitCue(r) || !(r.stepAnswer?.told || seamsOf(r).some((k) => ENDS.has(k)))) return null;
+  if (!waitCue(r) || tryCue(r) || !(r.stepAnswer?.told || seamsOf(r).some((k) => ENDS.has(k)))) return null;
   let j = prevTeacher(L, i);
-  while (j >= 0 && asideTurn(L.rows[j]) && !waitCue(L.rows[j])) j = prevTeacher(L, j);
+  while (j >= 0 && ((asideTurn(L.rows[j]) && !waitCue(L.rows[j])) || tryPassed(L, j, script))) j = prevTeacher(L, j);
+  // (sixth ruling, item 1: her turn on a try-first that stands for the question with no wait before it is wait one — waitOf's stand-in)
+  if (j >= 0 && tryCue(L.rows[j])) {
+    const P0 = standsFor(script, L.rows[j].text) && [null, "?short"].includes(atQuestionOf(script, L.rows[j].text)) ? stoodFor(L, j, script) : null;
+    return P0 ? { n: 2, P: P0, first: j } : null;
+  }
   const p = j >= 0 ? waitAt(L, j, script) : null;
   return p ? { n: p.turns.length + 1, P: p.P, first: p.turns[0] } : null;
 }
