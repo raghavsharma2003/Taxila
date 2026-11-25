@@ -211,10 +211,11 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
     case "check": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
     // (dc-r8-director29 Brain 045 P3: a remediation's unsaid wordings are help for its follow-up card — the card's own hint, then the
     // remediation's sayAlt, then its simpler, each over its own board: c5-t01 steady 88, stuck 42; c6 steady 8, 90, stuck 42, 76)
-    // (to-brain 054 C5, main's ruling on question 4 — director36 c4 stuck 32: at a follow-up card help is the card's own simpler, then the key.
-    // A remediation's wordings are written about the remediation's board (ruling 1 of round d36): over the card's board they can be untrue,
-    // and on their own board at the card they were heard as the wrong picture)
-    case "then_card": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
+    // (to-brain 054 C5 is UNDONE, main's third ruling on cause C item 1: the ladder is as at a23e5c45d — the card's simpler, then the
+    // remediation's sayAlt and simpler on the remediation's board, then the key. stuck c6-ch06-t01 44 to 52: two of the remediation's wordings
+    // reached a child that C5 keyed after one hint. d37c's thenHelpOtherBoard stays a pending count for Learning)
+    case "then_card": { const rp = String(part.path).replace(/\.then$/, ""); const rb = boardAt(script, `${rp}.board`) ?? part.board;
+      rungs = [rung("simpler", `${part.path}.simpler`, part.board), ...(rp !== part.path ? [rung("sayAlt", `${rp}.sayAlt`, rb), rung("simpler", `${rp}.simpler`, rb)] : [])]; break; }
     // (dc-r8-director27 P3: the worked example's own step is the worked example's — its wordings follow the step's own)
     case "your_step": { const wb = boardAt(script, `${part.worked}.board`) ?? part.board;
       // (Brain 049 B3: a problem restated is not help at the child's own step — problemAlt is said at an asked step only; c4 stuck 46, c5-t02
@@ -236,9 +237,10 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
   return rungs;
 }
 /** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole).
- *  (RULING-C2 item 5: then_card and your_step as to-brain 054 C5 and C4 built them — the card's or the step's own simpler, then the key) */
+ *  (RULING-C2 item 5: your_step as to-brain 054 C4 built it — the step's own simpler, then the key. then_card as at a23e5c45d: C5 is
+ *  undone, main's third ruling on cause C item 1) */
 export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], checkin: ["pointAlt", "simpler"], card: ["ask.simpler", "pointAlt", "simpler"], check: ["simpler"],
-  then_card: ["simpler"], your_step: ["simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
+  then_card: ["simpler", "sayAlt", "simpler"], your_step: ["simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
 
 /** The script-level joints help needs that a script lacks (Learning 014): helpSpent, afterKeyGoOn; and a hindiSwitch whose forms still
  *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */

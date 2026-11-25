@@ -36,16 +36,9 @@ describe("A: a second picture request", () => {
   });
   // (the eighth bare turn, steering c6-ch07-t03 16, is not read: every wording of its ladder is said by help.js's own reading — a sentence
   // near one said is said — so A3 has nothing to add there; the line and the invitation is what A3 leaves when all are spent)
-  // (re-pinned by name, to-brain 054 C5 — main's ruling on question 4, order C.4 and RULING-C2 item 4: at a follow-up card help is the card's
-  // own simpler, then the key; the remediation's sayAlt and simpler are no rungs of its ladder. The old pin guarded "a bare no-picture turn
-  // with a wording of the card's ladder unsaid"; five of its seven rows (steering 16 of c4-ch05-t01, c4-ch06-t01, c5-t01, c5-t02, c6-ch06-t01)
-  // are follow-up cards whose own simpler was said, so only the remediation's wordings were unsaid there — under C5 their ladder is spent and
-  // the line and the invitation is what A3 leaves. noPictureBare still guards the two whose own ladder had a wording unsaid; d37c's
-  // thenHelpOtherBoard guards the remediation's wordings said at a follow-up card)
-  test("noPictureBare reads director34's bare no-picture turns (the line and the invitation, a wording of the card's own ladder unsaid): two", () => {
-    assert.deepEqual(flaggedAll("noPictureBare"), ["offtopic c4-maths-ch01-t02 26", "steering c6-maths-ch07-t01 16"].sort());
-    for (const x of ["steering c4-maths-ch05-t01 16", "steering c4-maths-ch06-t01 16", "steering c5-maths-ch02-t01 16", "steering c5-maths-ch02-t02 16", "steering c6-maths-ch06-t01 16"])
-      assert.ok(!flaggedAll("noPictureBare").includes(x), x);
+  test("noPictureBare reads director34's bare no-picture turns (the line and the invitation, a wording unsaid): seven of the eight", () => {
+    assert.deepEqual(flaggedAll("noPictureBare"), ["offtopic c4-maths-ch01-t02 26", "steering c4-maths-ch05-t01 16", "steering c4-maths-ch06-t01 16", "steering c5-maths-ch02-t01 16",
+      "steering c5-maths-ch02-t02 16", "steering c6-maths-ch06-t01 16", "steering c6-maths-ch07-t01 16"].sort());
   });
   // (re-pinned for release 61: those four hints were said over the card's own posing board — a board to say them over, not one they own. No
   // hint in director34's scripts owns a board, so the line with the hint in words was A3's right answer there; director35 heard the old
@@ -82,22 +75,13 @@ describe("A: a second picture request", () => {
     assert.equal(d.pictureLine?.text, s.joints.noPicture[0].hi);
     assert.match(d.rung.text, /^4 ke nishaan/);
   });
-  // (re-pinned by name, to-brain 054 C5 / RULING-C2 item 4: the old pin said the remediation's simpler (remediation[2].simpler) at steering
-  // c5-t01 16, a follow-up card; C5 takes it off that card's ladder — there the first noPicture form comes with no wording (its own simpler
-  // was said), and A3's first unsaid wording is the card's own simpler where it is unsaid (steering c6-ch07-t01 16). thenHelpOtherBoard
-  // guards the remediation's wording in the walk)
-  test("A3: nothing to draw — the script's FIRST noPicture form, then the first unsaid wording of the card's own ladder in words (C5)", () => {
-    { const { rows, script } = lesson("steering", "c6-maths-ch07-t01");
-      const d = pickHelp({ script, ...at(rows, 16), request: "picture", said: saidTo(rows, 16), jointN: { noPicture: 2 }, lessonKey: "x" });
-      assert.ok(!d.hintBoard);
-      assert.equal(d.pictureLine.text, script.joints.noPicture[0].hi);
-      assert.equal(d.rung.path, "skills[0].remediation[0].then.simpler");
-      assert.equal(d.card, "keep");
-      assert.equal(d.key, null); }
+  test("A3: nothing to draw — the script's FIRST noPicture form, then the first unsaid wording in words (steering c5-t01 16 as walked)", () => {
     const { rows, script } = lesson("steering", "c5-maths-ch02-t01");
     const d = pickHelp({ script, ...at(rows, 16), request: "picture", said: saidTo(rows, 16), jointN: { noPicture: 2 }, lessonKey: "x" });
+    assert.ok(!d.hintBoard);
     assert.equal(d.pictureLine.text, script.joints.noPicture[0].hi);
-    assert.ok(!/remediation\[\d+\]\.(?:sayAlt|simpler)$/.test(String(d.rung?.path ?? "")), String(d.rung?.path));
+    assert.equal(d.rung.path, "skills[0].remediation[2].simpler");
+    assert.equal(d.card, "keep");
     assert.equal(d.key, null);
     assert.equal(noPictureLine(script, { first: true, lang: "english" }).text, script.joints.noPicture[0].en);
   });

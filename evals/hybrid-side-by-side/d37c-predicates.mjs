@@ -9,7 +9,8 @@
 //                       `wrongAnswers` entry with its `why`) and that answer's reason was never said at the card.
 //   ownStepWorkedHelp   C4: help at an own step (her turn's cell at the your-step) that says the worked problem's `simpler`.
 //   thenHelpOtherBoard  C5: help at a follow-up card (her turn's cell at a remediation's `then`) that says that remediation's `sayAlt` or
-//                       `simpler` — a remediation's wording is written about its own board.
+//                       `simpler` — a remediation's wording is written about its own board. PENDING (main's third ruling on cause C, item 1:
+//                       C5 undone): a count of rows for Learning to read, a remediation wording untrue of its follow-up card.
 // And C3's re-pin, by name (main's ruling on question 5):
 //   questionFiveTimes   (053 B3, gated, as d35a's) allows a fifth hearing only on a turn whose body is the card's named wrong answer's reason
 //                       (its marked whyAlt, or that answer's wrongAnswers why) said for the first time at that card, the child's line before
