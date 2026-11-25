@@ -279,11 +279,12 @@ export const asideAgainLine = (topic, lang = "hinglish", state = null, kit = nul
   }
   return freshForm(ASIDE_AGAIN[lang === "english" ? "english" : "hinglish"], state, t);
 };
-/** to-brain 054 D3: the child answered a question of hers asking what they like in it (her turn's last question, ASKS_LIKE_Q; their next line). */
+/** to-brain 054 D3: the child told what they like in it — their line, saying a liking ("batting sabse achhi lagti hai"), answered a question of
+ *  hers asking what they like (her turn's last question, ASKS_LIKE_Q). */
 export function likeToldBefore(state) {
   const rs = (state?.recent ?? []).slice(0, -1);
   for (let i = 1; i < rs.length; i++) {
-    if (rs[i].who === "teacher" || rs[i - 1].who !== "teacher" || !String(rs[i].text ?? "").trim()) continue;
+    if (rs[i].who === "teacher" || rs[i - 1].who !== "teacher" || !ASKS_LIKE_Q.test(String(rs[i].text ?? ""))) continue;
     const q = String(rs[i - 1].text ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+/).filter((x) => /[?？]\s*$/.test(x)).at(-1) ?? "";
     if (ASKS_LIKE_Q.test(q)) return true;
   }
