@@ -205,12 +205,20 @@ describe("B3 after main's R1 and R2: the cap is on her own repeats", async () =>
     const { lm } = fifth(card, ...WRONG, SHORT_ASK_FORMS[0]);
     assert.equal(lm.heardCap, undefined); assert.ok(!lm.gave);
   });
-  test("at an asked step: Hindi and repeat requests are honoured, a bare haan waits; the step is never told", () => {
+  // (re-pinned for to-brain 054 B.4, main's ruling on question 3: a bare haan that starts a wait waits — the short ask, the step not told;
+  // at a wait's third turn or later the fifth hearing is the cap as built, and the step is told on that turn only)
+  test("at an asked step: Hindi and repeat requests are honoured, a bare haan waits; the step is told only by the cap at a wait's third turn or later", () => {
     for (const cue of [HINDI, REPEAT, HAAN]) {
       const { lm } = fifth(stepS, ...cue);
       assert.equal(lm.heardCap, undefined, cue[0]); assert.ok(!lm.stepFrom, cue[0]); assert.ok(lm.stepAsk?.prompt, cue[0]);
     }
     assert.ok(fifth(stepS, ...HAAN).lm.waitShort);
+    const q = stepS.lastMove.stepAsk.prompt, P = atQuestionOf(script, q);
+    const at = (n) => step({ ...stepS, qHeard: { [P]: 3 }, waitQ: { P, n }, recent: [...(stepS.recent ?? []), { who: "teacher", text: q }] },
+      { event: "turn", kit, text: "haan", cls: { confidence: 0.9, flags: {}, outcome: "no_evidence" }, now: (stepS.turn + 1) * 20_000 }).state.lastMove ?? {};
+    const w2 = at(1), w3 = at(2);
+    assert.equal(w2.heardCap, undefined); assert.ok(!w2.stepFrom); assert.equal(w2.waitN, 2);
+    assert.equal(w3.heardCap, P); assert.ok(w3.stepFrom != null); assert.equal(w3.waitN, 3);
   });
   test("at an asked step: after a miss, or a give-up, the fifth hearing tells the step", () => {
     for (const cue of [WRONG, GIVE_UP]) {

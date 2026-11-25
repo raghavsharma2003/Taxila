@@ -154,3 +154,34 @@ describe("B.5: waitNoQuestion and waitSecondNotReask", async () => {
     assert.deepEqual(flags(helped, "waitNoQuestion"), []);
   });
 });
+
+// B.4: the re-pins, by name, for exactly the turns the ruling names; each read as before everywhere else.
+describe("B.4: questionThreeRunning exempts the wait's re-ask; stepToldEarly exempts the cap's turn at a wait", async () => {
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const { readFileSync } = await import("node:fs");
+  const { questionObjectAt } = await import("../server/director/question-run.js");
+  const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c4-maths-ch05-t01.json", import.meta.url), "utf8"));
+  const P = ".skills[0].workedExample.steps[0].ask";
+  const ask = questionObjectAt(script, P);
+  const prompt = norm(ask.prompt.hi), reask = norm(ask.reask.hi);
+  const sx = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
+  const T = (text, column, seams, extra = {}) => ({ who: "teacher", text, cell: { part: "c4-maths-ch05-t01-s1:worked:step1:ask", column }, seams: sx(...seams), ...extra });
+  const C = (text) => ({ who: "child", text });
+  const HELP = "Khaane se pehle wali poori barfi yaad karo, jab ek bhi tukda khaya nahi gaya tha.";
+  const asked = T(`Aao, agla sawaal main aur tum saath mein karenge. ${prompt}`, "right", ["verdict", "workedProblem", "stepAsk"]);
+  const short = T(`Haan, pehle tum try karo. ${SHORT_ASK_FORMS[0]}`, "try_first", ["tryFirst", "reaskShort"]);
+  const flags = (rows, name) => lessonFlags({ rows, script }).filter((f) => f.predicate === name).map((f) => f.row);
+  test("questionThreeRunning: wait three's help after the wait's re-ask passes; the same help after a re-ask that is no wait's is still flagged", () => {
+    const wait = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan"), T(`${HELP} ${prompt}`, "yes", ["help", "stepAsk"])];
+    assert.deepEqual(flags(wait, "questionThreeRunning"), []);
+    const old = [asked, C("pata nahi"), T(`${HELP} ${reask}`, "give_up", ["help", "stepAsk"]), C("pata nahi"), T(`Neeche wala number poori barfi ki baat karta hai. ${prompt}`, "give_up", ["help", "stepAsk"])];
+    assert.deepEqual(flags(old, "questionThreeRunning"), [4]);
+  });
+  test("stepToldEarly: the step told on the cap's turn at a wait passes; a step told after a bare yes with no cap is still flagged", () => {
+    const told = (extra) => T("Neeche wala number saare tukde ginta hai, yaani 5. Tumhari baari: plate par bache tukde poori barfi ka kaunsa fraction hain?", "yes",
+      ["workedStep", "card"], { stepAnswer: { beat: "c4-maths-ch05-t01-s1:worked:step1", right: false, told: true }, ...extra });
+    const lead = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan")];
+    assert.deepEqual(flags([...lead, told({ heardCap: P })], "stepToldEarly"), []);
+    assert.deepEqual(flags([...lead, told({})], "stepToldEarly"), [6]);
+  });
+});

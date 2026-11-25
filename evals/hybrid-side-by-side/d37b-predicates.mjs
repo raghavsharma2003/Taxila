@@ -5,8 +5,13 @@
 //                       was at), none of the three saying the question (any form the script writes for it) or help. A side-topic's turn in
 //                       the wait is passed over: it neither restarts nor advances the wait (052 B4). director36 c4 steady 28 to 48.
 //   waitSecondNotReask  the wait's second turn does not end on the question's own `reask`.
+// And B.4's re-pins, by name, for exactly the turns main's ruling on question 3 names (read as before everywhere else):
+//   questionThreeRunning  (049 B4, d34c's reading) the wait's re-ask is no turn of a run: the run counts from the turn after it
+//   stepToldEarly         (d30, gated) the cap's turn at a wait — a step told on the fifth hearing after a try-first or a bare yes — is allowed
 import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion } from "../../server/director/question-run.js";
 import { asideTurn, helpTurn } from "./d34b-predicates.mjs";
+import { D34C_PREDICATES } from "./d34c-predicates.mjs";
+import { D30_PREDICATES } from "./d30-predicates.mjs";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const SLOT = "zzslotzz";
@@ -48,6 +53,8 @@ export function waitAt(L, i, script) {
   const at = turns.slice(from);
   return at.length && at.at(-1) === i ? { P, turns: at } : null;
 }
+/** Whether row i is the wait's re-ask: the wait's second turn, ending on the question's own `reask`. */
+const waitReaskAt = (L, i, ctx) => { const w = waitAt(L, i, ctx?.script); return !!w && w.turns.length === 2 && D37B_PREDICATES.waitSecondNotReask(L, L.rows[i], i, ctx) === null; };
 /** Whether a teacher row says the question (any form the script writes for it) or help. */
 const saysOrHelps = (script, r, P) => atQuestionOf(script, r.text) === P || helpTurn(r);
 
@@ -71,5 +78,23 @@ export const D37B_PREDICATES = {
     const got = qKey(closingQuestion(r.text) ?? sentencesOf(r.text).at(-1) ?? "");
     const re = new RegExp(`^${want.split(SLOT).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[\\p{L}\\p{N}/ ]+?")}$`, "u");
     return want && re.test(got) ? null : `the wait's second turn at ${w.P} does not end on its reask: "${sentencesOf(r.text).at(-1) ?? ""}"`;
+  },
+  /** B.4 (main's ruling on question 3): 049 B4's count with the wait's re-ask exempt — the re-ask overrides the third-turn invitation, so it
+   *  is no turn of a run: a run that holds it is counted from the turn after it. Gated, as d34c's. */
+  questionThreeRunning(L, r, i, ctx) {
+    const was = D34C_PREDICATES.questionThreeRunning(L, r, i, ctx);
+    if (!was) return was;
+    const m = /ends (\d+) of her turns running/.exec(was);
+    const n = m ? Number(m[1]) : 3;
+    const her = [];
+    for (let j = i; j >= 0 && her.length < n; j--) if (L.rows[j].who === "teacher") her.push(j);
+    const k = her.findIndex((j) => waitReaskAt(L, j, ctx));
+    return k < 0 || k >= 3 ? was : null;
+  },
+  /** B.4 (main's ruling on question 3): d30's stepToldEarly, with the cap's turn at a wait allowed — the step told on its fifth hearing (the
+   *  record's heardCap) after a try-first or a bare yes. Gated, as d30's. */
+  stepToldEarly(L, r, i, ctx) {
+    if (r.who === "teacher" && r.heardCap && waitCue(r) && r.stepAnswer?.told) return null;
+    return D30_PREDICATES.stepToldEarly(L, r, i, ctx);
   },
 };
