@@ -7,7 +7,8 @@
 //                       key seam and no key words, the step's own why unsaid)
 //   keyValueTwice       C2: a key whose value (every number of the card's `key`) is said in the key and its reason more times than the
 //                       script's own sentence (its `why`) says it, and at least twice (RULING-C3 item 8). For every key but a teach-back's
-//                       (RULING-C2 item 2), GATED; teachbackKeyValueTwice reads the teach-back's, pending.
+//                       (RULING-C2 item 2), GATED; teachbackKeyValueTwice reads the teach-back's, GATED since main's fifth ruling on
+//                       cause C, correction 2 (a teach-back's told answer follows C2). Both read a key with no number by its own words.
 //   capBeforeOwnReason  C3: a key at a card where the child's answer was the card's named wrong answer (`wrongIfMis` with `whyAltAsHelp`, or a
 //                       `wrongAnswers` entry with its `why`) and that answer's reason was never said at the card.
 //   ownStepWorkedHelp   C4: help at an own step (her turn's cell at the your-step) that says the worked problem's `simpler`. PENDING
@@ -71,17 +72,21 @@ function namedReason(n, child) {
 function keyValueTwice0(L, r, i, ctx) {
   if (!keyRow(r)) return null;
   const n = nodeOfPart(ctx?.script, partOf(r))?.node;
-  const keyN = NUMS(n?.key);
+  // (main's fifth ruling on cause C, correction 2: a key with no number is read by its words — the key's own words, in order, counted as one;
+  // a yes-or-no key is said as its fact and not read)
+  const kw = NUMS(n?.key).length ? null : nk(n?.key);
+  const keyN = kw ? (/^(?:haan|ha|nahi|nahin|yes|no)$/.test(kw) || !/\p{L}{3,}/u.test(kw) ? [] : [kw]) : NUMS(n?.key);
   if (!n?.key || !keyN.length) return null;
   // (the key and its reason: from the turn's start to the end of the card's why where it is said, else the key's own sentence)
   const T = String(r.text ?? "").replace(/\s+/g, " ");
   const why = hi(n.why);
   let seg = T;
   if (why) { const tail = String(why).replace(/[.!?।]+$/, "").slice(-12); const k = T.lastIndexOf(tail); if (k >= 0) seg = T.slice(0, k + tail.length); else seg = sentencesOf(T).filter((s) => KEY_WORDS.test(s)).join(" ") || T; }
-  const got = NUMS(seg);
+  const WORDS = (t) => { const T = ` ${nk(t)} `; let c = 0, at0 = 0; for (;;) { const k = T.indexOf(` ${kw} `, at0); if (k < 0) return Array(c).fill(kw); c++; at0 = k + kw.length + 1; } };
+  const got = kw ? WORDS(seg) : NUMS(seg);
   // (RULING-C3 item 8: flagged where the turn says the value more times than the script's own sentence does — its why; once at least, the
   // key's own mention: a why-alone key whose why says the value twice says it as written, offtopic c4-ch06-t01 36)
-  const own = NUMS(why);
+  const own = kw ? WORDS(why) : NUMS(why);
   return keyN.every((x) => got.filter((y) => y === x).length > Math.max(1, own.filter((y) => y === x).length)) ? `the key's value (${n.key}) said more times in the key and its reason than the script's own sentence says it` : null;
 }
 const isTeachback = (p) => /(?:^|:)teachback$/.test(p);
@@ -117,7 +122,7 @@ export const D37C_PREDICATES = {
     if (isTeachback(partOf(r))) return null;
     return keyValueTwice0(L, r, i, ctx);
   },
-  /** RULING-C2 item 2 (pending): keyValueTwice at a teach-back's key — the rows left, listed for main. */
+  /** RULING-C2 item 2: keyValueTwice at a teach-back's key — gated since main's fifth ruling on cause C, correction 2. */
   teachbackKeyValueTwice(L, r, i, ctx) {
     return isTeachback(partOf(r)) ? keyValueTwice0(L, r, i, ctx) : null;
   },

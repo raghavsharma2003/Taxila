@@ -327,10 +327,11 @@ describe("RULING-C2 item 2: C2, the key said as its why alone where the why name
   });
   // (RULING-C3 item 8: keyValueTwice is GATED, reading the value against the script's own why — c2/dry2 offtopic c4-ch06-t01 36 is C2's
   // why-alone key, and that script's own yourStep.why says its value twice: said as written, not flagged; the row is Learning's)
-  test("keyValueTwice (gated) reads every key but a teach-back's; teachbackKeyValueTwice is pending and reads the teach-back's", async () => {
+  // (main's fifth ruling on cause C, correction 2: teachbackKeyValueTwice is gated once it reads 0 — a teach-back's told answer follows C2)
+  test("keyValueTwice (gated) reads every key but a teach-back's; teachbackKeyValueTwice (gated since correction 2) reads the teach-back's", async () => {
     const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
     assert.ok(PREDICATES.keyValueTwice && !PENDING.has("keyValueTwice"));
-    assert.ok(PREDICATES.teachbackKeyValueTwice && PENDING.has("teachbackKeyValueTwice"));
+    assert.ok(PREDICATES.teachbackKeyValueTwice && !PENDING.has("teachbackKeyValueTwice"));
     const twice = R(`Yeh jawab sahi nahi hai. Iska jawab hai 11, kyunki ${c2.why.hi}. Yahan tak theek hai?`, "wrong", ["missVerdict", "key", "checkin"]);
     assert.deepEqual(flags([ask, C("9"), twice], "keyValueTwice"), [2]);
     assert.deepEqual(flags([ask, C("9"), R(whyKey, "wrong", ["missVerdict", "key", "checkin"], { keyWhy: true, pageParts: pp("close", "c2", bar(1)) })], "keyValueTwice"), []);
@@ -462,4 +463,80 @@ describe("RULING-C5 correction 1: the worked example's reason before \"nothing e
     const closeNoHelp = row(`Nahi, ${we.why.hi}. Yahan tak theek hai?`, "misconception", ["missVerdict", "checkin"]);
     assert.deepEqual(flagsOf([C("Rahul"), told, C("Rahul"), closeNoHelp], "ownKeyNoReason", sc), [3], "a close with no help seam after the key: still flagged");
   });
+});
+
+// Main's fifth ruling on cause C (RULING-C5), correction 2: C2 reaches an answer that is words, and the teach-back. judge-c-t02: stuck
+// c5-ch02-t02 46 ("Is sawaal ka sahi jawab: Sana ka hissa, kyunki … isliye Sana ka hissa … bada hai"), steady c5-ch02-t02 116 ("Iska jawab hai
+// 7/12, kyunki … isliye 7/12 chhota hai"), steady c6-ch06-t01 98.
+describe("RULING-C5 correction 2: a key with no number whose why says its words, and a teach-back's key, are the why alone", async () => {
+  const { keyLine, whyNamesKey } = await import("../server/director/help.js");
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const t02 = scriptOf("c5-maths-ch02-t02");
+  const ys = t02.skills[0].workedExample.yourStep;
+  test("whyNamesKey reads a word key by its words, in order: \"Sana\" and \"Sana ka hissa\" in the step's why; a yes-or-no key, or words the why does not say, as built", () => {
+    assert.equal(whyNamesKey(ys.key, ys.why.hi), true);
+    assert.equal(whyNamesKey("Sana ka hissa", ys.why.hi), true);
+    assert.equal(whyNamesKey("Rahul ka hissa", ys.why.hi), false);
+    assert.equal(whyNamesKey("nahi", "nahi, kyunki dono barabar nahi hain"), false);
+    assert.equal(whyNamesKey("square", "iske chaaron kone barabar hain"), false);
+    assert.equal(keyLine({ key: ys.key, why: ys.why }).text, `${ys.why.hi.charAt(0).toUpperCase()}${ys.why.hi.slice(1)}.`);
+    assert.match(keyLine({ key: "square", why: { hi: "iske chaaron kone barabar hain" } }).text, /^Iska jawab hai square, kyunki /);
+  });
+  test("walked (c5-ch02-t02's own step given up to its key): the told answer is the step's why alone — \"Sana\" said as the why says it", async () => {
+    const w = await walkUntil("c5-maths-ch02-t02", (s) => /-s1:ask:worked$/.test(String(s.lastUi?.ask?.itemId ?? "")));
+    // (give-ups: code's real read takes a bare "Rahul" here for a mix-up and goes to its remediation — the dry child's read is a plain miss)
+    const turns = await w.play(["give", "give", "give", "give"]);
+    w.done();
+    assert.ok(w.found);
+    const k = turns.find((t) => t.seams.includes("key"));
+    assert.ok(k, turns.map((t) => t.seams.join(">")).join(" | "));
+    assert.ok(k.text.includes(`${ys.why.hi.charAt(0).toUpperCase()}${ys.why.hi.slice(1)}`), k.text);
+    assert.ok(!/jawab/i.test(k.text), k.text);
+    assert.equal((k.text.match(/(?<![\p{L}])Sana(?![\p{L}])/gu) ?? []).length, 2, k.text);
+  });
+  test("keyValueTwice reads a word key's words: \"Sana\" three times against its why's two is flagged; the why alone is not", () => {
+    const part = "c5-maths-ch02-t02-s1:worked:yourStep";
+    const R = (text) => ({ who: "teacher", text, cell: { part, column: "wrong" }, seams: [{ left: "start", right: "missVerdict", joint: null }, { left: "missVerdict", right: "key", joint: null }, { left: "key", right: "checkin", joint: null }] });
+    const fl = (r) => lessonFlags({ rows: [{ who: "child", text: "Rahul" }, r], script: t02 }).filter((f) => f.predicate === "keyValueTwice").map((f) => f.row);
+    assert.deepEqual(fl(R(`Nahi, yeh theek nahi hai. Is sawaal ka sahi jawab: Sana ka hissa, kyunki ${ys.why.hi}. Ab tak samajh aaya?`)), [1]);
+    assert.deepEqual(fl(R(`Nahi, yeh theek nahi hai. ${ys.why.hi.charAt(0).toUpperCase()}${ys.why.hi.slice(1)}. Ab tak samajh aaya?`)), []);
+  });
+  for (const [topic, wrong] of [["c5-maths-ch02-t02", "12/7"], ["c6-maths-ch06-t01", "73 cm"]]) {
+    test(`walked (${topic}'s teach-back missed to its key): the told answer is its why alone, read as the key; teachbackKeyValueTwice 0`, async () => {
+      const tb = scriptOf(topic).teachback;
+      const w = await walkUntil(topic, (s) => !!s.teachbackAsked);
+      const turns = await w.play([wrong, wrong, wrong]);
+      w.done();
+      assert.ok(w.found);
+      const k = turns.find((t) => t.lm?.authoredEnd === "teachbackKey" || t.seams.includes("key"));
+      assert.ok(k, turns.map((t) => `${t.seams.join(">")} ${t.text.slice(0, 40)}`).join(" | "));
+      const why = String(tb.why.hi).replace(/[.!?]+$/, "");
+      assert.ok(k.text.includes(`${why.charAt(0).toUpperCase()}${why.slice(1)}.`), k.text);
+      assert.ok(!/Iska jawab hai/.test(k.text), k.text);
+      assert.ok(k.seams.includes("key"), k.seams.join(">"));
+    });
+  }
+});
+
+// RULING-E2 item 3: requestAnswered and requestHelped read a turn whose record carries the key seam of a why-alone key as a key given, as
+// goOnAfterKey reads it (RULING-C2 item 2). Dry steady c4-ch01-t02 104: a give-up at the teach-back told its answer as the why alone.
+describe("RULING-E2 item 3: a why-alone key's seam answers a request (requestAnswered, requestHelped)", async () => {
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const sc = JSON.parse(readFileSync(new URL("../data/lesson-scripts-staged/c4-maths-ch01-t02.json", import.meta.url), "utf8"));
+  const tb = sc.teachback, part = "c4-maths-ch01-t02:teachback";
+  const T = (text, column, seams, extra = {}) => ({ who: "teacher", text, move: "teachback", card: null, cell: { part, column }, seams: seams.map((right, k) => ({ left: k ? seams[k - 1] : "start", right, joint: null })), ...extra });
+  const G = { who: "child", text: "pata nahi, shayad wahi", intent: "give_up" };
+  const ask = T(tb.prompt.hi, "right", ["closingQuestion"], { pageParts: [{ part: "body", from: 0, beat: "teachback" }] });
+  const told = (seams, extra) => T(`${tb.why.hi.replace(/[.]$/, "")}. Yeh hissa saaf hua?`, "give_up", seams, { pageParts: [{ part: "body", from: 0, beat: "teachback:answer" }], ...extra });
+  const fl = (rows, name) => lessonFlags({ rows, script: sc }).filter((f) => f.predicate === name).map((f) => f.row);
+  for (const name of ["requestAnswered", "requestHelped"]) {
+    test(`${name}: the why-alone key with its key seam is a key given; the same words with no key seam, or no keyWhy, are not`, () => {
+      assert.ok(!PENDING.has(name));
+      assert.deepEqual(fl([ask, G, told(["key", "checkin"], { keyWhy: true })], name), []);
+      assert.deepEqual(fl([ask, G, told(["key", "checkin"], {})], name), [2], "no keyWhy on the record");
+      assert.deepEqual(fl([ask, G, told(["body", "checkin"], { keyWhy: true })], name), [2], "no key seam");
+      const bare = T(`Koi baat nahi. ${tb.prompt.hi}`, "give_up", ["closingQuestion"], { pageParts: [{ part: "body", from: 15, beat: "teachback" }] });
+      assert.deepEqual(fl([ask, G, bare], name), [2], "no help, no key, no nothing-easier line");
+    });
+  }
 });

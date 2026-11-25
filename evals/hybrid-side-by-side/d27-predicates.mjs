@@ -290,6 +290,8 @@ export const D27_PREDICATES = {
     if (bareBridgeGoOn(r, ctx)) return null;
     if (/^worked$/.test(String(a.beat)) && parts.some((p) => p.part === "simpler" && /^worked:step\d+$/.test(String(p.beat)))) return null;
     if (KEY_SAID.test(String(r.text ?? "")) || r.check?.gave || r.keyFact) return null;
+    // (RULING-E2 item 3: the key seam of a why-alone key is a key given, as goOnAfterKey reads it — dry steady c4-ch01-t02 104)
+    if (r.keyWhy && (r.seams ?? []).some((x) => x.right === "key")) return null;
     const id = partIdOf(a, ctx.script);
     const isSpent = id ? spent(ctx.script, id, a.keyed || a.kind === "close", st.sents, { ownDue: ownReasonDue(L, i, ctx, id) }) : true;
     // (Brain 044 T5: the three things and nothing else — an unsaid wording, the key, the "nothing easier" line; the after-key return, the go-on

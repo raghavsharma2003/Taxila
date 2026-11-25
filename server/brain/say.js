@@ -1926,7 +1926,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (end === "teachbackKey") {
       // (the verdict and the key are the answer board's unit — a body part, drawn from the first word, T1)
       const lp = cleanParts([{ part: "body", text: [close, ...lines].filter(Boolean).join(" ") }, { part: "aside", text: rotateOf(beatAsk(kit)[L], state) }]);
-      return { reply: joinParts(lp), guard: { authoredEnd: end, ...(endLead ? { whyJoint: endLead.k } : {}), lineParts: lp, parts: { list: lp } } };
+      // (correction 2 of main's fifth ruling on cause C: a why-alone teach-back key is read as the key, as a card's is — guard whyKey)
+      const tbWhy = state.lastMove.tbWhyKey ? d(spokenMarks(state.lastMove.tbWhyKey, L)) : null;
+      return { reply: joinParts(lp), guard: { authoredEnd: end, ...(endLead ? { whyJoint: endLead.k } : {}), ...(tbWhy ? { whyKey: tbWhy } : {}), lineParts: lp, parts: { list: lp } } };
     }
     // (T4, clause 2 as written: between what was covered and the goodbye, one sentence about what this child did — the model's, at most
     // 18 words, naming only cards and values in the lesson's rows, no praise of the child's traits; left out when the check fails)

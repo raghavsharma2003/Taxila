@@ -59,6 +59,9 @@ D26_PREDICATES.requestAnswered = function requestAnswered(L, r, i, ctx) {
   const first = sentencesOf(norm(r.text))[0] ?? "";
   if (!first) return "a request answered with nothing";
   if (helpSentenceOf(ctx, first) || jointKeys(ctx).has(normSentence(first)) || KEY_SAID_RE.test(first) || r.check?.gave || r.keyFact) return null;
+  // (RULING-E2 item 3: a turn whose record carries the key seam of a why-alone key IS a key given, as goOnAfterKey reads it — dry steady
+  // c4-ch01-t02 104, the teach-back's told answer after a give-up, its why alone)
+  if (r.keyWhy && (r.seams ?? []).some((x) => x.right === "key")) return null;
   // (the seam record names a joint said at the turn's start: a word to the child)
   if ((r.seams ?? []).some((x) => x.left === "start" && x.joint && x.form && normSentence(first).startsWith(normSentence(x.form).slice(0, 16)))) return null;
   // (a joint form with a slot, or a help rung said in part: the first sentence's first words are a joint's)

@@ -2778,12 +2778,16 @@ function teachback(s, input) {
     }
     const why = tb.why ? saidIn(tb.why, lang) : null;
     const en = lang === "english";
-    const keyLine = hit ? null : `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
+    // (main's fifth ruling on cause C, correction 2 — judge-c-t02 steady c5-ch02-t02 116 "Iska jawab hai 7/12, kyunki … isliye 7/12 chhota
+    // hai", steady c6-ch06-t01 98: the teach-back's told answer follows C2 — where its why says the key's value, the key is the why alone)
+    const why1 = why && String(why).trim() ? String(why).trim().replace(/[.!?\u0964]+$/, "") : "";
+    const tbWhyKey = !hit && why1 && whyNamesKey(tb.key, why1) ? `${why1.charAt(0).toUpperCase()}${why1.slice(1)}.` : null;
+    const keyLine = hit ? null : tbWhyKey ?? `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why1 ? `, ${en ? "because" : "kyunki"} ${joinable(why1, { lower: true })}` : ""}.`;
     s.teachbackKeyed = true;
     // (main's 026, director22 T1: the key turn shows the teach-back's answerBoard from its first word, else a cleared board — never
     // its question board; the wrap that follows holds it)
     const board = tb.answerBoard ?? null;
-    return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: keyLine ? [keyLine] : [], authoredEnd: "teachbackKey", ...(board ? {} : { clear: "board" }),
+    return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: keyLine ? [keyLine] : [], authoredEnd: "teachbackKey", ...(board ? {} : { clear: "board" }), ...(tbWhyKey ? { tbWhyKey } : {}),
       // (dc-r8-director23 T2, c6 steady 114: a miss on the closing question gets a miss verdict before the key)
       ...(gaveUpEnd && !hit ? { endGaveUp: true } : { endVerdict: hit ? "correct" : "not_yet" }),
       ...(board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board, mode: "fresh" } } : {}) });
@@ -4799,6 +4803,7 @@ function step0(prev, input) {
   if (p.hookSaid) move.hookSaid = true;
   if (p.authoredEnd) move.authoredEnd = p.authoredEnd;
   if (p.endVerdict) move.endVerdict = p.endVerdict;
+  if (p.tbWhyKey) move.tbWhyKey = p.tbWhyKey;
   if (p.endAside) move.endAside = true;
   // (dc-r8-director27 P4, P7: what each authored ending line is — the closing question's lead-in, its hint, the question — for the record)
   if (p.renderedKinds?.length) move.renderedKinds = [...p.renderedKinds];

@@ -304,11 +304,18 @@ export function goOnPlain(script, { lang = "hinglish", lessonKey = null, n = 0, 
 /** A card's key said as the worked answer:the key and its why as one statement (a yes-or-no key: its why alone, never a verdict word). */
 /** to-brain 054 C2 (director36 c4 steady 134, c5-t01 steering 18, c5-t02 steady 102, steering 18: the key's value said twice — "Is sawaal ka
  *  jawab 1/6 kilometre par hai, kyunki … toh 1/6 kilometre par"): whether a key's `why` names every number of its value — then the key is the
- *  why alone, its own sentence, as a yes-or-no key's is. A key with no number (a name, a word) is said with its why as built. */
+ *  why alone, its own sentence, as a yes-or-no key's is. A key with no number (a name, a word) is the why alone where the why says the key's
+ *  words (correction 2 below), else said with its why as built. */
 export function whyNamesKey(key, why) {
   const nums = (t) => String(t ?? "").match(/\d+(?:[./]\d+)?/g) ?? [];
   const k = nums(key), w = nums(why);
-  return k.length > 0 && k.every((x) => w.includes(x));
+  if (k.length) return k.every((x) => w.includes(x));
+  // (main's fifth ruling on cause C, correction 2 — judge-c-t02 stuck c5-ch02-t02 46: "Is sawaal ka sahi jawab: Sana ka hissa, kyunki … isliye
+  // Sana ka hissa … bada hai": a key with no number whose why says the key's own words — every word of it, in order — is the why alone too.
+  // A yes-or-no key is said as its fact already)
+  const kw = normSentence(key);
+  if (!kw || /^(?:haan|ha|nahi|nahin|yes|no)$/.test(kw) || !/\p{L}{3,}/u.test(kw)) return false;
+  return ` ${normSentence(why)} `.includes(` ${kw} `);
 }
 export function keyLine(part, lang = "hinglish") {
   if (!part || part.key == null || String(part.key).trim() === "") return null;

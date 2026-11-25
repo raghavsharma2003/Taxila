@@ -277,6 +277,9 @@ function kindOf(p, i, list, info) {
       if (info.tryFirst && low(t).startsWith(low(info.tryFirst).slice(0, 20))) return "tryFirst";
       // (dc-r8-director27 P7, c4 steady 138: "Haan, sahi hai, kyunki … nahi jaate" is a right verdict — a right head wins over a "nahi" in its why)
       if (info.authoredEnd && i === 0 && VERDICT_HEAD.test(t)) return !/^(?:haan|bilkul|sahi|yes|exactly|that's right)\b/i.test(t) && MISS_WORD.test(sentencesOf(t)[0] ?? "") ? "missVerdict" : "verdict";
+      // (main's fifth ruling on cause C, correction 2: a teach-back's key said as its why alone with no verdict before it — a give-up's — is
+      // the key; dry steady c4-ch01-t02 104)
+      if (info.authoredEnd && info.keyWhy && i === 0 && norm(t).startsWith(norm(info.keyWhy).slice(0, 40))) return "key";
       if (CHECKIN_Q.test(t) && sentencesOf(t).length === 1) return "checkin";
       return info.remediation ? "remediation" : "point";
   }
