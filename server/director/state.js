@@ -137,6 +137,9 @@ export function scriptWhyShortOf(kit, item, lang = "hinglish") {
  * (a range, a place, a phrase) is said in its authored Hindi accept form, preferring one that carries every number of the key
  * ("0 aur 1 ke beech"), else the key's word in Hindi (WORD_HI), else the key itself. Never a number pulled out of a phrase.
  */
+/** d37 item 17b: the card's key as written, beside a told key said in another form (keyInLang's Hindi form, "sonu ka" for "Sonu") —
+ *  brain/say.js reads the why against it (cause C2); nothing where the two are the same. */
+export const keyAsWritten = (item, lang) => (item?.answer != null && String(item.answer).trim() !== keyInLang(item, lang) ? { key: String(item.answer).trim() } : {});
 export function keyInLang(item, lang) {
   const a = String(item?.answer ?? "").trim();
   if (SPOKEN_NUMERIC_KEY.test(a)) return a.replace(/\s*\/\s*/, "/");
@@ -3394,9 +3397,9 @@ function capPlan(s, input, p) {
   s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
   return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave",
     // (S3: the answer and its why are said in code, brain/say.js: director2 shipped "assert" turns that never said it)
-    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: (scriptCardOf(item) ? gaveWhyOf(kit, item, s.ctx.lang) : whyOf(kit, item, s.ctx.lang)) ?? "", key: item?.answer ?? null } } : {}),
+    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: (scriptCardOf(item) ? gaveWhyOf(kit, item, s.ctx.lang) : whyOf(kit, item, s.ctx.lang)) ?? "", ...keyAsWritten(item, s.ctx.lang) } } : {}),
     // v3 K2: a script card that is let go is never left unanswered: its key is said in code (c4 director5: "2/3" never said)
-    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: gaveWhyOf(kit, item, s.ctx.lang) ?? "", key: item?.answer ?? null } } : {}) };
+    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: gaveWhyOf(kit, item, s.ctx.lang) ?? "", ...keyAsWritten(item, s.ctx.lang) } } : {}) };
 }
 const scriptCardOf = (item) => !!(item?.scriptAsk || item?.scriptCheck || item?.scriptThen);
 const isScriptCard = scriptCardOf;
@@ -5075,7 +5078,7 @@ function step0(prev, input) {
     const closedByVerdict = !!prev.pendingWhy && prev.pendingWhy === was;
     if (was && !closedByVerdict && !move.gave && move.kind !== "safeguard" && move.scriptBeat?.kind !== "remediation" && s.skipped.includes(was) && !(prev.skipped ?? []).includes(was)) {
       const left = findItem(prev, input.kit, was);
-      if (left) move.gave = { answer: keyInLang(left, s.ctx.lang), why: gaveWhyOf(input.kit, left, s.ctx.lang) ?? "", key: left?.answer ?? null };
+      if (left) move.gave = { answer: keyInLang(left, s.ctx.lang), why: gaveWhyOf(input.kit, left, s.ctx.lang) ?? "", ...keyAsWritten(left, s.ctx.lang) };
     }
   }
   // v4 W6: a parked topic served this turn rides on the move, so the reply keeps (or says) its return
