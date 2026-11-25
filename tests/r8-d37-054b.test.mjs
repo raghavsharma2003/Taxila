@@ -89,6 +89,15 @@ for (const [TOPIC, which, skip] of [["c4-maths-ch05-t01", "step", 0], ["c6-maths
       for (const t of turns.slice(2, end + 1)) assert.ok(t.text !== reaskFilled(w.script, w.P), t.text);
       assert.ok(turns[end].lm.heardCap || which === "step", `${end}: a card keyed before the cap — ${turns[end].text}`);
     });
+    // (RULING-B5 item 2: in a wait the question is heard three times at most — wait four is the cap, the step told or the key with its
+    // reason, whatever help is left; never a second help turn ending on the reask heard two turns before)
+    test("wait four is the cap: the step told or the key (heardCap), whatever help is left", () => {
+      assert.equal(turns[3].lm.waitN, 4);
+      assert.ok(turns[3].lm.heardCap, turns[3].text);
+      assert.ok(turns[3].lm.gave || turns[3].lm.stepReply?.told, turns[3].text);
+      assert.ok(!turns[3].text.endsWith(reaskFilled(w.script, w.P)), turns[3].text);
+      for (const t of turns.slice(0, 3)) assert.ok(!t.lm.gave && !t.lm.stepReply?.told && !t.lm.heardCap, t.text);
+    });
   });
 }
 

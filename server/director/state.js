@@ -3714,7 +3714,9 @@ function heardCap(prev, input, heard, said) {
   const stepQ = prev?.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose ? prev.lastMove.stepAsk.prompt : null;
   const qText = liveId && String(liveId).startsWith("script:") ? prev.lastUi.ask.text : stepQ;
   const P = qText ? atQuestionOf(script, qText) : null;
-  if (!P || P === "?short" || /teachback/.test(P) || (heard[P] ?? 0) < 4) return null;
+  // (RULING-B5 item 2: in a wait the question is heard three times at most — wait four is the cap whatever help is left: state.js step's
+  // waitCap. The four hearings after misses, R1, are unchanged outside a wait)
+  if (!P || P === "?short" || /teachback/.test(P) || ((heard[P] ?? 0) < 4 && !input.waitCap)) return null;
   if (liveId && String(liveId).startsWith("script:") && !stepQ) {
     const part = cardPartOf(input.kit, { itemId: liveId });
     if (!part) return null;
@@ -4171,7 +4173,7 @@ export function step(prev, input) {
   const wait = waitOf(prev, input);
   if (wait && (wait.n >= 3 || wait.reaskHeard)) {
     const { request: _rq, ...restW } = input.cls ?? {};
-    input = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P };
+    input = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P, ...(wait.n >= 4 ? { waitCap: true } : {}) };
   }
   const greetAgain = !recordedWalk(input) && !!prev?.lastMove?.greetHelp && input?.event === "turn" && !input.branch && ["clarify", "give_up", "hindi"].includes(columnName(input, prev)) && !input.cls?.flags?.distress && !input.cls?.flags?.wantsToStop;
   if (greetAgain)
