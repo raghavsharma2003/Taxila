@@ -219,3 +219,24 @@ describe("item 6a/6b: the rule-based children (evals/child-sim/reactive.mjs)", a
     assert.ok([...other].some((t) => /pata nahi|samajh nahi|nahi pata/.test(t)), [...other].join(" | "));
   });
 });
+
+describe("item 8: the reply's {word} is never an auxiliary or other function word (wr-d's B, offtopic c4-ch01-t02 34 'Achha, hoon!')", async () => {
+  const { replyWordOf, asideReplyLine, FUNCTION_WORDS } = await import("../server/brain/asideReplies.js");
+  const { j2WordsOf } = await import("../server/brain/say.js");
+  test("the picker and the slot leave the function words out; a content word of the line is still taken", () => {
+    for (const w of ["hoon", "hai", "hain", "tha", "thi", "the", "ho", "hun", "raha", "rahi", "ke", "ka", "ki", "se", "mein", "ko", "aur", "saath"]) assert.ok(FUNCTION_WORDS.has(w), w);
+    assert.ok(!j2WordsOf("papa ke saath dekhta hoon", "cricket").some((w) => FUNCTION_WORDS.has(w)));
+    assert.equal(replyWordOf(["hoon", "saath"], "papa ke saath dekhta hoon"), null);
+    assert.equal(replyWordOf(j2WordsOf("papa ke saath dekhta hoon", "cricket"), "papa ke saath dekhta hoon"), "papa");
+    // (the other side: a content word stands as before)
+    assert.equal(replyWordOf(["batting"], "batting karna"), "batting");
+  });
+  test("the reply to 'Virat ko tum kiske saath dekhte ho?': never 'Achha, hoon!'; with no content word left, a form with no slot", () => {
+    const asked = "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Virat ko tum kiske saath dekhte ho?";
+    const r = asideReplyLine({ said: "papa ke saath dekhta hoon", topic: "cricket", lang: "hinglish", n: 0, words: j2WordsOf("papa ke saath dekhta hoon", "cricket"), asked });
+    assert.ok(!/hoon!/.test(r.line ?? r), JSON.stringify(r));
+    const r2 = asideReplyLine({ said: "saath mein hoon", topic: "", lang: "hinglish", n: 0, words: ["hoon", "saath"], asked });
+    const line2 = String(r2.line ?? r2);
+    assert.ok(!/hoon!/i.test(line2) && !/\{word\}/.test(line2), line2);
+  });
+});

@@ -64,9 +64,13 @@ export function asideSadLine({ lang = "hinglish", n = 0 } = {}) {
 
 // (rule 1: {word} is only a noun the child said — never haan, nahi, pata nahi, kuch nahi, sab, a time word or an outcome)
 const NOT_A_WORD = /^(?:haan|han|ha|nahi|nahin|na|pata|kuch|sab|sabse|kal|aaj|parso|abhi|kabhi|roz|jeet|jeeta|jeeti|jeet\s+gaya|haar|hara|haari|gaya|gayi|yes|no|nothing|everything|today|yesterday|won|lost)$/i;
+/** d37 close item 8 (wr-d's B, offtopic c4-ch01-t02 34: "papa ke saath dekhta hoon" → "Achha, hoon!"): an auxiliary or other function
+ *  word is never a {word} — the picker's content-word list (brain/say.js J2_WORD_STOP) leaves these out too. */
+export const FUNCTION_WORDS = new Set(["hoon", "hun", "hu", "hai", "hain", "ho", "hon", "tha", "thi", "the", "thay", "raha", "rahi", "rahe", "ke", "ka", "ki",
+  "se", "mein", "me", "ko", "aur", "par", "pe", "tak", "saath", "sath", "liye", "bhi", "toh", "to", "hi", "na", "ne", "nahi", "gaya", "gayi", "gaye", "kar", "karke"]);
 /** A {word} for the reply from the picker's candidates, or null (then a plain form). */
 export function replyWordOf(cands = [], said = "") {
-  const w = (cands ?? []).map((x) => String(x ?? "").trim()).find((x) => x && !NOT_A_WORD.test(x) && new RegExp(`(?<![\\p{L}])${esc(x)}(?![\\p{L}])`, "iu").test(String(said ?? "")));
+  const w = (cands ?? []).map((x) => String(x ?? "").trim()).find((x) => x && !NOT_A_WORD.test(x) && !FUNCTION_WORDS.has(x.toLowerCase()) && new RegExp(`(?<![\\p{L}])${esc(x)}(?![\\p{L}])`, "iu").test(String(said ?? "")));
   return w ?? null;
 }
 
@@ -91,7 +95,7 @@ export function phraseOf(said = "") {
   for (const [re, to] of PERSON) t = t.replace(re, to);
   if (!t || NEVER_PHRASE.test(t)) return null;
   const w = t.split(" ");
-  if (w.length > 3 || w.every((x) => NOT_A_WORD.test(x))) return null;
+  if (w.length > 3 || w.every((x) => NOT_A_WORD.test(x) || FUNCTION_WORDS.has(x.toLowerCase()))) return null;
   return t;
 }
 /** Which of the kind's return questions her line asked (its index), or -1. */

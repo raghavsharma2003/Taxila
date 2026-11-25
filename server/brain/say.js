@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { boardWords } from "./board-words.js";
 import { inHindiWords } from "./register.js";
-import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyForms, asideReturnForms, asideInHerVoice } from "./asideReplies.js";
+import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyForms, asideReturnForms, asideInHerVoice, FUNCTION_WORDS } from "./asideReplies.js";
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
@@ -529,7 +529,9 @@ export function outsideAuthored(text, spans, fn) {
  *  word, a verb form, a lesson word or a number). [] when there is none; the aside's own topic is the fallback word. */
 const J2_WORD_STOP = new Set(["mujhe", "pasand", "pasandida", "favourite", "favorite", "maine", "mera", "meri", "mere", "aapko", "aapka", "tumhe", "sabse", "bahut", "achha", "achhi", "achhe", "accha",
   "acchi", "lagta", "lagti", "lagte", "seedha", "bahar", "andar", "jaati", "jaata", "jaate", "maarta", "maarti", "karta", "karti", "karte", "kyunki",
-  "woh", "wala", "wali", "wale", "jab", "phir", "bhi", "aur", "kuch", "sach", "really", "very", "like", "when", "that", "this", "what", "with", "have"]);
+  "woh", "wala", "wali", "wale", "jab", "phir", "bhi", "aur", "kuch", "sach", "really", "very", "like", "when", "that", "this", "what", "with", "have",
+  // (d37 close item 8: the auxiliaries and other function words — never the reply's {word}: asideReplies.js FUNCTION_WORDS)
+  ...FUNCTION_WORDS]);
 /** dc-r8-director24 A3: her reply to an aside said again after its return — the aside kind's reply form with a noun of the child's line
  *  (a past verb — "maara", "khela", "dekha" — is no noun), rotated by how many asides she has answered; null when no word of theirs fits. */
 const VERBISH = /(?:aara|ela|ala|ila|kha|aya|iya|aaya|gaye|gayi)$/;

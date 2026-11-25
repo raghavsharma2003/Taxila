@@ -243,6 +243,7 @@ describe("D.5 predicates: each trips on a made row and passes its fixed twin (re
 });
 
 describe("RULING-E2 item 1: asideFrameTwice reads the reply-kind forms of 053 C2 as reply frames, as the walk does", () => {
+  // (d37 close item 8: row 34 now says "Achha, papa! Yeh batane ke liye shukriya." — the {word} is no longer the auxiliary "hoon")
   test("a reply after a liking reply is read against that reply (offtopic c4-ch01-t02 34 against row 28, not row 10); the same frame twice running is still flagged", async () => {
     const { D34C_PREDICATES: Q, asideFrameOf } = await import("../evals/hybrid-side-by-side/d34c-predicates.mjs");
     const { replyFrameOf } = await import("../server/brain/asideReplies.js");
@@ -250,11 +251,11 @@ describe("RULING-E2 item 1: asideFrameTwice reads the reply-kind forms of 053 C2
     const liking = "Achha, toh tumhe chauka pasand hai!";
     assert.equal(asideFrameOf(t(liking)), "Achha, toh tumhe {phrase} pasand hai!", "a reply-kind form is a frame");
     assert.equal(asideFrameOf(t(liking)), replyFrameOf(liking), "the frame the walk reads");
-    const rows = [t("Achha, toh Rohit! Yeh batane ke liye shukriya."), c("chauka"), t(liking), c("hoon"), t("Achha, hoon! Yeh batane ke liye shukriya.")];
+    const rows = [t("Achha, toh Rohit! Yeh batane ke liye shukriya."), c("chauka"), t(liking), c("papa ke saath dekhta hoon"), t("Achha, papa! Yeh batane ke liye shukriya.")];
     assert.equal(Q.asideFrameTwice({ rows }, rows[4], 4), null, "row 28's liking frame is her last: not flagged");
     const twice = [t("Achha, toh tumhe batting pasand hai!"), c("chauka"), t(liking)];
     assert.match(String(Q.asideFrameTwice({ rows: twice }, twice[2], 2)), /twice running/, "the liking frame in two replies running");
-    const old = [t("Achha, toh Rohit! Yeh batane ke liye shukriya."), c("hoon"), t("Achha, hoon! Yeh batane ke liye shukriya.")];
+    const old = [t("Achha, toh Rohit! Yeh batane ke liye shukriya."), c("papa ke saath dekhta hoon"), t("Achha, papa! Yeh batane ke liye shukriya.")];
     assert.match(String(Q.asideFrameTwice({ rows: old }, old[2], 2)), /twice running/, "the same kind frame twice running");
   });
 });
