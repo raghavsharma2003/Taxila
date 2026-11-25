@@ -120,7 +120,12 @@ describe("B.3: a side-topic in a wait is parked once and neither restarts nor ad
     assert.equal(turns[3].lm.waitN, 3);
     // (opened on a bare haan at a step, wait two hears the step's simpler before its reask — 046 Q1's second yes — so wait three's give-up has
     // nothing left: the step told, as main's second ruling item 2 gives it)
-    assert.ok(turns[3].seams.includes("help") || turns[3].lm.stepReply?.told, turns[3].seams.join(">"));
+    // (to-brain 054 C step 0, pinned — pr3b section 5: which of the two happens here: wait two says the step's simpler, then its reask;
+    // wait three tells the step — never help there)
+    assert.ok(turns[2].text.endsWith(reaskFilled(w.script, w.P)) && turns[2].text.length > reaskFilled(w.script, w.P).length + 20, turns[2].text);
+    assert.ok(!turns[2].lm.stepReply?.told, turns[2].text);
+    assert.equal(turns[3].lm.stepReply?.told, true, turns[3].text);
+    assert.ok(!turns[3].seams.includes("help"), turns[3].seams.join(">"));
   });
 });
 
