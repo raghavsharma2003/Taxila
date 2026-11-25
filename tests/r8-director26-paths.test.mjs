@@ -209,7 +209,8 @@ test("Record: a picture asked for after the walk's key on a then-card (c5-t01 st
   // recorded "near 3" lands on that check-in; the same wrong answer is given to the card once it is posed, and the follow-up card comes)
   const { kit, plans } = await replay("2026-11-18-director29", "steering", "c5-maths-ch02-t01", 8);
   let st = { ...plans.at(-1).state };
-  for (let k = 0; k < 3 && !String(st.activeItemId ?? "").includes(":then:"); k++) { const p = await planAt(st, "near 3", kit); st = { ...p.r.state, mode: "text" }; }
+  // (main's third ruling item 6: exactly one "near 3" — an allowance of three would hide a stalled check-in)
+  { const p = await planAt(st, "near 3", kit); st = { ...p.r.state, mode: "text" }; }
   assert.ok(String(st.activeItemId ?? "").includes(":then:"), "a follow-up card is live");
   for (let k = 0; k < 6 && !st.lastMove?.gave?.answer; k++) { const p = await planAt(st, "1 and 6", kit); st = { ...p.r.state, mode: "text" }; }
   const prev = st.lastMove;
