@@ -94,7 +94,10 @@ describe("fix 2: a side-topic at a check-in is the same rule", () => {
     const row = { who: "teacher", text: "Arre haan, cricket! Achha, ab padhai. Pehle 3/4 ke har hisse. Upar kaunsa number aayega?", seams: [{ right: "aside" }, { right: "point", joint: "afterAside" }, { right: "card" }] };
     const checkin = { who: "teacher", text: "Ab tak samajh aaya?", seams: [{ right: "verdict" }, { right: "bridge" }, { right: "checkin" }] };
     assert.ok(P.replyIntoPoint({}, row, 2, { prevT: checkin }));
-    assert.equal(P.replyIntoPoint({}, row, 2, { prevT: { who: "teacher", noFit: "aside", noFitGoOn: true } }), null);
+    // (third ruling item 3: the said-again turn after a go-on line is excused only with no after joint)
+    const bare = { ...row, seams: [{ right: "aside" }, { right: "point", left: "replyAgain", joint: null }, { right: "card" }] };
+    assert.equal(P.replyIntoPoint({}, bare, 2, { prevT: { who: "teacher", noFit: "aside", noFitGoOn: true } }), null);
+    assert.ok(P.replyIntoPoint({}, row, 2, { prevT: { who: "teacher", noFit: "aside", noFitGoOn: true } }));
     assert.equal(P.replyIntoPoint({}, { ...row, seams: [{ right: "aside" }, { right: "goOn", joint: "afterAside" }] }, 2, { prevT: checkin }), null);
   });
 });
@@ -209,3 +212,23 @@ test("third ruling item 2: orderDisplaced holds a displaced part over one go-on 
   assert.equal(mk({ who: "teacher", text: "Main AI teacher hoon." }), null);
   assert.ok(mk({ ...go }));
 });
+
+test("third ruling item 3: replyIntoPoint reads a first seam aside; the said-again exemption holds only with no after joint and within 70 words; asideGoOnNext reads the turn after the AI line said after a go-on", () => {
+  const go = { who: "teacher", text: "Ab wapas kaam par.", noFit: "aside", noFitGoOn: true, seams: [{ right: "park" }, { right: "goOn", joint: "afterPark" }] };
+  const checkin = { who: "teacher", text: "Ab tak samajh aaya?", seams: [{ right: "verdict" }, { right: "bridge" }, { right: "checkin" }] };
+  const w = (n) => Array.from({ length: n }, (_, k) => `shabd${k}`).join(" ");
+  const again = (n, joint = null) => ({ who: "teacher", text: `${w(n)}?`, seams: [{ right: "aside" }, { right: "point", joint }, { right: "card" }] });
+  assert.ok(P.replyIntoPoint({}, again(40), 2, { prevT: checkin }));
+  // (an aside seam inside a turn, not its first, is not her reply's)
+  assert.equal(P.replyIntoPoint({}, { ...again(40), seams: [{ right: "verdict" }, { right: "aside" }, { right: "point" }, { right: "card" }] }, 2, { prevT: checkin }), null);
+  assert.equal(P.replyIntoPoint({}, again(60), 2, { prevT: go }), null);
+  assert.ok(P.replyIntoPoint({}, again(60, "afterAside"), 2, { prevT: go }));
+  assert.ok(P.replyIntoPoint({}, again(72), 2, { prevT: go }));
+  assert.equal(P.asideGoOnNext({}, again(60), 2, { prevT: go }), null);
+  assert.ok(P.asideGoOnNext({}, again(60, "afterAside"), 2, { prevT: go }));
+  const ai = { who: "teacher", text: "Main AI teacher hoon. Tumhe kya pasand hai?", seams: [{ right: "aiQuestion" }] };
+  const goAgain = { who: "teacher", text: "Wah! Ab phir se kaam par.", noFit: "aside", noFitGoOn: true, seams: [{ right: "aiReply" }, { right: "goOn", joint: "afterAiLine" }] };
+  assert.ok(P.asideGoOnNext({}, goAgain, 4, { prevT: ai, prevPrevT: go }));
+  assert.equal(P.asideGoOnNext({}, goAgain, 4, { prevT: ai, prevPrevT: checkin }), null);
+});
+

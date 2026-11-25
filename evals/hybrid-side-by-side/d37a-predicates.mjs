@@ -15,8 +15,15 @@
 //   goOnJointTwice  a go-on joint (afterAside, afterPark, afterAiLine, afterKeyGoOn) said in two of her turns running — "back to work" twice.
 import { VPC_MAX } from "../../server/director/state.js";
 
-// (main's second ruling fix 2: and her said-again line — seam "aside" — wherever it occurs, a check-in before it too)
-const REPLY = new Set(["asideReply", "aiReply", "park", "aside"]);
+const REPLY = new Set(["asideReply", "aiReply", "park"]);
+/** Main's second ruling fix 2 and third ruling item 3: her reply's seam — a reply, a park, or her side-topic line said at a check-in, seam
+ *  "aside", as the turn's first seam. → its index, or -1. */
+const replyAt = (k) => k.findIndex((x, n) => REPLY.has(x) || (n === 0 && x === "aside"));
+const AFTER_JOINTS = new Set(["afterAside", "afterPark", "afterAiLine"]);
+/** Third ruling item 3: the said-again turn after a go-on line is excused only as the order shapes it — no after* joint, within VPC_MAX. */
+const againShaped = (r) => !(r.seams ?? []).some((x) => AFTER_JOINTS.has(String(x.joint ?? ""))) && wordsOf(r.text) <= VPC_MAX;
+/** Third ruling item 3: the turn after the AI line said straight after her reply's go-on line is read as the turn after that go-on. */
+const aiAfterGoOn = (ctx) => ["aiQuestion", "aiLine"].includes(rightsOf(ctx?.prevT).at(-1)) && goOnRow(ctx?.prevPrevT);
 const rightsOf = (r) => (r?.seams ?? []).map((x) => String(x.right ?? ""));
 const wordsOf = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 const goOnRow = (r) => r?.who === "teacher" && r.noFit === "aside" && !!r.noFitGoOn;
@@ -46,18 +53,20 @@ export const D37A_PREDICATES = {
     return a && b ? `a go-on joint in two turns running (${a}, then ${b})` : null;
   },
   replyIntoPoint(L, r, i, ctx) {
-    if (r.who !== "teacher" || goOnRow(ctx?.prevT)) return null;
+    if (r.who !== "teacher" || (goOnRow(ctx?.prevT) && againShaped(r))) return null;
     const k = rightsOf(r);
-    const at = k.findIndex((x) => REPLY.has(x));
+    const at = replyAt(k);
     if (at < 0) return null;
     const rest = k.slice(at + 1);
     return rest.includes("point") && cardIn(rest) ? `her ${k[at]} runs into a new point and its card (${k.join(" > ")}, ${wordsOf(r.text)} words)` : null;
   },
   asideGoOnNext(L, r, i, ctx) {
-    if (r.who !== "teacher" || !goOnRow(ctx?.prevT)) return null;
+    const after = goOnRow(ctx?.prevT), afterAi = !after && aiAfterGoOn(ctx);
+    if (r.who !== "teacher" || (!after && !afterAi)) return null;
     if (/^(?:wrap|safeguard|break|stop)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     const k = rightsOf(r);
-    if (k.at(-1) === "aiQuestion") return null;
+    if (after && k.at(-1) === "aiQuestion") return null;
+    if (!againShaped(r)) return `the turn after her reply's go-on line says a second go-on joint or runs past ${VPC_MAX} words (${wordsOf(r.text)})`;
     // (a point and its card that do not fit split again as T1 splits any — the point on its check-in, noFit "point": still the held point)
     return (k.includes("point") || k.includes("held")) && (cardIn(k) || r.noFit === "point") ? null : `the turn after her reply's go-on line is not its held point and card (${k.join(" > ") || "no seams"})`;
   },
