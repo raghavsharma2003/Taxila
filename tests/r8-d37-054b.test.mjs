@@ -209,13 +209,27 @@ describe("B.5: waitNoQuestion and waitSecondNotReask", async () => {
     assert.deepEqual(flags([asked, C("pata nahi"), helpInvite, C("haan"), T(reask, "yes", ["stepAsk"])], "waitSecondNotReask"), []);
     assert.deepEqual(flags([asked, C("pata nahi"), helpInvite, C("haan"), T(SHORT_ASK_FORMS[0], "yes", ["reaskShort"])], "waitSecondNotReask"), [4]);
   });
-  test("waitNoQuestion trips on three wait turns with neither the question nor help (short ask, invitation, short ask) and not when one says either", () => {
+  // (RULING-B5 item 3: tightened from three turns to two — never two turns running with no question, the wait counted from her turns)
+  test("waitNoQuestion (RULING-B5: two, was three) trips on two wait turns running with neither the question nor help, and not when one says either", () => {
     const old = [asked, C("pehle main try karun?"), short, C("haan"), T(invite, "yes", ["yourTurn"]), C("haan"), T(SHORT_ASK_FORMS[1], "yes", ["reaskShort"])];
-    assert.deepEqual(flags(old, "waitNoQuestion"), [6]);
+    assert.deepEqual(flags(old, "waitNoQuestion"), [4, 6]);
     const reasked = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan"), T(SHORT_ASK_FORMS[1], "yes", ["reaskShort"])];
     assert.deepEqual(flags(reasked, "waitNoQuestion"), []);
-    const helped = [asked, C("pehle main try karun?"), short, C("haan"), T(invite, "yes", ["yourTurn"]), C("haan"), T(`Khaane se pehle wali poori barfi yaad karo. ${SHORT_ASK_FORMS[1]}`, "yes", ["help", "reaskShort"])];
+    const helped = [asked, C("pehle main try karun?"), short, C("haan"), T(`Khaane se pehle wali poori barfi yaad karo. ${SHORT_ASK_FORMS[1]}`, "yes", ["help", "reaskShort"])];
     assert.deepEqual(flags(helped, "waitNoQuestion"), []);
+    // (walk 4's old shape: her turn ended on the invitation with no question — wait one counted from her turns — then a short ask)
+    const fromHer = [asked, C("pata nahi"), T(invite, "give_up", ["yourTurn"]), C("haan"), T(SHORT_ASK_FORMS[0], "yes", ["reaskShort"])];
+    assert.deepEqual(flags(fromHer, "waitNoQuestion"), [4]);
+    assert.deepEqual(flags([...fromHer.slice(0, 4), T(reask, "yes", ["stepAsk"])], "waitNoQuestion"), []);
+  });
+  test("waitFourNotTold (RULING-B5 item 3): gated; a fourth wait turn that is help again is flagged; the step told or the key there is not", () => {
+    assert.ok(PREDICATES.waitFourNotTold); assert.ok(!PENDING.has("waitFourNotTold"));
+    const lead = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan"), T(`Khaane se pehle wali poori barfi yaad karo. ${prompt}`, "yes", ["help", "stepAsk"]), C("haan")];
+    assert.deepEqual(flags([...lead, T(`Neeche wala number poori barfi ki baat karta hai. ${reask}`, "yes", ["help", "stepAsk"])], "waitFourNotTold"), [8]);
+    const told = T("Neeche wala number saare tukde ginta hai, yaani 5. Tumhari baari: plate par bache tukde poori barfi ka kaunsa fraction hain?", "yes", ["workedStep", "card"], );
+    assert.deepEqual(flags([...lead, { ...told, stepAnswer: { beat: "c4-maths-ch05-t01-s1:worked:step1", right: false, told: true }, heardCap: P }], "waitFourNotTold"), []);
+    // (a third wait turn is not read)
+    assert.deepEqual(flags([...lead.slice(0, 6), T(`Neeche wala number poori barfi ki baat karta hai. ${reask}`, "yes", ["help", "stepAsk"])], "waitFourNotTold"), []);
   });
 });
 
@@ -267,6 +281,22 @@ describe("B.4: questionThreeRunning exempts the wait's re-ask; stepToldEarly exe
     assert.deepEqual(flags([asked, C("pata nahi"), T(`${simpler} ${reask}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), told], "stepToldEarly"), []);
     // (… but not with the simpler unsaid)
     assert.deepEqual(flags([asked, C("pata nahi"), T(`Kuch aur socho. ${reask}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), told], "stepToldEarly"), [6]);
+  });
+  // (RULING-B5 item 3: item 2's told turn — wait four, the cap whatever help is left (heardCap) — is allowed exactly as the cap's is)
+  test("stepToldEarly (RULING-B5): the step told at wait four as the cap (heardCap) passes with help left; the same turn with no cap is flagged", () => {
+    const told = (extra) => T("Neeche wala number saare tukde ginta hai, yaani 5. Tumhari baari: plate par bache tukde poori barfi ka kaunsa fraction hain?", "yes",
+      ["workedStep", "card"], { stepAnswer: { beat: "c4-maths-ch05-t01-s1:worked:step1", right: false, told: true }, ...extra });
+    const lead = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan"), T(`Kuch aur socho. ${prompt}`, "yes", ["help", "stepAsk"]), C("haan")];
+    assert.deepEqual(flags([...lead, told({ heardCap: P })], "stepToldEarly"), []);
+    assert.deepEqual(flags([...lead, told({})], "stepToldEarly"), [8]);
+  });
+  test("questionFiveTimes (RULING-B5): wait four's cap after the question's fourth hearing is not read (a yes cue, and the turn ends on no question of it); a fifth hearing after a miss outside a wait still is", () => {
+    const key = T("Neeche wala number saare tukde ginta hai, yaani 5. Tumhari baari: plate par bache tukde poori barfi ka kaunsa fraction hain?", "yes",
+      ["workedStep", "card"], { stepAnswer: { beat: "c4-maths-ch05-t01-s1:worked:step1", right: false, told: true }, heardCap: P });
+    const lead = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan"), T(`${HELP} ${prompt}`, "yes", ["help", "stepAsk"]), C("haan")];
+    assert.deepEqual(flags([...lead, key], "questionFiveTimes"), []);
+    const misses = [asked, C("7"), T(`Nahi. ${reask}`, "wrong", ["verdict", "stepAsk"]), C("8"), T(`Nahi. ${prompt}`, "wrong", ["verdict", "stepAsk"]), C("9"), T(`Nahi. ${reask}`, "wrong", ["verdict", "stepAsk"]), C("6"), T(`Nahi. ${prompt}`, "wrong", ["verdict", "stepAsk"])];
+    assert.deepEqual(flags(misses, "questionFiveTimes"), [8]);
   });
   test("waitSecondNotReask (RULING-B3): wait two as help passes where the question was last said as its reask; flagged where it was last said whole", () => {
     const simpler = norm(script.skills[0].workedExample.steps[0].simpler.hi);

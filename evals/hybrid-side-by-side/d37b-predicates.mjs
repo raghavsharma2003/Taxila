@@ -1,9 +1,10 @@
 // to-brain 054 B (docs/patches/to-brain/054-director36-the-turns-shape-walk-only.md, B.5; main's ruling on question 3): a wait says the
 // question. Registered in dry-predicates.mjs after d37a; both gated (tests/r8-d37-054b.test.mjs pins each on made rows).
-//   waitNoQuestion      three of her turns at one question after a try-first or a bare yes (the wait: her turns whose child line was
+//   waitNoQuestion      (RULING-B5: two, was three) of her turns at one question after a try-first or a bare yes (the wait: her turns whose child line was
 //                       "Haan, pehle tum try karo."'s cue or a bare yes — cell column try_first or yes — at the question her turn before
-//                       was at), none of the three saying the question (any form the script writes for it) or help. A side-topic's turn in
+//                       was at, or her turn that ended on a short ask or an invitation, counted as wait one), neither saying the question (any form the script writes for it) or help. A side-topic's turn in
 //                       the wait is passed over: it neither restarts nor advances the wait (052 B4). director36 c4 steady 28 to 48.
+//   waitFourNotTold     (RULING-B5, gated) the wait's fourth turn is not the cap: the step told or the key.
 //   waitSecondNotReask  the wait's second turn does not end on the question's own `reask` (RULING-B3: allowed where the turn that last
 //                       said the question before the wait ended on that reask and wait two is help — what wait three is).
 // And B.4's re-pins, by name, for exactly the turns main's ruling on question 3 names (read as before everywhere else):
@@ -113,7 +114,9 @@ function waitPlace(L, i, script) { return waitRowOf(L, i, script)?.n ?? 0; }
 function waitRowOf(L, i, script) {
   const w = waitAt(L, i, script);
   if (w) return { n: w.turns.length, P: w.P, first: w.turns[0] };
-  if (!waitCue(L.rows[i])) return null;
+  // (only a turn that ends the wait — the step told or the key — is read by the turn before it: a turn after it starts afresh)
+  const r = L.rows[i];
+  if (!waitCue(r) || !(r.stepAnswer?.told || seamsOf(r).some((k) => ENDS.has(k)))) return null;
   let j = prevTeacher(L, i);
   while (j >= 0 && asideTurn(L.rows[j]) && !waitCue(L.rows[j])) j = prevTeacher(L, j);
   const p = j >= 0 ? waitAt(L, j, script) : null;
@@ -151,10 +154,16 @@ export const D37B_PREDICATES = {
   /** B.5: three of her turns at one question after a try-first or a bare yes, none saying the question or help. Gated. */
   waitNoQuestion(L, r, i, ctx) {
     const w = waitAt(L, i, ctx?.script);
-    if (!w || w.turns.length < 3) return null;
-    const last3 = w.turns.slice(-3);
-    return last3.some((n) => saysOrHelps(ctx.script, L.rows[n], w.P)) ? null
-      : `three turns of a wait at ${w.P} (rows ${last3.join(", ")}) and none says the question or help`;
+    // (RULING-B5 item 3: tightened from three turns to two — never two turns running with no question; the wait counted from her turns)
+    if (!w || w.turns.length < 2) return null;
+    const last2 = w.turns.slice(-2);
+    return last2.some((n) => saysOrHelps(ctx.script, L.rows[n], w.P)) ? null
+      : `two turns of a wait at ${w.P} running (rows ${last2.join(", ")}) and neither says the question or help`;
+  },
+  /** RULING-B5 item 3: a fourth wait turn (the wait counted from her turns) that is not the cap — the step told or the key. Gated. */
+  waitFourNotTold(L, r, i, ctx) {
+    if (r.who !== "teacher" || waitPlace(L, i, ctx?.script) !== 4) return null;
+    return r.stepAnswer?.told || seamsOf(r).some((k) => k === "key" || k === "workedStep") ? null : `the wait's fourth turn is not the step told or the key: "${sentencesOf(r.text).at(-1) ?? ""}"`;
   },
   /** B.5: the wait's second turn ends on the question's own `reask`. Gated. */
   waitSecondNotReask(L, r, i, ctx) {
