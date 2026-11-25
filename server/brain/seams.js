@@ -92,6 +92,8 @@ export const SEAM_TABLE = [
   // (to-brain 054 A(i), main's ruling D1: her reply to a side-topic said apart from the point and card it led into ends on its own joint, said
   // as a go-on line — the turn's last seam, into nothing: the "goOn" end the walk marks with noFit "aside")
   ["asideReply", "goOn", "afterAside"], ["aiReply", "goOn", "afterAiLine"], ["park", "goOn", "afterPark"],
+  // (main's second ruling fix 2: and her said-again line, the side-topic brought up again at a check-in)
+  ["aside", "goOn", "afterAside"],
   // (to-brain 054 A: the no-other-drawing line at a key's check-in, then the go-on line the check-in would have taken)
   ["noPicture", "afterKeyGoOn", "afterKeyGoOn"],
 ];
@@ -346,7 +348,7 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   // hers when it passes the join checks and says the verdict it opens: a right word on a right answer, a miss word on a miss)
   const opener = verdictOpener(stripped, kinds, { kit, state, lang, info });
   // (to-brain 054 A(i): the reply's go-on joint ends the turn — an end seam after the reply, placed by the table as any joint is)
-  if (info.goOnAfterReply && ["asideReply", "aiReply", "park"].includes(kinds.at(-1))) { stripped.push({ part: "aside", text: "", goOnEnd: true }); kinds.push("goOn"); }
+  if (info.goOnAfterReply && ["asideReply", "aiReply", "park", "aside"].includes(kinds.at(-1))) { stripped.push({ part: "aside", text: "", goOnEnd: true }); kinds.push("goOn"); }
   const out = [], seams = [], said = {}, used = [];
   let prevKind = "start";
   // (dc-r8-director25 L2 item 5: the record's left kind — a key said inside a verdict's part is recorded as its own part, after the

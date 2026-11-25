@@ -10,7 +10,8 @@
 //   closeCardLong   A(iii): a worked close (its afterWorked joint) and the next card said in one turn of more than 70 words.
 import { VPC_MAX } from "../../server/director/state.js";
 
-const REPLY = new Set(["asideReply", "aiReply", "park"]);
+// (main's second ruling fix 2: and her said-again line — seam "aside" — wherever it occurs, a check-in before it too)
+const REPLY = new Set(["asideReply", "aiReply", "park", "aside"]);
 const rightsOf = (r) => (r?.seams ?? []).map((x) => String(x.right ?? ""));
 const wordsOf = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 const goOnRow = (r) => r?.who === "teacher" && r.noFit === "aside" && !!r.noFitGoOn;

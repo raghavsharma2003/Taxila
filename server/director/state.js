@@ -5924,7 +5924,7 @@ function replyApart(prev, input, out) {
   let lm = s.lastMove, ui = out.ui;
   if (s.splitHold) {
     const h = s.splitHold;
-    if (!h.teach || !lm.splitTeach || h.helpSplit || !h.ui?.ask?.itemId || !(lm.asideAck || lm.returnReply || (s.later ?? []).some((e) => e.at === s.turn && e.share && e.servedAt == null))) return out;
+    if (!h.teach || !lm.splitTeach || h.helpSplit || !h.ui?.ask?.itemId || !(lm.asideAck || lm.returnReply || lm.asideAgain || (s.later ?? []).some((e) => e.at === s.turn && e.share && e.servedAt == null))) return out;
     const { splitTeach: _st, checkinOk: _ck, noFit: _nf, quick: _q, quickNoRoom: _qn, stayCheckin: _sc, ...m0 } = lm;
     lm = m0; ui = h.ui;
   }
@@ -5936,7 +5936,9 @@ function replyApart(prev, input, out) {
   // (a point said now, or held behind her AI line or a return and said first now)
   const point = (lm.point && String(lm.point).trim()) || (lm.heldSaid?.length && [lm.scriptBeat?.kind, lm.heldBeat?.kind].includes("explain"));
   if (!point) return out;
-  const reply = !!(lm.asideAck || lm.returnReply);
+  // (main's second ruling fix 2 — dry offtopic c6-ch07-t03 50, c4-ch01-t02 46, c5-ch02-t03 46: the side-topic said again at a bridge's or a
+  // point's check-in, her said-again line, is a reply like any other: it ends on its joint as a go-on line)
+  const reply = !!(lm.asideAck || lm.returnReply || lm.asideAgain);
   const parkNow = (s.later ?? []).some((e) => e.at === s.turn && e.share && e.servedAt == null);
   if (!reply && !parkNow) return out;
   const kind = reply ? (prev?.lastMove?.tasteAsked ? "afterAiLine" : "afterAside") : "afterPark";
@@ -5944,6 +5946,7 @@ function replyApart(prev, input, out) {
   const form = forms?.length ? seamForm(forms, s, kind) : null;
   if (!form) return out;
   if (rejoin) { s.activeItemId = s.splitHold.activeItemId ?? undefined; s.quickItem = undefined; s.splitHold = undefined; }
+  s.goOnTurn = s.turn;
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, l2Break: true, noFit: "aside", vpcGoOn: String(form).trim(), replyApart: kind,
     ...(lm.asideAck ? { asideAck: true } : {}), ...(lm.returnReply ? { returnReply: lm.returnReply } : {}), ...(lm.sadAside ? { sadAside: true } : {}),
     ...(lm.asideAgain ? { asideAgain: lm.asideAgain } : {}), ...(leadBeatOf ? { scriptBeat: leadBeatOf } : {}) };
