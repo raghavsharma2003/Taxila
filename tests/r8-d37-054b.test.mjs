@@ -467,3 +467,38 @@ describe("sixth ruling, item 1: a try-first is answered as a request, wherever i
     assert.deepEqual(gated([asked, C("haan"), shortY, C("pehle main try karun?"), goInv, C("haan"), T(invite, "yes", ["yourTurn"])]), ["6:waitNoQuestion", "6:waitSecondNotReask"]);
   });
 });
+
+// Main's sixth ruling on cause B, item 2: what the child said is recorded as said. From wait three the walk reads the turn AS a give-up to
+// choose what she says; the talk monitor (noteChildTurn), the persona signals, the learner's affect, stepRead.said and the record's cell keep
+// the child's own "haan" and the cue yes.
+describe("sixth ruling, item 2: a wait turn read as a give-up keeps the child's own words everywhere else", async () => {
+  // (a long yes — "haan" fifteen times — so the persona's signals tell it from the give-up's two terse words: chatty, never terse)
+  const LONG = Array(15).fill("haan").join(" ");
+  const w = await walkTo("c4-maths-ch05-t01", "step");
+  const turns = await w.play(["haan", "haan"]);
+  const before = turns[1].state;
+  w.done();
+  test("the walk", () => { assert.equal(turns[1].lm.waitN, 2); });
+  test("wait three, read as a give-up for her turn, is recorded with the child's words: talk, persona, affect, stepRead.said, cell", async () => {
+    const { step } = await import("../server/director/state.js");
+    const kit = w.kit;
+    const r = step({ ...before, recent: [...(before.recent ?? []), { who: "child", text: LONG }] }, { event: "turn", kit, text: LONG, cls: { confidence: 0.9, flags: {}, outcome: "no_evidence" }, now: (before.turn + 1) * 20_000 });
+    const lm = r.state.lastMove;
+    assert.equal(lm.waitN, 3);
+    assert.ok(lm.stepReply, "the step's reply is on the move");
+    // (the talk monitor: fifteen words, labelled by the child's own line — never "idk")
+    assert.equal(r.state.talk.childWords - (before.talk?.childWords ?? 0), 15);
+    assert.notEqual(Object.entries(r.state.talk.mix).find(([k, v]) => v !== (before.talk?.mix?.[k] ?? 0))?.[0], "idk");
+    // (the learner's affect: no don't-know streak from a "haan")
+    assert.equal(r.state.affect.dontKnowStreak, 0);
+    // (the persona: this turn's signals are a long reply's, never the give-up's terse two words)
+    const mine = (r.state.persona?.log ?? []).filter((x) => x.turn === r.state.persona.turn).map((x) => x.key);
+    assert.ok(r.state.persona, "a persona state");
+    assert.ok(mine.includes("len+") && !mine.includes("reg-"), mine.join(","));
+    // (stepRead.said, as the beat's evidence keeps it)
+    const ev = (r.state.beatEvidence ?? []).filter((x) => x.kind === "stepAsk").at(-1);
+    assert.equal(ev?.said, LONG.slice(0, 80).trim());
+    // (the record's cell: the cue yes)
+    assert.equal(lm.cell?.column, "yes");
+  });
+});

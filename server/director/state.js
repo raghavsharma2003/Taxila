@@ -4139,6 +4139,9 @@ let leadBeatOf = null;
 /** Brain 044: whether this step replays a recorded run (tests/fixtures/replay.mjs runScriptOf) — it walks what that run walked, with the counts
  *  it ran under (her aside reply and park line counted). Set per step: the walk is synchronous. */
 let recordedNow = false;
+/** Main's sixth ruling on cause B, item 2: the child's own line on a wait turn the walk reads AS a give-up (step()'s wait three and after) —
+ *  { text, cls } as said, for everything that outlives that choice (the talk monitor, the persona signals, stepRead.said); null otherwise. */
+let childOwn = null;
 /** dc-r8-director28 Brain 044 T7: "let me try" at an asked step means that step — she says the try-first line and the step's question again,
  *  the step still asked (c4 stuck 28: steps 1 and 2 never said, recorded told; c6 offtopic 38; c5-t02 steady 32, offtopic 38). null otherwise. */
 function stepTryAgain(prev, input) {
@@ -4164,6 +4167,7 @@ function stepTryAgain(prev, input) {
 }
 export function step(prev, input) {
   recordedNow = recordedWalk(input);
+  childOwn = null;
   backToWords = backToWordsOf(input?.kit);
   afterWorkedWords = afterWorkedWordsOf(input?.kit);
   // (dc-r8-director28 Brain 044 T1: after the greeting's simpler wording, the next turn is the hook, the first point and its card — a second
@@ -4180,6 +4184,8 @@ export function step(prev, input) {
   // about to answer, and the same re-ask twice in three turns is the nagging B.7 warns of. Gated stepToldEarly allows that told step)
   const wait = waitOf(prev, input);
   if (wait && (wait.n >= 3 || wait.reaskHeard)) {
+    // (main's sixth ruling on cause B, item 2: the rewrite chooses what she says, nothing else — the child's own words and cue are kept)
+    childOwn = { text: input0.text, cls: input0.cls };
     const { request: _rq, ...restW } = input.cls ?? {};
     input = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P, ...(wait.n >= 4 ? { waitCap: true } : {}) };
   }
@@ -4193,7 +4199,7 @@ export function step(prev, input) {
   if (isQuickId(prev?.activeItemId)) {
     const m = /^stepask:(.+):(\d+)$/.exec(String(prev.activeItemId));
     prev = { ...prev, activeItemId: undefined, quickItem: undefined, ...(isQuickId(prev.cardUnsaid) ? { cardUnsaid: undefined } : {}),
-      ...(m && input?.event === "turn" ? { stepRead: { skillId: m[1], step: Number(m[2]), outcome: input.cls?.outcome ?? null, said: String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80) } } : {}) };
+      ...(m && input?.event === "turn" ? { stepRead: { skillId: m[1], step: Number(m[2]), outcome: input.cls?.outcome ?? null, said: String((childOwn ?? input).text ?? "").replace(/\s+/g, " ").trim().slice(0, 80) } } : {}) };
   }
   // (dc-r8-director25 H4: the said set, and the one help decision of this turn — before the walk for a request that stays on its part,
   // after it for a hint, a card asked or a turn that goes on)
@@ -4627,7 +4633,8 @@ function step0(prev, input) {
   if (input.event !== "start") s.turn += 1; // every call bumps the turn: the route's optimistic state check keys on it
   s.minutes = Math.round((now - s.startedAt) / 6000) / 10;
   if (input.event === "turn") {
-    s.affect = nextAffect(s.affect, { read: input.cls?.flags ?? {}, outcome: input.cls?.outcome, itemId: s.activeItemId, answer: input.answer });
+    // (main's sixth ruling on cause B, item 2: a wait turn read as a give-up sets no dontKnow on the learner's affect — the child said "haan")
+    s.affect = nextAffect(s.affect, { read: (childOwn?.cls ?? input.cls)?.flags ?? {}, outcome: input.cls?.outcome, itemId: s.activeItemId, answer: input.answer });
   }
   if (input.comp) s.comp = input.comp;
   const active = findItem(s, input.kit, s.activeItemId);
@@ -4652,16 +4659,17 @@ function step0(prev, input) {
   }
   if (input.event === "turn" && !input.branch) {
     // Conversation mix and child talk share (talk.js, W2-C #5): a monitor on the child's turn, never evidence.
-    s.talk = noteChildTurn(s.talk, { cls: input.cls, text: input.text ?? input.answer ?? "",
+    // (main's sixth ruling on cause B, item 2: a wait turn read as a give-up is recorded as the child said it)
+    s.talk = noteChildTurn(s.talk, { cls: childOwn?.cls ?? input.cls, text: (childOwn ?? input).text ?? input.answer ?? "",
       explaining: !!(active && s.pendingWhy === active.id) || (s.phase === "teachback" && s.teachbackAsked) });
   }
   if (input.event === "turn" && s.persona) {
-    const v = verdict(input.cls);
+    const v = verdict(childOwn?.cls ?? input.cls);
     s.turnsSinceError = v === "wrong" ? 0 : (s.turnsSinceError ?? 99) + 1;
     // Vibe signals (persona/signals.js): what the child said and did, plus the voice PACE signals only (slowerPace,
     // onset z on a think question). Pace knobs, never a belief (CE8). An explicit pace request ("dheere", the Slower
     // help) applies the same turn (persona/pace.js, W2-C #6).
-    const childWords = input.text ?? input.answer ?? "";
+    const childWords = (childOwn ?? input).text ?? input.answer ?? "";
     const pace = explicitPace(childWords);
     if (input.cls?.help === "slower") pace.explicitSlower = true;
     s.persona = personaStep(s.persona, { ...turnSignals({ text: childWords, bargeIn: !!input.bargeIn,
