@@ -931,6 +931,17 @@ export function rotateOf(xs, state) {
   const h = Math.imul(((state?.seed ?? 0) >>> 0) + (state?.turn ?? 0) * 2654435761, 2246822519) >>> 0;
   return pool[(h >>> 7) % pool.length];
 }
+/** to-brain 054 close item 1 (cause A(ii); both judges of cause A, c5-t01 stuck 4 and steering 4: "Ab tak samajh aaya?"): the check-in
+ *  that ends the first teaching turn after two requests at the greeting is said to a child who has just said twice that they did not
+ *  understand — never a form that asks whether they understood ("samajh aaya", English "make sense"); the next form of the same list
+ *  that does not. A choice among the list's own forms: no new words. */
+export const ASKS_UNDERSTOOD = /samajh\s+aa?ya|make\s+sense/i;
+export function notAskingUnderstood(form, xs) {
+  if (!form || !ASKS_UNDERSTOOD.test(String(form)) || !Array.isArray(xs) || !xs.length) return form;
+  const i = xs.indexOf(form);
+  for (let k = 1; k <= xs.length; k++) { const f = xs[((i < 0 ? 0 : i) + k) % xs.length]; if (!ASKS_UNDERSTOOD.test(String(f))) return f; }
+  return form;
+}
 /** v6.5 F1: the forms of code's frames (the first is the one the older tests know). */
 /** v6.6 K3: a board's "'?'" mark named in a spoken line is said in words ("sawaal wala nishaan"), never a "?" glyph. */
 export function spokenMarks(t, lang = "hinglish") {
@@ -3810,6 +3821,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const lastS = [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...body].filter((x) => norm(x)).at(-1);
       if (lastS && !/[?？]\s*$/.test(norm(lastS))) { tail = rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state); guard.l2Checkin = true; }
     }
+    // (054 close item 1: A(ii)'s first turn after two requests at the greeting never ends on a "samajh aaya" check-in)
+    if (state.lastMove?.startApart && tail && tail !== card) { const xs = (kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0]; if (xs.includes(tail)) { const t2 = notAskingUnderstood(tail, xs); if (guard.checkinTail === tail) guard.checkinTail = t2; tail = t2; } }
     // (to-brain 049 B6.1, main's ruling of 2026-11-23: a right verdict split from the point it led into — the walk's noFit "vpc" — ends on the
     // go-on joint the walk chose, a statement (state.js splitLongOnce, help.js goOnPlain), never on a check-in: after a right answer she gives
     // the reason and goes on. The one place besides the yourTurn invitation where a statement tail stands)
