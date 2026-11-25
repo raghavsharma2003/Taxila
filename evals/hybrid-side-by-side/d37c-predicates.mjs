@@ -20,8 +20,12 @@
 //   questionFiveTimes   (053 B3, gated, as d35a's) allows a fifth hearing only on a turn whose body is the card's named wrong answer's reason
 //                       (its marked whyAlt, or that answer's wrongAnswers why) said for the first time at that card, the child's line before
 //                       it being that answer; reads as before everywhere else.
+// And main's fifth ruling on cause C, correction 1 (gated):
+//   spentBeforeWorkedWhy the "nothing easier" line (seam helpSpent) at an own step whose key was told (C1), the worked example's own `why`
+//                       never said whole before it — where that why is not the step's own why again (the same sentence, or it cut short:
+//                       help.js sameReason). judge-c-t02: stuck c5-ch02-t02 48.
 // (spentWithShortUnsaid, C6's, is removed: main's third ruling on cause C, item 2 — C6 is taken out, its premise was wrong)
-import { helpPart, at, normSentence, sentencesOf, TEACHBACK_PART } from "../../server/director/help.js";
+import { helpPart, at, normSentence, sentencesOf, TEACHBACK_PART, sameReason } from "../../server/director/help.js";
 import { saidIn } from "../../server/director/script.js";
 import { wrongList } from "../../server/grading/script-answer.js";
 import { D35A_PREDICATES } from "./d35a-predicates.mjs";
@@ -98,6 +102,9 @@ export const D37C_PREDICATES = {
     if (!keyRow(r)) {
       const wA = p?.worked ? hi(at(ctx.script, `${p.worked}.answer`)) : null, wW = p?.worked ? hi(at(ctx.script, `${p.worked}.why`)) : null;
       const close = [wA, wW].find((w) => w && String(w).trim().length > 8 && saysWhole(r.text, w));
+      // (RULING-E2 item 2: the worked example's reason said as HELP after the own step's answer was already told with its own reason on an
+      // earlier turn of that step is RULING-C5 item 1's turn, not a close in place of the key — dry stuck c5-ch02-t02 48 after 46)
+      if (close && seamsOf(r).includes("help") && L.rows.slice(0, i).some((x) => keyRow(x) && partOf(x) === partOf(r) && saysWhole(x.text, why))) return null;
       return close && !saysWhole(r.text, why) ? `the worked example's close said in place of an own step's key, no key seam ("${String(close).slice(0, 50)}…")` : null;
     }
     if (/toh poora jawab|so the full answer/i.test(String(r.text ?? ""))) return `an own step's key with "Toh poora jawab" after it`;
@@ -130,6 +137,16 @@ export const D37C_PREDICATES = {
     const p = nodeOfPart(ctx?.script, partOf(r))?.part;
     const ws = p?.worked ? hi(at(ctx.script, `${p.worked}.simpler`)) : null;
     return ws && saysAny(r.text, ws) ? `help at an own step from the worked problem's simpler ("${ws.slice(0, 50)}…")` : null;
+  },
+  spentBeforeWorkedWhy(L, r, i, ctx) {
+    if (r.who !== "teacher" || !isOwnStep(partOf(r)) || !seamsOf(r).includes("helpSpent")) return null;
+    const { part: p, node: n } = nodeOfPart(ctx?.script, partOf(r)) ?? {};
+    const wv = p?.worked ? at(ctx.script, `${p.worked}.why`) : null, ww = hi(wv);
+    if (!ww || sameReason(wv, n?.why)) return null;
+    // (after the step's key told at this own step — not a right answer — and before any later part)
+    const told = L.rows.slice(0, i).some((x) => keyRow(x) && partOf(x) === partOf(r) && String(x.cell?.column ?? "") !== "right");
+    if (!told) return null;
+    return before(L, i).some((t) => saysWhole(t, ww)) ? null : `"nothing easier" after an own step's told answer, the worked example's reason unsaid ("${String(ww).slice(0, 50)}…")`;
   },
   thenHelpOtherBoard(L, r, i, ctx) {
     if (r.who !== "teacher" || seamsOf(r).includes("remediation")) return null;

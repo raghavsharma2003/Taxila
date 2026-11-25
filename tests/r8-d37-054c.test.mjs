@@ -427,3 +427,39 @@ describe("RULING-C4 item 3: a right answer's reason joint follows rightWhyLead's
     assert.equal(at(["Nahi, yeh jawab nahi hai. Is sawaal ka jawab 1/6 kilometre par hai, kyunki yeh sadak 6 barabar gaps mein kati hai. Yahan tak theek hai?"]).text, "Sahi jawab. 4 barabar gaps mein har gap 1/4 kilometre ka hai");
   });
 });
+
+// Main's fifth ruling on cause C, correction 1 (builder E's patch, applied by builder F with RULING-E2 item 2): after an own step's told
+// answer the worked example's own `why`, said whole over the answer board, is the keyed own step's last rung before the "nothing easier" line;
+// spentBeforeWorkedWhy (gated) reads that line said with it unsaid; ownKeyNoReason does not read it as a close in place of the key.
+describe("RULING-C5 correction 1: the worked example's reason before \"nothing easier\" after an own step's told answer", async () => {
+  const { ladderSpec, helpPart, sameReason } = await import("../server/director/help.js");
+  const sc = scriptOf("c5-maths-ch02-t02"), sk = sc.skills[0], we = sk.workedExample, ys = we.yourStep, part = `${sk.skillId}:worked:yourStep`;
+  const row = (text, column, seams) => ({ who: "teacher", text, cell: { part, column }, seams: seams.map((right) => ({ right })) });
+  const told = row(`Nahi, yeh theek nahi hai. Is sawaal ka sahi jawab: ${ys.key}, kyunki ${ys.why.hi}. Yahan tak theek hai?`, "misconception", ["missVerdict", "key", "checkin"]);
+  const workedHelp = row(`${we.why.hi}. Yahan tak saaf hai?`, "clarify", ["help", "checkin"]);
+  const spent = row("Yahi sabse seedha tareeka hai jo mere paas hai, koi baat nahi. Theek hai, isko yahin rakhte hain; ab agli baat.", "clarify", ["helpSpent", "afterKeyGoOn"]);
+  test("ladderSpec: the keyed own step ends on the worked why over the answer board; not where it is the step's own why (sameReason)", () => {
+    const p = helpPart(sc, part);
+    const keyed = ladderSpec(sc, p, { keyed: true });
+    assert.equal(keyed.at(-1).field, "workedWhy");
+    assert.equal(keyed.at(-1).board, p.answerBoard);
+    assert.ok(!ladderSpec(sc, p).some((r) => r.field === "workedWhy"), "not before the key");
+    const same = JSON.parse(JSON.stringify(sc)); same.skills[0].workedExample.why = { hi: ys.why.hi.split(",")[0], en: ys.why.en.split(",")[0] };
+    assert.ok(sameReason(same.skills[0].workedExample.why, ys.why), "the step's why cut short");
+    assert.ok(!ladderSpec(same, helpPart(same, part), { keyed: true }).some((r) => r.field === "workedWhy"), "the same sentence cut short: as built");
+  });
+  test("spentBeforeWorkedWhy: flagged with the worked why unsaid; not once it was said (dry stuck c5-ch02-t02 46, 48, 50)", () => {
+    assert.ok(PREDICATES.spentBeforeWorkedWhy); assert.ok(!PENDING.has("spentBeforeWorkedWhy"));
+    assert.deepEqual(flagsOf([C("Rahul"), told, C("yeh step samajh nahi aaya"), spent], "spentBeforeWorkedWhy", sc), [3]);
+    assert.deepEqual(flagsOf([C("Rahul"), told, C("yeh step samajh nahi aaya"), workedHelp, C("phir bhi samajh nahi aaya"), spent], "spentBeforeWorkedWhy", sc), []);
+    assert.deepEqual(flagsOf([C("Rahul"), C("pata nahi"), spent], "spentBeforeWorkedWhy", sc), [], "no key told at the step");
+  });
+  test("RULING-E2 item 2, ownKeyNoReason: the worked why as help after the step's key told with its own reason is not flagged; in place of the key it still is", () => {
+    assert.deepEqual(flagsOf([C("Rahul"), told, C("yeh step samajh nahi aaya"), workedHelp], "ownKeyNoReason", sc), []);
+    assert.deepEqual(flagsOf([C("Rahul"), workedHelp], "ownKeyNoReason", sc), [1], "no key told before it: a close in place of the key");
+    const toldNoWhy = row(`Nahi. Is sawaal ka sahi jawab: ${ys.key}. Yahan tak theek hai?`, "misconception", ["missVerdict", "key", "checkin"]);
+    assert.deepEqual(flagsOf([C("Rahul"), toldNoWhy, C("samajh nahi aaya"), workedHelp], "ownKeyNoReason", sc), [1, 3], "the key told without its own reason: the help after it is still read");
+    const closeNoHelp = row(`Nahi, ${we.why.hi}. Yahan tak theek hai?`, "misconception", ["missVerdict", "checkin"]);
+    assert.deepEqual(flagsOf([C("Rahul"), told, C("Rahul"), closeNoHelp], "ownKeyNoReason", sc), [3], "a close with no help seam after the key: still flagged");
+  });
+});

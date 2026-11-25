@@ -184,6 +184,12 @@ export function helpPartFrom(script, p) {
   return out;
 }
 
+/** Whether two script reasons (strings or { hi, en }) are one sentence — the same, or one the other cut short — in either language. */
+export function sameReason(a, b) {
+  const forms = (v) => (typeof v === "string" ? [v] : [v?.hi, v?.en]).filter((x) => typeof x === "string" && x.trim()).map((x) => normSentence(x.replace(/[.!?\u0964]+\s*$/, "")));
+  const A = forms(a), B = forms(b);
+  return A.some((x) => B.some((y) => !!x && !!y && (x === y || x.startsWith(y) || y.startsWith(x))));
+}
 /** A part's ladder: [{ field, path, value, board }], rungs whose field the script has, in order. `keyed`: the card just keyed. */
 export function ladderOf(script, part, { keyed = false } = {}) {
   return ladderSpec(script, part, { keyed }).filter((r) => r.present);
@@ -197,7 +203,18 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
   let rungs;
   // (dc-r8-director27 P3, c5-t02 stuck 42: after a key the why's other wording comes first, then the card's own wordings still unsaid — the
   // picker decides before any joint does; the go-on line was said with the worked example's simpler unsaid)
-  if (keyed) return CARD_KINDS.has(part.kind) ? [rung("whyAlt", `${part.path}.whyAlt`, part.answerBoard), ...ladderSpec(script, part)] : [];
+  if (keyed) {
+    if (!CARD_KINDS.has(part.kind)) return [];
+    const own = [rung("whyAlt", `${part.path}.whyAlt`, part.answerBoard), ...ladderSpec(script, part)];
+    // (main's fifth ruling on cause C, correction 1 — judge-c-t02 stuck c5-ch02-t02 46 → 48: after C1's told answer at an own step the worked
+    // problem's close is never said, and "yeh step samajh nahi aaya" got "Yahi sabse seedha tareeka hai…" while that close's reason was unsaid
+    // with its board up. The worked example's own `why`, said whole over the answer board it is about, is the keyed own step's last rung —
+    // before the "nothing easier" line; not where it is the step's own why again (the same sentence, or the same sentence cut short: as built).
+    // After a right answer the worked close said it, so it is spent there)
+    const ww = part.kind === "your_step" && part.worked ? rung("workedWhy", `${part.worked}.why`, part.answerBoard) : null;
+    if (ww?.present && !sameReason(ww.value, at(script, `${part.path}.why`))) own.push(ww);
+    return own;
+  }
   switch (part.kind) {
     case "point": case "checkin": rungs = [rung("pointAlt", `${part.point}.pointAlt`, part.board), rung("simpler", `${part.point}.simpler`, part.board)]; break;
     case "card": {
