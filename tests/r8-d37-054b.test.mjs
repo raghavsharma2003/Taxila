@@ -55,6 +55,8 @@ async function walkTo(TOPIC, which, skip = 0) {
   return { P, script, play, done, kit, now: () => r.state };
 }
 const reaskFilled = (script, P) => norm(fillFriend(reaskOf(script, P), "Riya"));
+/** The worked step whose question is at path P (".skills[0].workedExample.steps[0].ask" → that step). */
+const stepOf = (script, P) => String(P ?? "").replace(/\.ask$/, "").match(/\.(\w+)|\[(\d+)\]/g)?.reduce((v, k) => (v == null ? v : v[k.startsWith("[") ? Number(k.slice(1, -1)) : k.slice(1)]), script);
 
 // (at a card the walker reaches by right answers — a point's card — a try-first is the attempt-first format as built, the card held for the
 // try: the waits there start on a bare haan)
@@ -85,8 +87,18 @@ for (const [TOPIC, which, skip] of [["c4-maths-ch05-t01", "step", 0], ["c6-maths
     test("wait three is help as for a give-up, ending on the question (no invitation, no short ask), never the same question sentence as wait two", () => {
       assert.equal(turns[2].lm.waitN, 3);
       // (re-pinned by d37 RULING-H items 15 and 18a: at the step the wait now opens on a bare haan, as in the side-topic test below — wait two
-      // hears the step's simpler before its reask (046 Q1's second yes), so wait three's give-up has nothing left: the step told, as built)
-      if (which === "step") { assert.ok(turns[2].lm.stepReply?.told, turns[2].text); assert.ok(turns[1].text.length > reaskFilled(w.script, w.P).length + 20, turns[1].text); return; }
+      // hears the step's simpler before its reask (046 Q1's second yes), so wait three's give-up has nothing left: the step told, as built.
+      // BRIEF-G5 item 3a, pr9: asserted, not skipped — wait three at the step is the step's own told line with its reason, said first, and the
+      // turn goes on to the next question; the test below asserts the turn after it goes on)
+      if (which === "step") {
+        const st = stepOf(w.script, w.P), told = norm(fillFriend(String(st?.told?.hi ?? ""), "Riya"));
+        assert.ok(turns[1].text.length > reaskFilled(w.script, w.P).length + 20, turns[1].text);
+        assert.ok(turns[2].lm.stepReply?.told && !turns[2].lm.heardCap && !turns[2].lm.gave, turns[2].text);
+        assert.ok(told.length > 0 && /kyunki/.test(told), told);
+        assert.ok(turns[2].text.startsWith(told), `${turns[2].text} | told: ${told}`);
+        assert.notEqual(atQuestionOf(w.script, turns[2].text), w.P, turns[2].text);
+        return;
+      }
       assert.ok(turns[2].seams.includes("help"), turns[2].seams.join(">"));
       assert.equal(atQuestionOf(w.script, turns[2].text), w.P, turns[2].text);
       assert.ok(!turns[2].text.endsWith(reaskFilled(w.script, w.P)), turns[2].text);
@@ -103,6 +115,15 @@ for (const [TOPIC, which, skip] of [["c4-maths-ch05-t01", "step", 0], ["c6-maths
     });
     // (RULING-B5 item 2: in a wait the question is heard three times at most — wait four is the cap, the step told or the key with its
     // reason, whatever help is left; never a second help turn ending on the reask heard two turns before)
+    // (BRIEF-G5 item 3a, pr9: at the step the walk tells the step at wait three, so there is no wait four there — asserted: the turn after the
+    // told step goes on, at the next question, never the step's question again, and the step's wait is over)
+    if (which === "step") test("at the step there is no wait four: the turn after the told step goes on (the next question; the step's wait is over)", () => {
+      assert.ok(turns[2].lm.stepReply?.told, turns[2].text);
+      assert.notEqual(turns[3].lm.waitP, w.P, `${turns[3].lm.waitP} ${turns[3].text}`);
+      assert.notEqual(atQuestionOf(w.script, turns[3].text), w.P, turns[3].text);
+      assert.ok(!turns[3].lm.stepReply?.told && !turns[3].lm.gave && !turns[3].lm.heardCap, turns[3].text);
+      for (const t of turns.slice(0, 2)) assert.ok(!t.lm.gave && !t.lm.stepReply?.told && !t.lm.heardCap, t.text);
+    });
     if (which !== "step") test("wait four is the cap: the step told or the key (heardCap), whatever help is left", () => {
       assert.equal(turns[3].lm.waitN, 4);
       assert.ok(turns[3].lm.heardCap, turns[3].text);
@@ -149,8 +170,7 @@ for (const TOPIC of ["c4-maths-ch05-t01", "c6-maths-ch07-t01"]) describe(`RULING
   test("the give-up gets the step's simpler, ending on the reask; wait one; wait two the step told, not the reask again (no cap)", () => {
     assert.ok(turns[0].seams.includes("help"), turns[0].seams.join(">"));
     assert.ok(turns[0].text.endsWith(reaskFilled(w.script, w.P)), turns[0].text);
-    // (sixth ruling, item 1: the try-first's turn is the go-ahead and the invitation, no wait turn — it stands for the question, so the next
-    // bare haan is wait two)
+    // (sixth ruling, item 1, as RULING-H item 15 has it: the try-first's turn is the go-ahead alone, no wait turn)
     assert.equal(turns[1].lm.waitN, undefined);
     assert.equal(turns[1].text, "Haan, pehle tum try karo.");
     assert.equal(turns[2].lm.waitN, 1); assert.ok(endsOnShortAsk(w.script, turns[2].text), turns[2].text);
@@ -438,8 +458,9 @@ describe("RULING-B2 item 1: cardWholeAfterTryOrYes, the first wait turn and the 
 // turn with no answer of a wait; the wait's count goes on from the turns before and after it. (b2/dry4 stuck c4-ch01-t02, c4-ch05-t01 and
 // c4-ch06-t01 row 28: "mujhe khud try karne do" after a help turn that ended on an invitation got help.)
 describe("sixth ruling, item 1: a try-first is answered as a request, wherever it comes", async () => {
-  const goAhead = (t) => t.text.startsWith("Haan, pehle tum try karo.") && !t.seams.includes("help") && !t.lm.gave && !t.lm.stepReply?.told && !t.lm.heardCap && t.lm.waitN === undefined;
-  test("after help that ended on the invitation (the matrix rows 28): the go-ahead and the short ask, then the count goes on from her turns", async () => {
+  // (BRIEF-G5 item 3b, pr9: the go-ahead ALONE — the whole turn, never a tail after it: RULING-H item 15)
+  const goAhead = (t) => t.text === "Haan, pehle tum try karo." && !t.seams.includes("help") && !t.lm.gave && !t.lm.stepReply?.told && !t.lm.heardCap && t.lm.waitN === undefined;
+  test("after help that ended on the invitation (the matrix rows 28): the go-ahead alone, then the count goes on from her turns", async () => {
     const w = await walkTo("c4-maths-ch05-t01", "card");
     const turns = await w.play(["give", "give", "try", "haan"]);
     w.done();
@@ -457,7 +478,7 @@ describe("sixth ruling, item 1: a try-first is answered as a request, wherever i
     assert.ok(endsOnShortAsk(w.script, turns[3].text) || turns[3].seams.at(-1) === "yourTurn", turns[3].text);
     assert.notEqual(atQuestionOf(w.script, turns[3].text), w.P, turns[3].text);
   });
-  test("in a wait at a step (after the reask): the go-ahead and the invitation; the count is kept, and the next bare haan is wait three", async () => {
+  test("in a wait at a step (after the reask): the go-ahead alone; the count is kept, and the next bare haan is wait three", async () => {
     const w = await walkTo("c4-maths-ch05-t01", "step");
     const turns = await w.play(["haan", "haan", "try", "haan"]);
     w.done();
