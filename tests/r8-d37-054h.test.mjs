@@ -234,3 +234,25 @@ describe("item 18c: item 6 walked — the told line said where its park comes du
     assert.ok(!/pasand|achha lag/i.test(hit.text), hit.text);
   });
 });
+
+// Item 17a (main's ruling on H's stop at r8-main-034's fixture stuck c4-ch05-t01 47/48): a plain no after help given at that same check-in
+// to a plain no, a "samajh nahi aaya" or a give-up — the help ending on a check-in again — may go on without help (the walk reads the no as
+// the third clarify there); a first request answered without help, or a no after help given for something else, still flags.
+describe("item 17a: plainNoUnhelped's later-request exemption reads a clarify or a give-up before the help too", () => {
+  const her = { who: "teacher", text: "Circle 3 barabar tukdon mein bata hai, yaani 2/3. Yahan tak theek hai?" };
+  const no = { who: "child", text: "nahi" };
+  const helpCk = { who: "teacher", text: "Circle wahi hai. Ab bas rangin tukde phir se gino. Yeh hissa saaf hua?", seams: [{ right: "help" }, { right: "help" }, { right: "checkin" }] };
+  const goOn = { who: "teacher", text: "Koi baat nahi, yeh hum aage phir dekhenge. Waise, cricket mein tumne kabhi kuch barabar baanta hai?", seams: [{ right: "afterKeyGoOn" }, { right: "return" }] };
+  const f = (rows) => PREDICATES.plainNoUnhelped({ rows }, rows.at(-1), rows.length - 1);
+  test("a no after help to a plain no: passes (as before)", () => { assert.equal(f([her, no, helpCk, no, goOn]), null); });
+  test("a no after help to a clarify or a give-up at that check-in: passes (the fixture's row 48)", () => {
+    assert.equal(f([her, { who: "child", text: "phir bhi samajh nahi aaya" }, helpCk, no, goOn]), null);
+    assert.equal(f([her, { who: "child", text: "samajh nahi aaya" }, helpCk, no, goOn]), null);
+    assert.equal(f([her, { who: "child", text: "mujhe nahi pata" }, helpCk, no, goOn]), null);
+  });
+  test("a first no answered without help: flags", () => { assert.match(f([her, no, goOn]), /no help/); });
+  test("a no after help given for a picture or a Hindi request: flags", () => {
+    assert.match(f([her, { who: "child", text: "picture dikhao" }, helpCk, no, goOn]), /no help/);
+    assert.match(f([her, { who: "child", text: "hindi mein bolo" }, helpCk, no, goOn]), /no help/);
+  });
+});

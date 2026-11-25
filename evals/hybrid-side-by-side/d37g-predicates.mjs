@@ -23,6 +23,12 @@ const NO_ADDRESS = ["didi", "ma'am", "maam", "mam", "miss", "teacher"];
 const PLAIN_NOS = new Set([...NO_WORDS, ...NO_SAMJHA].flatMap((n) => [n, ...NO_ADDRESS.map((a) => `${n} ${a}`)]));
 const noKey = (t) => norm(t).toLowerCase().replace(/[.!,]+/g, " ").replace(/\s+/g, " ").trim();
 export const isPlainNo = (t) => PLAIN_NOS.has(noKey(t));
+/** d37 item 17a (main's ruling on H's stop, r8-main-034's fixture stuck c4-ch05-t01 48): the child's lines that ask for help at a check-in
+ *  besides a plain no — a "didn't understand" (clarify) and a give-up — the check's OWN lists, written out here, not the walk's. */
+const CLARIFY_SAID = /(?<![\p{L}])(?:(?:phir\s+bhi\s+|abhi\s+bhi\s+)?samajh\s+(?:nahi|nahin|nhi)\s+(?:aaya|aya|aa\s+raha|aa\s+rahi)|(?:nahi|nahin|nhi)\s+samajh\s+(?:aaya|aya)|samjha\s+(?:nahi|nahin|nhi)|(?:phir\s+se\s+)?samjhao|i\s+(?:don'?t|do\s+not|didn'?t|did\s+not)\s+(?:understand|get\s+it)|explain\s+(?:again|once\s+more))(?![\p{L}])/iu;
+const GIVE_UP_SAID = /(?<![\p{L}])(?:(?:mujhe\s+)?(?:nahi|nahin|nhi)\s+pata|pata\s+(?:nahi|nahin|nhi)|aap\s+(?:hi\s+)?batao|tum\s+(?:hi\s+)?batao|i\s+(?:don'?t|do\s+not)\s+know|no\s+idea)(?![\p{L}])/iu;
+/** A line that asks for help at a check-in: a plain no, a clarify or a give-up. */
+const asksHelp = (t) => isPlainNo(t) || CLARIFY_SAID.test(norm(t)) || GIVE_UP_SAID.test(norm(t));
 /** Help at a FIRST no: a `help` seam or a told key, or a simpler / whyAlt part (never `alt`, the card's other wording, nor `helpSpent`). */
 const HELP_SEAMS = new Set(["help", "key"]);
 const HELP_PARTS = new Set(["simpler", "whyAlt"]);
@@ -42,7 +48,10 @@ export const D37G_PREDICATES = {
     // turn before that ending on a check-in (the check-in said again takes another of its forms: the walk's fresh-form rule) — and this turn
     // goes on, on the go-on line or the "nothing easier" line)
     const kid0 = L.rows?.[i - 3], her0 = L.rows?.[i - 4];
-    const second = (her.seams ?? []).some((x) => x.right === "help") && kid0?.who === "child" && isPlainNo(kid0.text) && her0?.who === "teacher" && !!endsOnCheckin(her0.text) && !!ck
+    // (d37 item 17a, main's ruling — the one further reading change: the help before it may have answered a plain no, a "samajh nahi aaya"
+    // (clarify) or a give-up at that same check-in, read from this check's own lists; help given for anything else — a picture, a Hindi
+    // request — is no such help, and a first request answered without help still flags whatever its wording)
+    const second = (her.seams ?? []).some((x) => x.right === "help") && kid0?.who === "child" && asksHelp(kid0.text) && her0?.who === "teacher" && !!endsOnCheckin(her0.text) && !!ck
       && (r.seams ?? []).some((x) => ["afterKeyGoOn", "helpSpent"].includes(x.right));
     if (second) return null;
     const why = (w) => `"${norm(kid.text)}" to "${ck}" answered with ${w} (${(r.seams ?? []).map((x) => x.right).join(" > ")})`;
