@@ -104,9 +104,12 @@ describe("item 2: a plain no at a comprehension check-in is \"I did not understa
       assert.ok(n1.lm.help || n1.seams.includes("help"), `help: ${n1.text}`);
       assert.ok(!n1.ui.ask?.itemId, "no card yet: the same check-in");
       assert.match(n1.text, CK);
-      // (the child's words are recorded as said)
-      assert.equal(n1.state.talk?.turns?.at?.(-1)?.text ?? "nahi", "nahi");
-      assert.equal(n1.lm.cell?.column ?? "other", "other");
+      // (the child's words are recorded as said: the record's cell reads the child's own line — column "other", a plain no the walk has no
+      // column for — never the "samajh nahi aaya" reading the walk acts on, whose own cell says "clarify". RULING-G item 13, pr7 step 3: the
+      // old assertions read talk.turns, which talk.js does not keep, and defaulted the column, so they could not fail. The talk monitor
+      // counts no request turn — "samajh nahi aaya" included — so it is no record of either)
+      assert.deepEqual([n1.lm.cell?.column, c1.lm.cell?.column], ["other", "clarify"], JSON.stringify([n1.lm.cell, c1.lm.cell]));
+      assert.equal(n1.lm.cell?.part, c1.lm.cell?.part);
     });
   }
   test("the other side: a \"haan\" there goes on; a no to a question card is an answer (graded), never this", async () => {
@@ -118,9 +121,14 @@ describe("item 2: a plain no at a comprehension check-in is \"I did not understa
     } finally { w.done(); }
     const w2 = await walker("c4-maths-ch05-t01");
     try {
-      // (a yes-or-no card: its key No — the child's "nahi" is graded by the code's own read)
-      const reached = await w2.until((s) => { const q = String(s.lastUi?.ask?.text ?? ""); return /\?$/.test(q) && /(?:hai na|kya .* sahi|theek hai)\?$/i.test(q) && !!s.activeItemId; }, 200);
-      if (reached) { const n = await w2.go("nahi"); assert.notEqual(n.lm.help?.request, "clarify", n.text); }
+      // (a yes-or-no card that the walk certainly reaches: c4-maths-ch05-t01's second card, skills[0].explain[1].ask, key No — "Kya woh pizza
+      // ka ek-tihaai hai, haan ya nahi?". RULING-G item 13, pr7 step 3: the old side ran under \`if (reached)\` and could assert nothing)
+      assert.ok(await w2.until((s) => /-s1:ask:e2$/.test(String(s.activeItemId ?? ""))), "the walk reaches the yes-or-no card");
+      assert.match(String(w2.now().lastUi?.ask?.text ?? ""), /haan ya nahi\?$/);
+      const n = await w2.go("nahi");
+      // (graded by the card as its answer — right, its key is No — never sent down the clarify path)
+      assert.equal(n.lm.cell?.column, "right", JSON.stringify(n.lm.cell));
+      assert.notEqual(n.lm.help?.request, "clarify", n.text); assert.ok(!n.lm.help, n.text);
     } finally { w2.done(); }
   });
   test("plainNoUnhelped (gated): a plain no to a check-in answered by a point and a card trips it; help, a stop or a yes does not", () => {
@@ -134,14 +142,54 @@ describe("item 2: a plain no at a comprehension check-in is \"I did not understa
     assert.equal(PREDICATES.plainNoUnhelped(L(t(["help", "checkin"])), t(["help", "checkin"]), 2), null);
     assert.equal(PREDICATES.plainNoUnhelped(L(t(["stopLine"])), t(["stopLine"]), 2), null);
     assert.equal(PREDICATES.plainNoUnhelped(L(t(["point", "card"]), { who: "child", text: "haan" }), t(["point", "card"]), 2), null);
-    // (the second no running, after her help ended on the check-in again, goes on — as a second "samajh nahi aaya" does there)
+    // (the second no running — her help to a FIRST plain no at that check-in ended on the check-in again — goes on, as a second "samajh nahi
+    // aaya" does there; RULING-G item 13: only when the child's line before that help was itself a plain no at a check-in)
     const helpCk = { who: "teacher", text: "Gaps gino. Ab tak samajh aaya?", seams: [{ right: "help" }, { right: "checkin" }] };
     const goOn = t(["afterKeyGoOn", "point", "card"]);
-    assert.equal(PREDICATES.plainNoUnhelped({ rows: [helpCk, no, goOn] }, goOn, 2), null);
-    assert.match(PREDICATES.plainNoUnhelped({ rows: [helpCk, no, t(["point", "card"])] }, t(["point", "card"]), 2), /no help/);
+    assert.equal(PREDICATES.plainNoUnhelped({ rows: [her, no, helpCk, no, goOn] }, goOn, 4), null);
+    // (help given for a picture request, then a FIRST "nahi" answered with the go-on line: flagged — pr7 step 3, steering c4-ch05-t01 16)
+    assert.match(PREDICATES.plainNoUnhelped({ rows: [her, { who: "child", text: "picture dikhao" }, helpCk, no, goOn] }, goOn, 4), /no help/);
+    assert.match(PREDICATES.plainNoUnhelped({ rows: [helpCk, no, goOn] }, goOn, 2), /no help/);
+    assert.match(PREDICATES.plainNoUnhelped({ rows: [her, no, helpCk, no, t(["point", "card"])] }, t(["point", "card"]), 4), /no help/);
     assert.match(PREDICATES.plainNoUnhelped({ rows: [her, no, goOn] }, goOn, 2), /no help/);
     const card = { who: "teacher", text: "Kya Pinky sahi hai?" };
     assert.equal(PREDICATES.plainNoUnhelped({ rows: [card, no, t(["verdict", "card"])] }, t(["verdict", "card"]), 2), null);
+  });
+  test("RULING-G item 13 (pr7 step 3): only a stop or a safety turn is excused; at a first no `alt` and `helpSpent` are no help; at a bridge's check-in the help ends on the check-in again", () => {
+    const her = { who: "teacher", text: "Ab wahi gaps ginenge. Yahan tak saaf hai?" };
+    const bridge = { ...her, seams: [{ right: "bridge" }, { right: "checkin" }] };
+    const no = { who: "child", text: "nahi" };
+    const t = (seams, o = {}) => ({ who: "teacher", text: "x", seams: seams.map((right) => ({ right })), ...o });
+    const at = (r, h = her) => PREDICATES.plainNoUnhelped({ rows: [h, no, r] }, r, 2);
+    assert.match(at(t(["point", "card"], { move: "wrap" })), /no help/);
+    assert.match(at(t(["point", "card"], { move: "break" })), /no help/);
+    assert.equal(at(t(["goodbye"], { move: "goodbye" })), null);
+    assert.equal(at(t(["safety"], { move: "safeguard" })), null);
+    assert.match(at(t(["helpSpent", "card"])), /no help/);
+    assert.match(at(t(["card"], { pageParts: [{ part: "alt" }] })), /no help/);
+    assert.equal(at(t(["card"], { pageParts: [{ part: "simpler" }] })), null);
+    assert.equal(at(t(["key", "checkin"])), null);
+    assert.match(at(t(["help", "point", "card"], { text: "Gaps gino. Is baar line 3 gaps mein hai. Kaunsa mark?" }), bridge), /does not end on the check-in again/);
+    assert.equal(at(t(["help", "checkin"], { text: "Gaps gino. Ab tak samajh aaya?" }), bridge), null);
+  });
+  test("RULING-G item 13 (pr7 step 3): \"nhi\", \"nahin\" and a no with an address word are a plain no — at a check-in only, in the walk and (by its own list) in the check; \"nai\" is not", async () => {
+    const { isPlainNo } = await import("../evals/hybrid-side-by-side/d37g-predicates.mjs");
+    const her = { who: "teacher", text: "Ab wahi gaps ginenge. Yahan tak saaf hai?" };
+    const pc = { who: "teacher", text: "x", seams: [{ right: "point" }, { right: "card" }] };
+    for (const x of ["nhi", "nahin", "nahi didi", "nahi ma'am", "nahi mam", "nahi miss", "no ma'am", "nahi teacher", "Nahi, didi.", "nahi samjha didi"]) {
+      assert.ok(isPlainNo(x), x);
+      assert.match(PREDICATES.plainNoUnhelped({ rows: [her, { who: "child", text: x }, pc] }, pc, 2), /no help/, x);
+    }
+    for (const x of ["nai", "nahi pata", "no idea", "nahi didi mujhe nahi pata"]) assert.ok(!isPlainNo(x), x);
+    // (the walk: the same forms at a bridge's check-in take the clarify path; "nai" does not)
+    const CK = /(?:Yahan tak theek hai|Ab tak samajh aaya|Yahan tak saaf hai|Yeh hissa saaf hua|Yeh kadam saaf hai|Yeh kadam samajh aaya)\?$/;
+    const atB = (s) => !s.lastUi?.ask?.itemId && !!s.lastMove?.bridgeSaid && !(s.lastMove?.replyPoint || s.lastMove?.startApart)
+      && CK.test(String([...(s.recent ?? [])].reverse().find((q) => q.who === "teacher")?.text ?? "").trim());
+    const one = async (line) => { const w = await walker("c5-maths-ch02-t01"); try { assert.ok(await w.until(atB)); return await w.go(line); } finally { w.done(); } };
+    const ref = await one("samajh nahi aaya");
+    for (const x of ["nhi", "nahi didi", "no ma'am"]) { const r = await one(x); assert.equal(r.text, ref.text, x); assert.equal(r.lm.cell?.column, "other", x); }
+    const nai = await one("nai");
+    assert.notEqual(nai.text, ref.text);
   });
 });
 

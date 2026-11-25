@@ -3643,8 +3643,10 @@ function helpRequestOf(prev, input) {
   if (!col && PLAIN_NO.test(String(input?.text ?? "").trim()) && heldCardAt(prev)) return "clarify";
   return col === "clarify" || col === "give_up" || col === "hindi" ? col : null;
 }
-/** d37 close item 13: a plain no, said alone. */
-const PLAIN_NO = /^(?:nahi|nahin|nahi\s+(?:samjha|samjhi|samjhe|samajh\s+aaya)|no|nope|na)[\s.!,]*$/iu;
+/** d37 close item 13: a plain no, said alone. (d37 RULING-G item 13, pr7 step 3: and as children say it — "nhi", "nahin", a no with an
+ *  address word, "nahi didi", "nahi ma'am", "no ma'am", "nahi teacher"; never "nai", which is ambiguous. Read only at a comprehension
+ *  check-in, as before: never at an asked card or step) */
+const PLAIN_NO = /^(?:(?:nahi|nahin|nhi)(?:\s+(?:samjha|samjhi|samjhe|samajh\s+aaya))?|no|nope|na)(?:[\s,]+(?:didi|ma'?am|mam|miss|teacher))?[\s.!,]*$/iu;
 /** The check-in of her reply's point turn (D2) or of the split first turn (A(ii)), its card held for the next turn (main's sixth ruling on
  *  cause A, item 1: pickHelp's heldCard). */
 const heldCardAt = (prev) => !!(prev?.lastMove?.replyPoint || prev?.lastMove?.startApart) && !!prev?.splitHold?.teach && !!prev?.splitHold?.ui?.ask?.itemId;
