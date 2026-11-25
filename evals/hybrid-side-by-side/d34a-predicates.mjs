@@ -34,7 +34,10 @@ export const D34A_PREDICATES = {
     const pages = drawnPagesOf(r).filter((p) => p.board?.template);
     const up = upAt(ctx);
     const first = up ?? pages[0]?.board ?? null;
-    const moved = pages.find((p) => !sameBoardRef(p.board, first));
+    // (to-brain 054 A, main's ruling on the dry steering c4-ch06-t01 16: a card asked in a no-picture turn is said over its own board — its page
+    // goes up at the card's first word; the line and the help in words stay over the board up, as C1 says)
+    const cardAt = (r.pageParts ?? []).find((p) => p.part === "card")?.from;
+    const moved = pages.find((p) => !sameBoardRef(p.board, first) && !(cardAt != null && cardAt > 0 && p.from === cardAt));
     return moved ? `a page change to ${moved.board.template} at char ${moved.from ?? 0} on a no-picture turn` : null;
   },
   /** C1: a second view that would draw the board already on screen is spent — a `view` picture whose drawn board equals the held board, or

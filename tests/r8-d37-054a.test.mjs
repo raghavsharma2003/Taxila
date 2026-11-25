@@ -159,3 +159,37 @@ describe("A.5: the four predicates, gated, each on a made row that trips it and 
     assert.ok(PREDICATES.keyOnce({ rows: [] }, T({ text: "Is sawaal ka jawab 4 hai." }), 2, { prevT: T({ text: "Iska jawab 4 hai." }) }));
   });
 });
+
+describe("main's ruling on the after-walk's six rows: a picture at a key's check-in, and a card asked on a no-picture turn", async () => {
+  const { pickHelp } = await import("../server/director/help.js");
+  const { heldOf } = await import("../server/brain/propose.js");
+  const { readFileSync } = await import("node:fs");
+  const sc = JSON.parse(readFileSync(new URL("../data/lesson-scripts-staged/c4-maths-ch01-t02.json", import.meta.url), "utf8"));
+  test("a picture with nothing left at a keyed card: the no-other-drawing line, then the go-on line — the lesson goes on; never a key or a wording", () => {
+    const d = pickHelp({ script: sc, part: "c4-maths-ch01-t02-s1:e1:card", keyed: true, request: "picture", said: [] });
+    assert.equal(d.card, "goOn"); assert.equal(d.key, null); assert.equal(d.rung, null);
+    assert.equal(d.joint?.kind, "noPicture"); assert.equal(d.then?.kind, "afterKeyGoOn"); assert.ok(d.pictureSpent);
+    // (at a live card, the same request is A3's — the line, a wording, the card kept)
+    const live = pickHelp({ script: sc, part: "c4-maths-ch01-t02-s1:e1:card", keyed: false, request: "picture", said: [] });
+    assert.equal(live.card, "keep");
+  });
+  test("the seam pass records the line and the go-on line as two joints, each its own kind", () => {
+    const list = [{ part: "close", text: "Iski aur koi tasveer mere paas nahi hai." }, { part: "close", text: "Chalo, ab agli baat dekhte hain." }, { part: "body", text: "Do baar moda kaagaz hamara tester hai." }];
+    const r = applySeams(list.map((p) => p.text).join(" "), list, { kit: { topicId: "t", __joints: {} }, state: { turn: 9 }, lang: "hinglish",
+      info: { helpJoint: { kind: "afterKeyGoOn", form: "Chalo, ab agli baat dekhte hain.", by: "authored", spent: { form: "Iski aur koi tasveer mere paas nahi hai.", by: "authored", kind: "noPicture" } } } });
+    assert.deepEqual(r.seams.slice(0, 2).map((x) => [x.left, x.right, x.joint]), [["start", "noPicture", "noPicture"], ["noPicture", "afterKeyGoOn", "afterKeyGoOn"]]);
+    assert.ok(SEAM_TABLE.some((x) => x[0] === "noPicture" && x[1] === "afterKeyGoOn"));
+  });
+  test("a no-picture turn keeps the board up under the line and the help, and puts the card's own board up at the card's first word", () => {
+    const up = { board: { template: "number-line-scale@1", params: { from: 2, to: 12, view: "jumps" } }, unit: "t-s1:rem:x" };
+    const own = { template: "number-line-scale@1", params: { from: 2, to: 12 } };
+    const list = [{ part: "aside", text: "Iski aur koi drawing mere paas nahi hai." }, { part: "simpler", text: "Ungli 6 par rakho." }, { part: "card", text: "Chabi kitni lambi hai?" }];
+    const line = list.map((p) => p.text).join(" ");
+    const h = heldOf({ move: { keepBoard: true, cardBeat: { skillId: "t-s1", beatId: "then:x", kind: "then", board: own } }, list, line, kit: {}, up });
+    assert.deepEqual(h.board, up.board);
+    assert.deepEqual(h.switchTo?.board, own); assert.equal(h.switchTo?.atChar, line.indexOf("Chabi"));
+    // (the card's own board already up: no page change)
+    const h2 = heldOf({ move: { keepBoard: true, cardBeat: { skillId: "t-s1", beatId: "then:x", kind: "then", board: up.board } }, list, line, kit: {}, up });
+    assert.equal(h2.switchTo, undefined);
+  });
+});

@@ -3,8 +3,9 @@
 //   replyIntoPoint  A(i): her reply to a side-topic — an aside's, the AI line's or a return's reply (seams asideReply, aiReply), or a park — and
 //                   then a new point and its card in the same turn. The turn straight after her reply's go-on line is the rule's one
 //                   exception (a side-topic said again there gets its line, then the held point and card: the lesson does not stall).
-//   asideGoOnNext   A(i): the turn after her reply's go-on line (noFit "aside") is the held point and its card, whatever the child said — a
-//                   stop, a safety turn, a wrap or a break excepted, and the AI line, which ends on her question as built (O7).
+//   asideGoOnNext   A(i): the turn after her reply's go-on line (noFit "aside") is the held point and its card (or the point on its check-in
+//                   where the two do not fit, T1), whatever the child said — a stop, a safety turn, a wrap or a break excepted, and the AI
+//                   line, which ends on her question as built (O7).
 //   startIntoCard   A(ii): the start line (joints.startAnyway), the hook, the point and its card in one turn.
 //   closeCardLong   A(iii): a worked close (its afterWorked joint) and the next card said in one turn of more than 70 words.
 import { VPC_MAX } from "../../server/director/state.js";
@@ -29,7 +30,8 @@ export const D37A_PREDICATES = {
     if (/^(?:wrap|safeguard|break|stop)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     const k = rightsOf(r);
     if (k.at(-1) === "aiQuestion") return null;
-    return (k.includes("point") || k.includes("held")) && cardIn(k) ? null : `the turn after her reply's go-on line is not its held point and card (${k.join(" > ") || "no seams"})`;
+    // (a point and its card that do not fit split again as T1 splits any — the point on its check-in, noFit "point": still the held point)
+    return (k.includes("point") || k.includes("held")) && (cardIn(k) || r.noFit === "point") ? null : `the turn after her reply's go-on line is not its held point and card (${k.join(" > ") || "no seams"})`;
   },
   startIntoCard(L, r) {
     if (r.who !== "teacher") return null;

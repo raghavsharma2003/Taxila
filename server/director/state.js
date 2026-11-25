@@ -3552,13 +3552,17 @@ export function pictureKindOf(prev, input) {
   const c = input.cls ?? {};
   if (c.flags?.distress || c.flags?.wantsToStop || c.request?.see?.subject) return null;
   const where = (() => { try { return helpPartOf(prev, input); } catch { return null; } })();
-  if (!where?.part || where.keyed || where.closed) return null;
+  // (to-brain 054 A, main's ruling: a picture at a key's check-in is on the keyed card's own ladder — no longer the paths before G5)
+  if (!where?.part || where.closed) return null;
   const script = scriptFor(input.kit)?.script;
   const part = (() => { try { return helpPart(script, where.part); } catch { return null; } })();
   if (!part || !["card", "check", "then_card", "your_step", "worked_step"].includes(part.kind)) return null;
   const raw = (() => { try { return String(part.path ?? "").split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], script); } catch { return null; } })();
   const card = part.kind === "worked_step" ? (part.step ? raw?.ask : null) : raw;
   if (!card?.prompt) return null;
+  // (Brain 045 P1 stands where the keyed card writes its answer view's caption: its answer board, captioned — the card's authored picture of
+  // its answer. Only a keyed card with none — where P1 said the key's reason again over the board up — takes the ladder)
+  if (where.keyed && (card.answerViewCaption?.hi ?? card.answerViewCaption?.en ?? (typeof card.answerViewCaption === "string" ? card.answerViewCaption : null))) return null;
   const shown = prev.picShown?.[part.id] ?? [];
   const board = card.board ?? part.board ?? null;
   if (card.pictureBoard?.template && !shown.includes("pictureBoard")) return { kind: "pictureBoard", part, card, board };
@@ -4073,7 +4077,7 @@ function helpAfter(prev, input, out, pre) {
     // (Brain 044 T5: after a key, the "nothing easier" line first, then the go-on line — the seam pass turns it into the after-key return before
     // an earlier card, or drops it before the aside's return; the help joint it records is the go-on line)
     const j2 = d.then?.text ? fillFriend(d.then.text, friendOf) : null;
-    out.state.lastMove = { ...lm, sayFirst: [j, ...(j2 ? [j2] : []), ...(lm.sayFirst ?? [])], helpJoint: j2 ? { kind: d.then.kind, form: j2, by: d.then.by, spent: { form: j, by: d.joint.by } } : { kind: d.joint.kind, form: j, by: d.joint.by }, help: mark };
+    out.state.lastMove = { ...lm, sayFirst: [j, ...(j2 ? [j2] : []), ...(lm.sayFirst ?? [])], helpJoint: j2 ? { kind: d.then.kind, form: j2, by: d.then.by, spent: { form: j, by: d.joint.by, kind: d.joint.kind } } : { kind: d.joint.kind, form: j, by: d.joint.by }, help: mark };
   } else out.state.lastMove = { ...lm, help: mark, ...(d.request === "hindi" && d.hindiWhole ? { request: "language" } : {}) };
   noteHelp(out.state, d);
   if (out.move) out.move = { ...out.state.lastMove };
@@ -4726,7 +4730,9 @@ function step0(prev, input) {
     // (dc-r8-director29 Brain 045 P1 supersedes E3 for a picture: after a key the picture is of the answered card's answer board — the board
     // the key was said over — captioned by its answerViewCaption (Learning 018); where the script writes none the board is redrawn alone and she
     // says the card's why on it (pictureAlone, pictureWords), as after help's own key)
-    const keyedAns = s.stayOn?.turn === s.turn && s.stayOn.beat?.answerBoard && s.stayOn.beat?.board && p.request === "visual" && p.visual !== "game" && !scriptFor(input.kit)?.script?.recordedRun ? s.stayOn.beat : null;
+    // (to-brain 054 A, main's ruling: where the keyed card's own ladder draws — its pictureBoard or second view — that is the picture)
+    const pkKeyed = prev?.keyedPart && !prev.lastUi?.ask?.itemId ? pictureKindOf(prev, input) : null;
+    const keyedAns = !(pkKeyed && pkKeyed.kind !== "hint") && s.stayOn?.turn === s.turn && s.stayOn.beat?.answerBoard && s.stayOn.beat?.board && p.request === "visual" && p.visual !== "game" && !scriptFor(input.kit)?.script?.recordedRun ? s.stayOn.beat : null;
     if (keyedAns) {
       const { posingBoard: _pb, ...b0 } = keyedAns;
       move.scriptBeat = { ...b0 };
@@ -5911,8 +5917,18 @@ function closeGoesOn(out, input) {
  *  example or a remediation is not this rule's. */
 export const REPLY_APART_JOINTS = ["afterAside", "afterPark", "afterAiLine"];
 function replyApart(prev, input, out) {
-  const s = out?.state, lm = s?.lastMove, ui = out?.ui;
-  if (input?.event !== "turn" || input.branch || !scriptOn() || recordedNow || !l2On() || !lm || out.end || s.splitHold) return out;
+  const s = out?.state;
+  if (input?.event !== "turn" || input.branch || !scriptOn() || recordedNow || !l2On() || !s?.lastMove || out.end) return out;
+  // (the walk already split the point from its card — her reply, the point, its check-in: the D2 shape director29 item 6 forbids. The point
+  // and its card are put back together and held behind her reply, as below; the held half splits them again if they do not fit)
+  let lm = s.lastMove, ui = out.ui;
+  if (s.splitHold) {
+    const h = s.splitHold;
+    if (!h.teach || !lm.splitTeach || h.helpSplit || !h.ui?.ask?.itemId || !(lm.asideAck || lm.returnReply || (s.later ?? []).some((e) => e.at === s.turn && e.share && e.servedAt == null))) return out;
+    const { splitTeach: _st, checkinOk: _ck, noFit: _nf, quick: _q, quickNoRoom: _qn, stayCheckin: _sc, ...m0 } = lm;
+    lm = m0; ui = h.ui;
+  }
+  const rejoin = !!s.splitHold;
   if (!ui?.ask?.itemId || !ui.ask.text || prev?.lastMove?.noFit === "aside") return out;
   if (input.cls?.flags?.distress || input.cls?.flags?.wantsToStop || s.safeguard) return out;
   if (["safeguard", "wrap", "break", "teachback", "worked_example", "hint"].includes(String(lm.kind ?? "")) || lm.scriptBeat?.kind === "remediation") return out;
@@ -5927,6 +5943,7 @@ function replyApart(prev, input, out) {
   const forms = jointOf(input.kit, kind, s.ctx?.lang ?? "hinglish");
   const form = forms?.length ? seamForm(forms, s, kind) : null;
   if (!form) return out;
+  if (rejoin) { s.activeItemId = s.splitHold.activeItemId ?? undefined; s.quickItem = undefined; s.splitHold = undefined; }
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, l2Break: true, noFit: "aside", vpcGoOn: String(form).trim(), replyApart: kind,
     ...(lm.asideAck ? { asideAck: true } : {}), ...(lm.returnReply ? { returnReply: lm.returnReply } : {}), ...(lm.sadAside ? { sadAside: true } : {}),
     ...(lm.asideAgain ? { asideAgain: lm.asideAgain } : {}), ...(leadBeatOf ? { scriptBeat: leadBeatOf } : {}) };

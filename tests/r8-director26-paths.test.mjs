@@ -205,8 +205,11 @@ test("A4: an aside said again is replied to in the child's own words; the reply 
 // off the recorded rows (a follow-up card's ladder runs into its remediation's wordings first), so the key is reached here by missing the
 // then-card on director29 steering c5-t01 until the walk keys it)
 test("Record: a picture asked for after the walk's key on a then-card (c5-t01 steering) is drawn on the card's answer board (Brain 045 P1)", async () => {
-  const { kit, plans } = await replay("2026-11-18-director29", "steering", "c5-maths-ch02-t01", 12);
+  // (re-pinned, to-brain 054 A(ii): after two requests at the greeting the point ends on its check-in and its card is the next turn, so the
+  // recorded "near 3" lands on that check-in; the same wrong answer is given to the card once it is posed, and the follow-up card comes)
+  const { kit, plans } = await replay("2026-11-18-director29", "steering", "c5-maths-ch02-t01", 8);
   let st = { ...plans.at(-1).state };
+  for (let k = 0; k < 3 && !String(st.activeItemId ?? "").includes(":then:"); k++) { const p = await planAt(st, "near 3", kit); st = { ...p.r.state, mode: "text" }; }
   assert.ok(String(st.activeItemId ?? "").includes(":then:"), "a follow-up card is live");
   for (let k = 0; k < 6 && !st.lastMove?.gave?.answer; k++) { const p = await planAt(st, "1 and 6", kit); st = { ...p.r.state, mode: "text" }; }
   const prev = st.lastMove;

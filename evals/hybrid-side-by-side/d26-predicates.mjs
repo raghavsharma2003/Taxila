@@ -214,6 +214,9 @@ D26_PREDICATES.pictureAfterKey = function pictureAfterKey(L, r, i, ctx) {
   let posing = false;
   const walk = (o, up = null) => { if (posing || !o || typeof o !== "object") return; if (Array.isArray(o)) return o.forEach((x) => walk(x, up));
     if (o.answerBoard && same(o.answerBoard, answered) && same(o.board ?? up, drawn)) { posing = true; return; }
+    // (to-brain 054 A, main's ruling on dry steering c4-ch01-t02 14: a picture at a key's check-in is on the keyed card's own ladder — its
+    // authored pictureBoard first: the card the answered board answers, its pictureBoard drawn)
+    if (o.answerBoard && same(o.answerBoard, answered) && o.pictureBoard && same(o.pictureBoard, drawn)) { posing = true; return; }
     for (const v of Object.values(o)) walk(v, o.board ?? up); };
   walk(ctx.script);
   return same(answered, drawn) || posing ? null : `a picture after the key drawn on ${drawn.template} ${JSON.stringify(drawn.params ?? {}).slice(0, 50)}, not the answered board`;

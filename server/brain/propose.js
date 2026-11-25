@@ -573,7 +573,17 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   // (a move that clears the board — the teach-back's key turn with no answerBoard, a "board hatao" — holds none: nothing is up)
   if (move?.clear === "board") return null;
   // (dc-r8-director22 K: the why's second wording after a key is said over the board the key was said over)
-  if (move?.keepBoard && up?.board) return { board: up.board, unit: up.unit };
+  // (to-brain 054 A, main's ruling on the dry steering c4-ch06-t01 16: a no-picture turn keeps the board up under the line and the help in
+  // words — and where it asks a card whose own board is another, that board goes up at the card's first word: the card is never said over a
+  // board that is not its own)
+  if (move?.keepBoard && up?.board) {
+    const h = { board: up.board, unit: up.unit };
+    const cB = move?.cardBeat?.board ? move.cardBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
+    const t0 = String(line ?? "").replace(/\s+/g, " ").trim();
+    const c0 = list?.length ? offsetsOf(list).find((p) => p.part === "card" && String(p.text ?? "").trim()) : null;
+    if (cB && c0 && c0.start > 0 && c0.start < t0.length && JSON.stringify(cB.board) !== JSON.stringify(up.board)) h.switchTo = { board: cB.board, unit: unitOf(cB) ?? up.unit, atChar: c0.start, atClause: clauseAt(t0, c0.start) };
+    return h;
+  }
   // (main's 026: the wrap that says a teach-back's key holds its answerBoard — a unit of its own, end:teachback:answer)
   const answerWrap = move?.kind === "wrap" && move?.scriptBeat?.beatId === "teachback:answer" && !!move.scriptBeat.board;
   // (v6.9 N1: a stop or goodbye menu, a break, a wrap, a check-in has no part of its own — the board up stays, nothing new is drawn)

@@ -529,6 +529,13 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // then the question; the no-other-drawing line is not said, and the hint counts as said. A hint whose board shows the card's answer is
   // never drawn. A3: anything else — the line in its first form, then the first unsaid wording in words over the board up (state.js
   // noPictureKeeps), then the question; never the key)
+  // (to-brain 054 A, main's ruling on the dry steering c4-ch01-t02 14: a picture asked at the check-in after a key is about the card just keyed,
+  // on that card's ladder — its pictureBoard, then its board's second view, drawn by the walk (state.js pictureKindOf). With nothing left: the
+  // no-other-drawing line, and the lesson goes on as the check-in would have — never the key's reason again over the board already up)
+  if (request === "picture" && keyed) {
+    const pl = noPictureLine(script, { lang: L, first: true }), go = goOnPlain(script, { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 });
+    return { ...base, rung: null, board: null, card: "goOn", key: null, joint: pl ?? go, ...(pl && go ? { then: go } : {}), pictureLine: pl, pictureSpent: true };
+  }
   if (request === "picture") {
     // (release 61 — director35 stuck c6-ch06-t01 18, c4-ch06-t01 18, steering c6-ch07-t01 16, c5-ch02-t03 16: a hint said over the card's own
     // posing board "owned" it, and the picture request got the board up back, or the card's board redrawn over the picture of the turn before.
