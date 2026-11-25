@@ -3635,8 +3635,17 @@ function helpRequestOf(prev, input) {
   // card's hint over its posing board, never "there is nothing to draw" and never the same board drawn again as if new)
   // (Brain 049 B2: it is a picture request of its own — help.js never answers it with a key, and says the script's noPicture line first)
   if (col === "picture") return pictureKindOf(prev, input)?.kind === "hint" ? "picture" : null;
+  // (d37 close item 13, main's ruling on the closing builder's 6b: a plain no — "nahi", "nahi samjha", "no", a line the walk reads as no
+  // column — to the check-in that ends her reply's point turn (D2) or the split first turn (A(ii)), its card held, takes the path the sixth
+  // ruling gave a clarify there (pickHelp's heldCard): help on the point and then its card, in the same turn. Elsewhere a plain no is as built)
+  if (!col && PLAIN_NO.test(String(input?.text ?? "").trim()) && heldCardAt(prev)) return "clarify";
   return col === "clarify" || col === "give_up" || col === "hindi" ? col : null;
 }
+/** d37 close item 13: a plain no, said alone. */
+const PLAIN_NO = /^(?:nahi|nahin|nahi\s+(?:samjha|samjhi|samjhe|samajh\s+aaya)|no|nope|na)[\s.!,]*$/iu;
+/** The check-in of her reply's point turn (D2) or of the split first turn (A(ii)), its card held for the next turn (main's sixth ruling on
+ *  cause A, item 1: pickHelp's heldCard). */
+const heldCardAt = (prev) => !!(prev?.lastMove?.replyPoint || prev?.lastMove?.startApart) && !!prev?.splitHold?.teach && !!prev?.splitHold?.ui?.ask?.itemId;
 /** The part she is on for help: the card just keyed while no card has been posed since (the child speaks after a key's check-in),
  *  else the walk's record (cellAddressOf). → { part, keyed } | null — with no part recorded, help is not picked. */
 function helpPartOf(prev, input) {
@@ -3651,7 +3660,8 @@ function helpPartOf(prev, input) {
   // (dc-r8-director27 P3: a card answered right, its verdict and why said, no card posed since — a request there is help on that card, its
   // why's other wording first, but no key was said as help: it is not keyed, and nothing left is helpSpent, never the go-on line)
   if (prev?.closedPart && !prev.lastUi?.ask?.itemId) return { part: prev.closedPart, keyed: false, closed: true };
-  const a = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
+  // (d37 close item 13: a plain no at a held-card check-in is addressed as the clarify it is taken for — the part her check-in was on)
+  const a = (() => { try { return cellAddressOf(prev, input, !columnName(input, prev) && PLAIN_NO.test(String(input?.text ?? "").trim()) && heldCardAt(prev) ? "clarify" : null); } catch { return null; } })();
   // (dc-r8-director26 N1: with no part recorded, the part is the last she said — a card her last turn closed, with no card posed since,
   // is the card just keyed)
   if (!a?.part) {
@@ -3805,7 +3815,7 @@ function helpDecision(prev, input, request, said) {
     // (to-brain 053 B7: a Hindi request that also asks for an explanation — "samjhao", "samjha do", "batao kaise")
     explain: request === "hindi" && HINDI_EXPLAIN.test(String(input.text ?? "")), boardUp: prev.heldUp?.board ?? null,
     // (to-brain 054 A, main's sixth ruling item 1: the check-in of her reply's point turn (D2) or of the split first turn (A(ii)), its card held)
-    heldCard: !!(prev.lastMove?.replyPoint || prev.lastMove?.startApart) && !!prev.splitHold?.teach && !!prev.splitHold?.ui?.ask?.itemId });
+    heldCard: heldCardAt(prev) });
   return d ? { ...noPictureKeeps(resultHeldHelp(d, prev, script), prev.heldUp?.board ?? null), friend: friendOf } : null;
 }
 /** to-brain 051 C2: help on a worked step after an earlier step's result board went up is said over that board (it is the held board for the

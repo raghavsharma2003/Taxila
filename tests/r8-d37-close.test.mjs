@@ -346,3 +346,45 @@ describe("item 12: shareParkUnreturned — only a return of THAT park clears it;
     assert.deepEqual(flag([C("mujhe cricket pasand hai", "aside"), untold, C("aapko virat pasand hai?", "aside"), ai, C("chauka"), bye]), [5]);
   });
 });
+
+describe("item 13 (main's ruling on 6b): a plain no at a held-card check-in takes the clarify path — help on the point and the card in one turn", async () => {
+  const { initLessonState, step } = await import("../server/director/state.js");
+  const { classifyFast, targetFor } = await import("../server/director/classify.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const { findItem } = await import("../server/director/items.js");
+  const { dryReading } = await import("../evals/hybrid-side-by-side/dry-reader.mjs");
+  /** step() alone, every line read as the dry matrix reads it; `until(s)` walks right answers (or "haan") first. */
+  function walkSteps(topicId, lines, until = null) {
+    const kit = kitFromFile(getTopic(topicId));
+    const ctx = { firstName: "Riya", teacherName: "Asha", lang: "hinglish", interests: ["cricket"], classLevel: 5, sessionId: "s13", teacher: "director" };
+    let s = step(initLessonState({ topicId, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 }).state;
+    const go = (text) => {
+      const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+      const target = targetFor(s, kit, item);
+      const fast = classifyFast({ target, childText: text, lang: "hinglish", classLevel: 5, typed: true });
+      const r = step({ ...s, recent: [...(s.recent ?? []), { who: "child", text }] }, { event: "turn", kit, text, cls: fast.result ?? dryReading(target), now: 1 });
+      s = r.state; return r;
+    };
+    if (until) for (let i = 0; i < 200 && !until(s); i++) { const it = s.activeItemId ? findItem(s, kit, s.activeItemId) : null; go(it ? String(it.answer) : "haan"); }
+    const reached = !until || until(s);
+    const out = lines.map(go); out.reached = reached; return out;
+  }
+  for (const no of ["nahi", "nahi samjha", "no"]) {
+    test(`A(ii) (c5-t01, two requests at the greeting): "${no}" at the split first turn's check-in — the point's other wording and the card`, () => {
+      const [, a, t] = walkSteps("c5-maths-ch02-t01", ["samajh nahi aaya", "samajh nahi aaya", no]);
+      assert.ok(a.state.lastMove.startApart);
+      assert.equal(t.state.lastMove.help?.request, "clarify"); assert.equal(t.state.lastMove.help?.rung, "pointAlt");
+      assert.equal(t.ui.ask?.itemId, "script:c5-maths-ch02-t01-s1:ask:e1", "the card in the same turn");
+    });
+  }
+  test("the other side: a 'haan' there gets the card alone; a no at a check-in with no held card (a bridge's) is as built — no card asked, no clarify", () => {
+    const [, , y] = walkSteps("c5-maths-ch02-t01", ["samajh nahi aaya", "samajh nahi aaya", "haan"]);
+    assert.equal(y.state.lastMove.help ?? null, null); assert.equal(y.ui.ask?.itemId, "script:c5-maths-ch02-t01-s1:ask:e1");
+    const isBridge = (s) => !s.lastUi?.ask?.itemId && s.lastMove?.scriptBeat?.kind === "bridge" && !(s.lastMove?.replyPoint || s.lastMove?.startApart);
+    const bw = walkSteps("c6-maths-ch07-t01", ["nahi"], isBridge), [b] = bw;
+    assert.ok(bw.reached, "the walk reaches a bridge's check-in");
+    assert.notEqual(b.state.lastMove.help?.request, "clarify");
+    assert.ok(!b.state.lastMove.help || b.state.lastMove.help.card !== "ask");
+  });
+});
