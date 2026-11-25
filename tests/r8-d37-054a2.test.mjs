@@ -157,6 +157,9 @@ describe("fix 3: after a go-on turn the next turn teaches; 'back to work' is nev
     assert.ok(P.goOnJointTwice({}, joint, 3, { prevT: go("afterPark") }));
     assert.equal(P.goOnJointTwice({}, teach, 3, { prevT: go("afterPark") }), null);
     assert.equal(P.goOnJointTwice({}, joint, 3, { prevT: teach }), null);
+    // (the after-key go-on line into an aside's return, then her reply to its answer going back to the card)
+    const toReturn = { who: "teacher", text: "r", seams: [{ right: "afterKeyGoOn", joint: "afterKeyGoOn" }, { right: "return" }] };
+    assert.equal(P.goOnJointTwice({}, joint, 3, { prevT: toReturn }), null);
   });
 });
 

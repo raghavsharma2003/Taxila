@@ -34,7 +34,9 @@ const goOnEnd = (r) => r?.who === "teacher" && (r.noFit === "vpc" || !!r.noFitGo
 const TEACH = new Set(["point", "card", "returnCard", "bridge", "workedProblem", "workedStep", "stepAsk", "remediation", "help", "simpler", "key", "verdict", "missVerdict", "caption", "held"]);
 const teaches = (r) => (r?.seams ?? []).some((x) => TEACH.has(String(x.right ?? "")));
 const GO_ON_JOINTS = new Set(["afterAside", "afterPark", "afterAiLine", "afterKeyGoOn"]);
-const goOnJoint = (r) => (r?.seams ?? []).find((x) => GO_ON_JOINTS.has(String(x.joint ?? "")))?.joint ?? null;
+// (a joint that leads into an aside's return — the after-key go-on line before the return question — goes to the side-topic, not back to work:
+// her reply to the child's answer then goes back, dry stuck c5-ch02-t02 50 → 52)
+const goOnJoint = (r) => { const sm = r?.seams ?? []; const j = sm.findIndex((x) => GO_ON_JOINTS.has(String(x.joint ?? ""))); return j >= 0 && !sm.slice(j).some((x) => x.right === "return") ? sm[j].joint : null; };
 
 export const D37A_PREDICATES = {
   goOnNoTeach(L, r, i) {
