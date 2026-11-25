@@ -3673,7 +3673,11 @@ function waitOf(prev, input) {
   const last = String((prev.recent ?? []).filter((x) => x.who === "teacher").at(-1)?.text ?? "");
   const aL = atQuestionOf(script, last);
   if (!(aL === P || aL === "?short" || endsOnYourTurn(script, last) || endsOnAnswerFirst(script, last))) return null;
-  const n = (prev.waitQ?.P === P ? prev.waitQ.n ?? 0 : 0) + 1;
+  // (RULING-B5 item 1: a wait is counted from her turns — never two turns running with no question. Where no wait is kept at this question
+  // and her turn before ended on a short ask or an invitation without saying the question, whatever led to it (a help turn that ended on
+  // "Ab tum batao.", 049 B4's third-turn invitation), that turn was wait one: this turn is wait two)
+  const standIn = aL !== P;
+  const n = (prev.waitQ?.P === P ? prev.waitQ.n ?? 0 : standIn ? 1 : 0) + 1;
   // (RULING-B3: wait two never says a reask the child has just heard — where the turn that last said the question ended on its reask, wait
   // two is what wait three is)
   const lastQ = n === 2 ? (prev.recent ?? []).filter((x) => x.who === "teacher").map((x) => String(x.text ?? "")).reverse().find((x) => atQuestionOf(script, x) === P) : null;

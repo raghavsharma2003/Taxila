@@ -75,6 +75,9 @@ export function waitAt(L, i, script) {
   let from = 0;
   turns.forEach((n, m) => { const a = atQuestionOf(script, L.rows[n].text); if (a && a !== "?short" && a !== P) from = m + 1; });
   const at = turns.slice(from);
+  // (RULING-B5 item 1: a wait is counted from her turns — her turn before the child's first cue, where it ended on a short ask or an
+  // invitation without saying the question (a help turn that ended on "Ab tum batao.", 049 B4's third-turn invitation), is wait one)
+  if (!from && at.length && j >= 0 && !waitCue(L.rows[j]) && standsFor(script, L.rows[j].text) && [null, "?short"].includes(atQuestionOf(script, L.rows[j].text))) at.unshift(j);
   return at.length && at.at(-1) === i ? { P, turns: at } : null;
 }
 /** Whether row i is the wait's re-ask: the wait's second turn, ending on the question's own `reask`. */

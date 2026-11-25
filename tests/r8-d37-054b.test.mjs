@@ -131,13 +131,17 @@ for (const TOPIC of ["c4-maths-ch05-t01", "c6-maths-ch07-t01"]) describe(`RULING
   const w = await walkTo(TOPIC, "card");
   const turns = await w.play(["give", "give", "haan", "haan", "haan"]);
   w.done();
-  test("wait two is help ending on the question (never the reask alone); wait three the key", () => {
+  // (RULING-B5 item 1: the second give-up's help ended on the invitation — that was wait one, so the first bare haan is wait two, never a
+  // short ask after "Ab tum batao.": the reask was heard in the first give-up's help, so wait two is help; wait three the key)
+  test("the help turn ending on the invitation is wait one; the first bare haan is wait two, help ending on the question (never a short ask, never the reask alone); wait three the key", () => {
     assert.ok(turns[0].text.endsWith(reaskFilled(w.script, w.P)), turns[0].text);
-    assert.equal(turns[3].lm.waitN, 2);
-    assert.ok(turns[3].seams.includes("help"), turns[3].seams.join(">"));
-    assert.equal(atQuestionOf(w.script, turns[3].text), w.P, turns[3].text);
-    assert.ok(!turns[3].text.endsWith(reaskFilled(w.script, w.P)), turns[3].text);
-    assert.ok(turns[4].lm.gave, turns[4].text);
+    assert.equal(turns[1].seams.at(-1), "yourTurn", turns[1].seams.join(">"));
+    assert.equal(turns[2].lm.waitN, 2);
+    assert.ok(turns[2].seams.includes("help"), turns[2].seams.join(">"));
+    assert.equal(atQuestionOf(w.script, turns[2].text), w.P, turns[2].text);
+    assert.ok(!turns[2].text.endsWith(reaskFilled(w.script, w.P)), turns[2].text);
+    assert.equal(turns[3].lm.waitN, 3);
+    assert.ok(turns[3].lm.gave, turns[3].text);
   });
   test("where the reask was not heard (a bare haan from the card), wait two is the reask as ruled", async () => {
     const w2 = await walkTo(TOPIC, "card");
@@ -152,11 +156,15 @@ describe("B.3: any other turn ends the wait", async () => {
   const w = await walkTo("c4-maths-ch05-t01", "step");
   const turns = await w.play(["try", "give", "haan"]);
   w.done();
-  test("a give-up gets help; the bare haan after it is wait one again (the short ask)", () => {
+  test("a give-up gets help and ends the wait; the bare haan after it starts a wait counted from her turns (RULING-B5 item 1)", () => {
     assert.equal(turns[1].lm.waitN, undefined);
     assert.equal(turns[1].state.waitQ, undefined);
-    assert.equal(turns[2].lm.waitN, 1);
-    assert.ok(SHORT_ASK_FORMS.some((f) => turns[2].text.endsWith(f)) || turns[2].seams.at(-1) === "yourTurn", turns[2].text);
+    // (the help turn is 049 B4's third turn at the question: it ends on the invitation, no question — so it was wait one, and the bare haan
+    // is wait two, the reask; never a short ask after it: two turns running with no question)
+    assert.equal(turns[1].seams.at(-1), "yourTurn", turns[1].seams.join(">"));
+    assert.equal(turns[2].lm.waitN, 2);
+    assert.ok(turns[2].text.endsWith(reaskFilled(w.script, w.P)), turns[2].text);
+    assert.ok(!SHORT_ASK_FORMS.some((f) => turns[2].text.endsWith(f)), turns[2].text);
   });
 });
 
@@ -186,6 +194,11 @@ describe("B.5: waitNoQuestion and waitSecondNotReask", async () => {
     const park = T("Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Pehle is sawaal ka jawab do.", "aside", ["park", "answerFirst"]);
     assert.deepEqual(flags([asked, C("pehle main try karun?"), short, C("sixer maara"), park, C("haan"), T(invite, "yes", ["yourTurn"])], "waitSecondNotReask"), [6]);
     assert.deepEqual(flags([asked, C("pehle main try karun?"), short, C("sixer maara"), park, C("haan"), T(reask, "yes", ["stepAsk"])], "waitSecondNotReask"), []);
+  });
+  test("RULING-B5 item 1: a wait is counted from her turns — a help turn ending on the invitation is wait one, so the next bare haan is wait two", () => {
+    const helpInvite = T(`Khaane se pehle wali poori barfi yaad karo. ${invite}`, "give_up", ["help", "yourTurn"]);
+    assert.deepEqual(flags([asked, C("pata nahi"), helpInvite, C("haan"), T(reask, "yes", ["stepAsk"])], "waitSecondNotReask"), []);
+    assert.deepEqual(flags([asked, C("pata nahi"), helpInvite, C("haan"), T(SHORT_ASK_FORMS[0], "yes", ["reaskShort"])], "waitSecondNotReask"), [4]);
   });
   test("waitNoQuestion trips on three wait turns with neither the question nor help (short ask, invitation, short ask) and not when one says either", () => {
     const old = [asked, C("pehle main try karun?"), short, C("haan"), T(invite, "yes", ["yourTurn"]), C("haan"), T(SHORT_ASK_FORMS[1], "yes", ["reaskShort"])];
