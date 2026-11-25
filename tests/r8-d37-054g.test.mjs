@@ -373,3 +373,88 @@ describe("item 7: help at a card said in its POINT's wording ends on the card's 
     assert.ok(!pointHelpReaskAt({ who: "teacher", cell, text: `${simpler} ${prompt}` }, sc));
   });
 });
+
+// d37 G3, RULING-G item 8: one go-on or back-to-work line a turn (offtopic c4-ch05-t01 54 in g/m7b: "Koi baat nahi, chalo aage badhte hain.
+// Haan, cricket, yeh tumne bataya tha na! Theek hai, ab phir se apne kaam par lagte hain. …" — the first is dropped, the turn opens on her
+// reply), and no sentence opener twice running: a joint never opens on the words the sentence before it opened on (stuck c4-ch05-t01 52,
+// "Koi baat nahi, isse aasaan shabd abhi mere paas nahi hain. Koi baat nahi, chalo aage badhte hain.").
+describe("RULING-G item 8: one go-on or back-to line a turn; no opener twice running", async () => {
+  const { seamPass, seamStart } = await import("../server/brain/seams.js");
+  const { helpJoint, openerOf } = await import("../server/director/help.js");
+  const joints = { afterAside: [{ hi: "Ab wapas apni padhai par aate hain." }, { hi: "Toh ab wahin se shuru karte hain jahan ruke the." }, { hi: "Theek hai, ab phir se apne kaam par lagte hain." }],
+    backTo: [{ hi: "Chalo, ab pichhle sawaal par wapas chalte hain." }] };
+  const kit = { topicId: "t", __joints: joints };
+  const GO = "Koi baat nahi, chalo aage badhte hain.", REPLY = "Haan, cricket, yeh tumne bataya tha na!", CARD = "Ek chhota tukda cake ke 1/4 se kam hai, ya zyada?";
+  const run = (list, info, state = { ctx: { lessonKey: "L8" }, jointN: {} }) => seamPass(list, { kit, state, lang: "hinglish", info });
+  const txt = (r) => r.list.map((p) => p.text).join(" ");
+  test("the go-on line before her reply to a side-topic and its back-to joint is dropped: the turn opens on the reply", () => {
+    const r = run([{ part: "body", text: GO }, { part: "aside", text: REPLY }, { part: "card", text: CARD }], { helpJoint: { kind: "afterKeyGoOn", form: GO, by: "authored" }, replyLine: REPLY });
+    assert.ok(!txt(r).includes(GO), txt(r));
+    assert.ok(txt(r).startsWith(REPLY), txt(r));
+    assert.equal(r.seams.filter((s) => s.joint).length, 1, JSON.stringify(r.seams));
+    assert.equal(r.seams.find((s) => s.joint)?.joint, "afterAside");
+    assert.ok(!r.seams.some((s) => s.right === "afterKeyGoOn"), JSON.stringify(r.seams));
+  });
+  test("other side: with no side-topic between, the go-on line leads the card as built", () => {
+    const r = run([{ part: "body", text: GO }, { part: "card", text: CARD }], { helpJoint: { kind: "afterKeyGoOn", form: GO, by: "authored" } });
+    assert.ok(txt(r).startsWith(GO), txt(r));
+    assert.ok(r.seams.some((s) => s.joint === "afterKeyGoOn"), JSON.stringify(r.seams));
+  });
+  test("a \"nothing easier\" line before the dropped go-on line stays, recorded as itself", () => {
+    const SP = "Yahi sabse seedha tareeka hai jo mere paas hai, koi baat nahi.";
+    const r = run([{ part: "body", text: SP }, { part: "body", text: GO }, { part: "aside", text: REPLY }, { part: "card", text: CARD }],
+      { helpJoint: { kind: "afterKeyGoOn", form: GO, by: "authored", spent: { form: SP, by: "authored", kind: "helpSpent" } }, replyLine: REPLY });
+    assert.ok(txt(r).startsWith(SP), txt(r)); assert.ok(!txt(r).includes(GO), txt(r));
+    assert.ok(r.seams.some((s) => s.joint === "helpSpent"), JSON.stringify(r.seams));
+  });
+  test("openerOf: the head before an early comma, else the first word", () => {
+    assert.equal(openerOf("Koi baat nahi, chalo aage badhte hain."), "koi baat nahi");
+    assert.equal(openerOf("Theek hai, ab phir se apne kaam par lagte hain."), "theek hai");
+    assert.equal(openerOf("Ab wapas apni padhai par aate hain."), "ab");
+    assert.equal(openerOf("Yahi sabse seedha tareeka hai jo mere paas hai, koi baat nahi."), "yahi");
+  });
+  test("a seam's joint never opens on the opener of the sentence before it; the next form of its own list", () => {
+    // (find the lesson key whose afterAside rotation picks the "Theek hai, …" form first)
+    let key = 0; while ((seamStart(`K${key}`, "afterAside") % 3) !== 2) key++;
+    const state = { ctx: { lessonKey: `K${key}` }, jointN: {} };
+    const plain = run([{ part: "aside", text: REPLY }, { part: "card", text: CARD }], { replyLine: REPLY }, state);
+    assert.equal(plain.seams.find((s) => s.joint)?.form, joints.afterAside[2].hi, "the rotation's form where the openers differ");
+    const R2 = "Theek hai, cricket mujhe bhi achha lagta hai.";
+    const r = run([{ part: "aside", text: R2 }, { part: "card", text: CARD }], { replyLine: R2 }, state);
+    const f = r.seams.find((s) => s.joint)?.form;
+    assert.ok(joints.afterAside.map((x) => x.hi).includes(f), f);
+    assert.notEqual(openerOf(f), "theek hai", f);
+  });
+  test("help's go-on line after the \"nothing easier\" line never opens on its opener, and the rotation still says every form once a cycle", async () => {
+    const { rotationDone } = await import("../server/director/help.js");
+    const script = { joints: { afterKeyGoOn: [{ hi: "Koi baat nahi, chalo aage badhte hain." }, { hi: "Theek hai, abhi agli baat dekhte hain." }, { hi: "Chalo, ab agle hisse par chalte hain." }] } };
+    const SP = "Koi baat nahi, isse aasaan shabd abhi mere paas nahi hain.";
+    // (a lesson whose rotation starts on the "Koi baat nahi, …" form)
+    let k = 0; while (helpJoint(script, "afterKeyGoOn", { lessonKey: `H${k}`, n: 0 }).ix !== 0) k++;
+    const L = `H${k}`;
+    assert.equal(openerOf(helpJoint(script, "afterKeyGoOn", { lessonKey: L, n: 0 }).text), "koi baat nahi", "other side: with nothing said before it, the rotation as built");
+    let done = null; const said = [];
+    for (let n = 0; n < 6; n++) {
+      const j = helpJoint(script, "afterKeyGoOn", { lessonKey: L, n, done, notOpening: n % 3 === 0 ? SP : null });
+      if (n % 3 === 0) assert.notEqual(openerOf(j.text), "koi baat nahi", j.text);
+      said.push(j.ix); done = rotationDone(j.len, n, done, j.ix);
+    }
+    assert.deepEqual([...said.slice(0, 3)].sort(), [0, 1, 2], said.join(","));
+    assert.deepEqual([...said.slice(3)].sort(), [0, 1, 2], said.join(","));
+  });
+  test("a seam joint taken out of turn keeps the rotation: every form once before any again (countJoints' record)", async () => {
+    const { countJoints } = await import("../server/brain/turn.js");
+    let key = 0; while ((seamStart(`K${key}`, "afterAside") % 3) !== 2) key++;
+    let state = { ctx: { lessonKey: `K${key}` }, jointN: {} };
+    const said = [];
+    for (let n = 0; n < 3; n++) {
+      const R = n === 0 ? "Theek hai, cricket mujhe bhi achha lagta hai." : "Haan, cricket!";
+      const r = run([{ part: "aside", text: R }, { part: "card", text: CARD }], { replyLine: R }, state);
+      const f = r.seams.find((s) => s.joint)?.form; said.push(f);
+      const guard = { jointsUsed: r.jointsUsed, ...r.said, jointPicks: r.picks };
+      state = { ...state, jointN: countJoints(state.jointN, guard, r.list.map((p) => p.text).join(" ")) };
+    }
+    assert.notEqual(openerOf(said[0]), "theek hai", said[0]);
+    assert.deepEqual([...said].sort(), joints.afterAside.map((x) => x.hi).sort(), said.join(" | "));
+  });
+});

@@ -40,7 +40,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { hindiFormOf, pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, whyNamesKey, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
+import { hindiFormOf, pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, whyNamesKey, helpJoint, rotationDone, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -3917,10 +3917,16 @@ const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "p
   // aside acknowledgement, and brain/say.js said the return's card again over the help — the acknowledgement is that turn's)
   "asideAck"];
 const stripHelp = (m) => { const o = { ...m }; for (const k of HELP_STRIP) delete o[k]; if (o.sayFirst && !o.heldSaid) delete o.sayFirst; return o; };
+/** Count a help joint said (forms rotate by it); d37 RULING-G item 8: with the form's place in its rotation (help.js rotationDone), so a form
+ *  taken out of turn is not said again before the others. */
+function countHelpJoint(s, j) {
+  const n = s.helpJointN?.[j.kind] ?? 0;
+  s.helpJointN = { ...(s.helpJointN ?? {}), [j.kind]: n + 1, ...(j.ix != null && j.len ? { [`${j.kind}~done`]: rotationDone(j.len, n, s.helpJointN?.[`${j.kind}~done`], j.ix) } : {}) };
+}
 /** Count a help joint said (forms rotate by it), and record the decision on the state. */
 function noteHelp(s, d) {
-  if (d.joint) s.helpJointN = { ...(s.helpJointN ?? {}), [d.joint.kind]: (s.helpJointN?.[d.joint.kind] ?? 0) + 1 };
-  if (d.then) s.helpJointN = { ...(s.helpJointN ?? {}), [d.then.kind]: (s.helpJointN?.[d.then.kind] ?? 0) + 1 };
+  if (d.joint) countHelpJoint(s, d.joint);
+  if (d.then) countHelpJoint(s, d.then);
   if (d.pictureLine) s.helpJointN = { ...(s.helpJointN ?? {}), noPicture: (s.helpJointN?.noPicture ?? 0) + 1 };
   if (d.easierLine) s.helpJointN = { ...(s.helpJointN ?? {}), easierWords: (s.helpJointN?.easierWords ?? 0) + 1 };
   s.keyedPart = d.card === "close" ? d.part : d.keyed && d.card === "wait" ? d.part : undefined;
@@ -4185,7 +4191,7 @@ function helpAfter(prev, input, out, pre) {
     // (to-brain 049 B6, 047 R5's third bullet: "nothing easier" is never followed in the same turn by an aside's return — c4-ch01-t02 stuck 68
     // in director31: before a return the go-on line is said in its place)
     if (lm.returned?.topic && d.joint.kind === "helpSpent") {
-      const g = d.then?.kind === "afterKeyGoOn" ? d.then : helpJoint(scriptFor(input.kit)?.script, "afterKeyGoOn", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.afterKeyGoOn ?? 0 });
+      const g = d.then?.kind === "afterKeyGoOn" ? d.then : helpJoint(scriptFor(input.kit)?.script, "afterKeyGoOn", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.afterKeyGoOn ?? 0, done: prev.helpJointN?.["afterKeyGoOn~done"] });
       if (g?.text) d = { ...d, joint: g, then: null };
     }
     const j = fillFriend(d.joint.text, friendOf);
@@ -4330,9 +4336,9 @@ export function step(prev, input) {
     if (keyedBefore && input?.event === "turn" && scriptOn() && !recordedWalk(input) && lm && out.ui?.ask?.itemId && !input.cls?.request && !input.cls?.help
       && !["correct", "incorrect", "partial", "misconception"].includes(String(input.cls?.outcome ?? "")) && !["safeguard", "wrap", "break", "worked_example"].includes(String(lm.kind ?? ""))
       && !lm.point && !lm.rendered?.length && !lm.sayFirst?.length && !lm.bridgeSaid && !lm.returned && !lm.helpJoint && !lm.simpler && !lm.problemLines && !lm.asideAck && !lm.tasteAsked) {
-      const j = helpJoint(scriptFor(input.kit)?.script, "afterKeyGoOn", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.afterKeyGoOn ?? 0 });
+      const j = helpJoint(scriptFor(input.kit)?.script, "afterKeyGoOn", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.afterKeyGoOn ?? 0, done: prev.helpJointN?.["afterKeyGoOn~done"] });
       if (j?.text) {
-        out.state.helpJointN = { ...(out.state.helpJointN ?? {}), afterKeyGoOn: (prev.helpJointN?.afterKeyGoOn ?? 0) + 1 };
+        out.state.helpJointN = { ...(out.state.helpJointN ?? {}), afterKeyGoOn: (prev.helpJointN?.afterKeyGoOn ?? 0) + 1, ...(j.ix != null ? { "afterKeyGoOn~done": rotationDone(j.len, prev.helpJointN?.afterKeyGoOn ?? 0, prev.helpJointN?.["afterKeyGoOn~done"], j.ix) } : {}) };
         out.state.lastMove = { ...lm, sayFirst: [j.text], helpJoint: { kind: "afterKeyGoOn", form: j.text, by: j.by } };
         if (out.move) out.move = { ...out.state.lastMove };
       }

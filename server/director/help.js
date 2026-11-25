@@ -278,13 +278,43 @@ const startOf = (lessonKey, kind) => {
   const h = [...`${lessonKey}|${kind}`].reduce((a, c) => Math.imul(a ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261);
   return Math.imul(h, 2654435761) >>> 0;
 };
-/** One form of a help joint: rotated from the lesson's start by how many of that joint she has said. → { kind, text, by } | null. */
-export function helpJoint(script, kind, { lang = "hinglish", lessonKey = null, n = 0 } = {}) {
+/** d37 RULING-G item 8 (the walk's fresh-form rule): the words a sentence opens on — its head before a comma (or "!", ":", ";") within its
+ *  first three words ("koi baat nahi", "theek hai", "chalo"), else its first word; lower case. */
+export function openerOf(text) {
+  const s = String(text ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+  if (!s) return "";
+  const m = s.match(/^([^,!.?:;]+)[,!:;]/);
+  if (m && m[1].trim().split(" ").length <= 3) return m[1].trim();
+  return s.split(" ")[0].replace(/[.!?,:;]+$/, "");
+}
+/** One form of a help joint: rotated from the lesson's start by how many of that joint she has said. → { kind, text, by } | null.
+ *  `notOpening` (d37 RULING-G item 8): a sentence said just before it — the form never opens on the words that sentence opened on; the next
+ *  form in the rotation that does not, else the rotated form as before. */
+export function helpJoint(script, kind, { lang = "hinglish", lessonKey = null, n = 0, notOpening = null, done = null } = {}) {
   const { forms, by } = helpJointForms(script, kind);
   const texts = forms.map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim());
   if (!texts.length) return null;
-  const t = String(texts[(startOf(lessonKey, kind) + n) % texts.length]).trim();
-  return { kind, text: t.charAt(0).toUpperCase() + t.slice(1), by };
+  const avoid = notOpening ? openerOf(notOpening) : "";
+  const k = rotationPick(texts.length, startOf(lessonKey, kind), n, done, (i) => !!avoid && openerOf(texts[i]) === avoid);
+  const t = String(texts[k]).trim();
+  return { kind, text: t.charAt(0).toUpperCase() + t.slice(1), by, ix: k, len: texts.length };
+}
+/** d37 RULING-G item 8: a rotation that may take a form out of turn (a joint that would open on the sentence before it's opener) and still
+ *  says every form once before any again — the rotation's own order (from `start`), minus the forms said in this cycle (`done`: { c: the
+ *  cycle, o: the form indexes said in it, as rotationDone keeps them; a count with no record is read as the plain rotation), the first that
+ *  is not `bad`, else the first. With nothing taken out of turn and nothing bad, exactly the plain rotation's form. */
+export function rotationPick(len, start, n, done = null, bad = () => false) {
+  const order = [...Array(len).keys()].map((d) => (Number(start) + d) % len);
+  const c = n % len, cyc = Math.floor(n / len);
+  const used = done && done.c === cyc && Array.isArray(done.o) ? done.o.filter((x) => order.includes(x)) : [];
+  for (const ix of order) { if (used.length >= c) break; if (!used.includes(ix)) used.push(ix); }
+  const free = order.filter((ix) => !used.includes(ix));
+  return free.find((ix) => !bad(ix)) ?? free[0] ?? order[c];
+}
+/** The cycle record after form `ix` was said at count `n` (rotationPick's `done`). */
+export function rotationDone(len, n, done, ix) {
+  const cyc = Math.floor(n / len);
+  return { c: cyc, o: [...(done && done.c === cyc && Array.isArray(done.o) ? done.o : []), ix] };
 }
 /** to-brain 049, main's ruling of 2026-11-23 (items 1 and 4): the go-on joint where nothing was keyed — a right verdict split from its point,
  *  a bridge's give-up — takes only a form that is a plain statement: it names no question ("sawaal", "jawab"), promises nothing ("dobara",
@@ -641,7 +671,7 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     // (Brain 047 R8, dc-r8-director31 item 1: most cards have no `hindi` form now, on purpose. A Hindi request never gets a key and never the
     // "nothing easier" line (c4 offtopic 32): with the part's help spent, the switch line (the language pass says it) and the whole card again
     // — said as the card's question, as a form is. A point's card is asked; after a key or at a bridge the lesson goes on with the go-on line)
-    if (keyed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 }), hindiWhole: true };
+    if (keyed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0, done: jointN["afterKeyGoOn~done"] }), hindiWhole: true };
     // (a card closed by its key or a right answer, or a bridge: the lesson goes on, after the switch line)
     if (part.kind === "bridge" || closed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: null, hindiWhole: true };
     const whole = isCard ? cardPromptOf(script, part) : null;
@@ -654,8 +684,10 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   if (keyed) {
     // (dc-r8-director28 Brain 044 T5: after a key with nothing unsaid, the "nothing easier" line is the help — then the go-on line or the after-key
     // return, and the lesson goes on. The go-on line alone is no help: c5-t01 stuck 30, steering 18, offtopic 62; c5-t02 stuck 30, steering 58)
-    const spentJ = helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 });
-    const goOn = helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 });
+    const spentJ = helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0, done: jointN["helpSpent~done"] });
+    // (d37 RULING-G item 8: the go-on line said after the "nothing easier" line never opens on that line's opener — stuck c4-ch05-t01 52,
+    // "Koi baat nahi, isse aasaan shabd abhi mere paas nahi hain. Koi baat nahi, chalo aage badhte hain.")
+    const goOn = helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0, notOpening: spentJ?.text ?? null, done: jointN["afterKeyGoOn~done"] });
     return { ...base, rung: null, board: null, card: "goOn", key: null, joint: spentJ ?? goOn, ...(spentJ && goOn ? { then: goOn } : {}) };
   }
   // (Brain 049 B1: a Hindi request at a card with no form and its help spent: the honest "nothing easier" line, then the card's question in

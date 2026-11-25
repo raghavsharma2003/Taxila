@@ -7,6 +7,7 @@
 import { alignParts } from "./lineParts.js";
 import { requeueMissedReturn, cardUnsaidNow, teachbackReading, GO_ON, STOP_WORD } from "../director/state.js";
 import { responseShape } from "../director/requestTable.js";
+import { rotationDone } from "../director/help.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
 import { sessionTokenHash } from "../auth.js";
@@ -976,7 +977,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     if (guard?.backTo && next) next.backToN = (next.backToN ?? 0) + 1;
     // (2.4 J1: each seam joint kind rotates by how many times it has been said)
     // (a joint counts only when its words are in what she said — one a later guard dropped did not use its form)
-    if (guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of jointsSaid(guard, teacherReply)) jn[k] = (jn[k] ?? 0) + 1; next.jointN = jn; }
+    if (guard?.jointsUsed?.length && next) next.jointN = countJoints(next.jointN, guard, teacherReply);
     // (v6.9 A5: her turn ended on an aside question — the next reply is read as about it, or as what it asks)
     // (dc-r8-director22 R: only when her turn ended on that question — a turn that went on to pose a card asked the card)
     if (guard?.asideEnd && !r.ui?.ask) next.asideReplyDue = true;
@@ -2172,6 +2173,17 @@ export function readByAsked(state, cls, text, kit = null) {
 }
 
 /** The joint kinds a turn's line actually says: those of guard.jointsUsed whose words (guard[kind]) are in the line. */
+/** The joint counts after a turn: each joint said counted once; d37 RULING-G item 8: with the form's place in its rotation (the seam pass's
+ *  picks, help.js rotationDone, kept as "<kind>~done"), so a form taken out of turn is not said again before the others. */
+export function countJoints(jointN, guard, reply) {
+  const jn = { ...(jointN ?? {}) };
+  for (const k of jointsSaid(guard, reply)) {
+    const n = jn[k] ?? 0, p = guard?.jointPicks?.[k];
+    if (p && p.ix >= 0 && p.len) jn[`${k}~done`] = rotationDone(p.len, n, jn[`${k}~done`], p.ix);
+    jn[k] = n + 1;
+  }
+  return jn;
+}
 export function jointsSaid(guard, reply) {
   const line = String(reply ?? "").toLowerCase();
   return (guard?.jointsUsed ?? []).filter((k) => typeof guard[k] !== "string" || line.includes(String(guard[k]).toLowerCase().replace(/[.!?]+$/, "")));

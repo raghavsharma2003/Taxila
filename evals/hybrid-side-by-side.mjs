@@ -47,7 +47,7 @@ import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisp
 import { drawnContradictions } from "./hybrid-side-by-side/drawn-pages.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
-import { jointsSaid } from "../server/brain/turn.js";
+import { countJoints } from "../server/brain/turn.js";
 import { newLearnerState } from "../server/comprehension/fuse.js";
 import { DEPLOY } from "../server/azure.js";
 import { teacherDeployment } from "../server/agent/flags.js";
@@ -433,7 +433,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       if (t.guard?.whyJoint != null && next) next = { ...next, whyJoint: { last: t.guard.whyJoint, n: (next.whyJoint?.n ?? 0) + 1 } };
       // (to-brain 049 B6, as brain/turn.js: the "Dekho," said in this lesson, counted — brain/say.js says it at most three times)
       if (next && t.reply) next = { ...next, dekhoN: (next.dekhoN ?? 0) + (String(t.reply).match(/(?<![\p{L}])Dekho,/gu)?.length ?? 0) };
-      if (t.guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of jointsSaid(t.guard, t.reply)) jn[k] = (jn[k] ?? 0) + 1; next = { ...next, jointN: jn }; }
+      if (t.guard?.jointsUsed?.length && next) next = { ...next, jointN: countJoints(next.jointN, t.guard, t.reply) };
       // (dc-r8-director22 R, as brain/turn.js: only when her turn ended on that question — a turn that posed a card asked the card)
       if (t.guard?.asideEnd && !ui?.ask) next = { ...next, asideReplyDue: true };
       if (next) next = { ...next, returnAsked: t.guard?.asideEnd && t.guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined };

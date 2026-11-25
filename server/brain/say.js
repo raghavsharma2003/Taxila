@@ -1636,7 +1636,7 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out.guard?.leadJoints?.length ? { ...out, guard: { ...out.guard, jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } } : out;
   // (Brain 043 R2: the invitation said at the turn's end rotates as a joint does — counted when its words are in what she said)
-  const g = { ...out.guard, seams: r.seams, jointsUsed: [...r.jointsUsed, ...(out.guard?.workedInvite ? ["workedInvite"] : []), ...(out.guard?.leadJoints ?? [])], ...r.said, lineParts: r.list, parts: { ...(out.guard.parts ?? {}), list: r.list } };
+  const g = { ...out.guard, seams: r.seams, jointsUsed: [...r.jointsUsed, ...(out.guard?.workedInvite ? ["workedInvite"] : []), ...(out.guard?.leadJoints ?? [])], ...r.said, ...(Object.keys(r.picks ?? {}).length ? { jointPicks: r.picks } : {}), lineParts: r.list, parts: { ...(out.guard.parts ?? {}), list: r.list } };
   for (const k of ["backTo", "beforeRemediation", "afterTryFirst", "afterAside", "afterAiLine"]) if (!r.said[k]) delete g[k];
   return { ...out, reply: r.reply, guard: g };
 }

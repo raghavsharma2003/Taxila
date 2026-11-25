@@ -5,7 +5,7 @@
 // the joint kind or none, the form) and the seam predicates read that list and nothing else.
 import { jointOf, scriptFor } from "../director/script.js";
 import { joinParts } from "./lineParts.js";
-import { FALLBACK_JOINTS, helpJoint } from "../director/help.js";
+import { FALLBACK_JOINTS, helpJoint, openerOf, rotationPick } from "../director/help.js";
 
 const norm = (x) => String(x ?? "").replace(/\s+/g, " ").trim();
 const low = (x) => norm(x).toLowerCase().replace(/[.!?।:]+$/, "");
@@ -146,10 +146,12 @@ export function seamStart(lessonKey, kind) {
 }
 export const lessonKeyOf = (state) => { const k = state?.ctx?.lessonKey ?? state?.ctx?.sessionId ?? state?.lessonId ?? null; return k == null ? null : String(k); };
 /** The form a seam says: rotated from the lesson's start by how many of that joint she has said. */
-export function seamForm(forms, state, kind) {
+export function seamForm(forms, state, kind, bad = null) {
   if (!forms?.length) return null;
   const n = state?.jointN?.[kind] ?? 0;
-  return forms[(seamStart(lessonKeyOf(state), kind) + n) % forms.length];
+  // (d37 RULING-G item 8: a form taken out of turn — `bad`, the fresh-form rule — keeps the rotation: help.js rotationPick, with the cycle
+  // record brain/turn.js countJoints keeps in jointN["<kind>~done"]; with nothing bad, the plain rotation's form)
+  return forms[rotationPick(forms.length, seamStart(lessonKeyOf(state), kind), n, state?.jointN?.[`${kind}~done`], bad ? (ix) => bad(forms[ix]) : undefined)];
 }
 
 /** dc-r8-director24 M (main's 035): the model writes the joins, in the turn's own reply call; code checks each and falls back to the
@@ -340,6 +342,23 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
       kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
     }
   }
+  // (d37 RULING-G item 8: one go-on or back-to-work line a turn — offtopic c4-ch05-t01 54, "Koi baat nahi, chalo aage badhte hain. Haan,
+  // cricket, yeh tumne bataya tha na! Theek hai, ab phir se apne kaam par lagte hain. …": where the go-on line leads a turn whose reply to a
+  // side-topic is followed by this table's back-to joint, the first is dropped and the turn opens on her reply; a "nothing easier" line
+  // before it stays)
+  if (info.helpJoint?.kind === "afterKeyGoOn" && info.helpJoint.form && !info.noReplyJoint) {
+    const goK = sentencesOf(info.helpJoint.form).map(low);
+    const at = stripped.findIndex((p) => sentencesOf(p.text).some((x) => goK.includes(low(x))));
+    const backAt = kinds.findIndex((k, i) => i > at && i + 1 < kinds.length && ["aside", "asideReply", "aiLine", "aiReply", "park"].includes(k)
+      && ["afterAside", "afterAiLine", "backTo"].includes(seamJoint(k, kinds[i + 1]) ?? ""));
+    if (at >= 0 && backAt > at) {
+      const rest = sentencesOf(stripped[at].text).filter((x) => !goK.includes(low(x)));
+      if (rest.length) stripped[at] = { ...stripped[at], text: rest.join(" ") }; else stripped.splice(at, 1);
+      const sp = info.helpJoint.spent;
+      info = { ...info, helpJoint: sp?.form ? { kind: sp.kind === "noPicture" ? "noPicture" : "helpSpent", form: sp.form, by: sp.by } : null, goOnDropped: info.helpJoint.form };
+      kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
+    }
+  }
   // (to-brain 049 B6, the same rule where help's joint is the "nothing easier" line alone — no key, so no go-on line: nothing in its place)
   if (info.helpJoint?.kind === "helpSpent" && info.helpJoint.form && kinds.includes("return")) {
     const spK = sentencesOf(info.helpJoint.form).map(low);
@@ -354,7 +373,7 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   // (dc-r8-director24 M: the verdict's opener in the model's words — the code frame at the head of the turn's verdict is swapped for
   // hers when it passes the join checks and says the verdict it opens: a right word on a right answer, a miss word on a miss)
   const opener = verdictOpener(stripped, kinds, { kit, state, lang, info });
-  const out = [], seams = [], said = {}, used = [];
+  const out = [], seams = [], said = {}, used = [], picks = {};
   let prevKind = "start";
   // (dc-r8-director25 L2 item 5: the record's left kind — a key said inside a verdict's part is recorded as its own part, after the
   // verdict; the joint is still decided by the part's kind, so what is said does not change)
@@ -380,7 +399,11 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     if (j && used.includes(j)) j = null;
     const own = j ? jointOf(kit, j, lang) : null;
     const forms = own?.length ? own : j ? CODE_SEAM_FORMS[j]?.[lang === "english" ? "english" : "hinglish"] ?? null : null;
-    let form = j && forms?.length ? seamForm(forms, state, j) : null;
+    // (d37 RULING-G item 8, the walk's fresh-form rule: a joint never opens on the words the sentence before it opened on — the next form of
+    // its own rotation that does not (the rotation kept: seamForm), else the form as picked)
+    const before = out.length ? sentencesOf(out.at(-1).text).at(-1) : "";
+    let form = j && forms?.length ? seamForm(forms, state, j, before ? (f) => openerOf(f) === openerOf(before) : null) : null;
+    if (form) picks[j] = { ix: forms.indexOf(form), len: forms.length };
     // (dc-r8-director24 M: the model's join for this seam, when it wrote one and it passes; else the authored form. The seam records
     // which was said, and why the model's fell back)
     const mine = j && form ? norm(info.modelJoins?.[j] ?? "") : "";
@@ -441,7 +464,7 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     if (at) Object.assign(at, rec); else { if (seams[0]?.left === "start") seams[0] = { ...seams[0], left: spK }; seams.unshift({ left: "start", right: spK, ...rec }); }
   }
   // (dc-r8-director27 P1: a joint keeps its mark — it is said over the board of the part it leads into, and the page builder reads that)
-  return { list: out.map(({ joint, ...p }) => (joint ? { ...p, joint } : p)), seams, jointsUsed: used, said };
+  return { list: out.map(({ joint, ...p }) => (joint ? { ...p, joint } : p)), seams, jointsUsed: used, said, picks };
 }
 
 /** The reply and its parts after the seam pass. */
