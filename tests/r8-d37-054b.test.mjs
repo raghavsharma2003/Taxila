@@ -269,9 +269,14 @@ describe("B.4: questionThreeRunning exempts the wait's re-ask; stepToldEarly exe
   test("stepToldEarly: the step told on the cap's turn at a wait passes; a step told after a bare yes with no cap is still flagged", () => {
     const told = (extra) => T("Neeche wala number saare tukde ginta hai, yaani 5. Tumhari baari: plate par bache tukde poori barfi ka kaunsa fraction hain?", "yes",
       ["workedStep", "card"], { stepAnswer: { beat: "c4-maths-ch05-t01-s1:worked:step1", right: false, told: true }, ...extra });
-    const lead = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan")];
+    // (re-pinned by main's sixth ruling, item 9: the cap's place is checked — wait four here, so the lead runs to wait three's help; the same
+    // cap at wait three, the question heard twice, is flagged)
+    const lead3 = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan")];
+    const lead = [...lead3, T(`${HELP} ${prompt}`, "yes", ["help", "stepAsk"]), C("haan")];
     assert.deepEqual(flags([...lead, told({ heardCap: P })], "stepToldEarly"), []);
-    assert.deepEqual(flags([...lead, told({})], "stepToldEarly"), [6]);
+    // (with no cap, a step told after a bare yes at wait three, its simpler unsaid, is still flagged)
+    assert.deepEqual(flags([...lead3, told({})], "stepToldEarly"), [6]);
+    assert.deepEqual(flags([...lead3, told({ heardCap: P })], "stepToldEarly"), [6]);
   });
   // (main's second ruling, item 2: also allowed on a wait's third-or-later turn where the give-up path had nothing left unsaid — the step's
   // own simpler said before it; everywhere else read as before)
