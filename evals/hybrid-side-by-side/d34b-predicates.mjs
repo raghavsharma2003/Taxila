@@ -131,9 +131,6 @@ export const D34B_PREDICATES = {
     const c = childBefore(L, i);
     if (String(c?.intent ?? "") !== "hindi" && String(r.cell?.column ?? "") !== "hindi") return null;
     if (seamsOf(r).includes("hindiSwitch")) return null;
-    // (to-brain 054 A(i): after her reply's go-on line no card is live — the held point and its card are said new, in the language asked
-    // from then on, as after a leadAlone reply: not a card's Hindi form)
-    if (ctx?.prevT?.noFit === "aside" && ctx.prevT.noFitGoOn) return null;
     const t = qKey(r.text);
     // (to-brain 052 A4: with the help spent she says the honest nothing-easier line (051 C5): a turn that says a joints.helpSpent form, read
     // from the script, or carries its seam, is not flagged — offtopic-c6-ch07-t01 row 32)

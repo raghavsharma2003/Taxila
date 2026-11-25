@@ -41,7 +41,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
+import { pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, helpJoint, goOnPlain, helpPart, hindiFormOf, hindiPathOf, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -5966,6 +5966,34 @@ export const _replyApartForTest = (prev, input, out) => replyApart(prev, input, 
 /** to-brain 049 B6 and 053 B4: a turn split after a right verdict that ended on the go-on line — the held half comes next whatever the child
  *  says (a right verdict split from its point, noFit "vpc"; a right answer's close apart from the next card, noFit "card" with its go-on). */
 const goesOnSplit = (lm) => lm?.noFit === "vpc" || (!!lm?.noFit && !!lm?.vpcGoOn);
+/** to-brain 054 A, main's second ruling fix 1: a language request on the turn after her reply's go-on line (replyApart) — the held point and
+ *  its card, the card asked in its own `hindi` form, as a Hindi request at that card is answered (help.js pickHelp, Brain 046 Q2), or as
+ *  written where it has none. The turn opens on the script's joints.easierWords line (051 C5), never the switch line: the point is a first
+ *  telling, and dc-r8-director28 T1 (switchFirst) forbids the switch line before one; a Hindi request's turn says one of the two (C5,
+ *  hindiNoFormNoLine).
+ *  `s` is the state of the turn, its language already set. → the turn, or null (no script card held). */
+function heldHindi(prev, input, s, h) {
+  const live = String(h.ui?.ask?.itemId ?? "");
+  const script = scriptFor(input.kit)?.script;
+  if (!script || !live.startsWith("script:") || !h.ui?.ask?.text || h.move?.kind === "worked_example") return null;
+  const partId = (() => { try { return cardPartOf(input.kit, { itemId: live }); } catch { return null; } })();
+  const part = partId ? (() => { try { return helpPart(script, partId); } catch { return null; } })() : null;
+  if (!part) return null;
+  const lessonKey = prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null;
+  const hf0 = hindiFormOf(script, part);
+  const hf = hf0 ? fillFriend(hf0, friendOf) : null;
+  const ew = Array.isArray(script.joints?.easierWords) && script.joints.easierWords.length ? helpJoint(script, "easierWords", { lang: "hinglish", lessonKey, n: prev.helpJointN?.easierWords ?? 0 }) : null;
+  const d = { part: partId, kind: part.kind, request: "hindi", rung: hf ? { field: "hindi", path: hindiPathOf(script, part), text: "", board: part.board ?? null } : null, board: part.board ?? null,
+    card: hf ? "hindiForm" : "keep", key: null, joint: null, ...(hf ? { hindiForm: hf } : { hindiAsked: true }), ...(ew ? { easierLine: ew } : {}), friend: friendOf };
+  const f = { ...(hf ? { hindiForm: hf } : {}), ...pictureLineFields(d) };
+  const move = { ...h.move, ...f, ...(f.sayFirst ? { sayFirst: [...f.sayFirst, ...(h.move.sayFirst ?? [])] } : {}), help: helpMark(d), request: "language", noLangAck: true };
+  noteHelp(s, d);
+  const ui = hf ? { ...h.ui, ask: { ...h.ui.ask, text: hf } } : h.ui;
+  // (the walk keeps the card's own text, as helpStay keeps it for a Hindi form: the form is this turn's words for it)
+  s.lastMove = move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent;
+  if (h.activeItemId) s.activeItemId = h.activeItemId;
+  return { state: s, move, moduleCommands: h.moduleCommands ?? [], ui, end: false, proposal: directorProposal(move, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+}
 /** The held half of a split turn, said now (any reply to "shall we go on?" but a safety read or a stop). null otherwise. */
 function heldTurn(prev, input) {
   const h = prev.splitHold;
@@ -5977,6 +6005,11 @@ function heldTurn(prev, input) {
     s.turn += 1;
     s.ctx = { ...s.ctx, lang: c.request.lang ?? "hindi", langPinned: true };
     s.splitHold = undefined;
+    // (to-brain 054 A, main's second ruling fix 1 — dry steady c5-t01 38, c6-ch07-t03 38: "Hindi mein bolo" after her reply's go-on line is
+    // honoured as at the card it holds: the switch line, the held point, and the card's own Hindi form as its question; at a card with no form,
+    // the script's easier-words line first, as 051 C5 at a card)
+    const hh = prev.lastMove?.replyApart ? heldHindi(prev, input, s, h) : null;
+    if (hh) return hh;
     s.lastMove = h.move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent;
     if (h.activeItemId) s.activeItemId = h.activeItemId;
     return { state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
