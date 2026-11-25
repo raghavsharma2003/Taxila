@@ -199,6 +199,16 @@ function commit(st, r, ctx) {
 /** The part she is on when row i is said ({ beat, kind, skill, keyed } — keyed: a key was said on it as help, after a miss or a request), read
  *  from the record, not from the walk's own cell (dc-r8-director27 P3: the walk's `keyed` was set by a right answer's verdict). */
 export function addressAt(L, r, i, ctx) { return stateAt(L, r, i, ctx).addr ?? null; }
+/** RULING-G item 1 (d37; steady c4-ch01-t02 46, steering c4-ch01-t02 38, steady c4-ch06-t01 42, offtopic c4-ch06-t01 58): a point's own board
+ *  is its explain beat's `board` in the script. The record copies the walk's: where the walk paged a point on its CARD's board (the beat's
+ *  `ask.board`, a card not yet said), the record named that board the point's own and boardOfSaidPart read the card's board as said. A body
+ *  part on an explain beat whose recorded own board is that beat's card board, not its point board, owns the point board. Else the record's. */
+export function pointOwnOf(p, r, script) {
+  if (!p?.own || p.part !== "body" || !/^e\d+$/.test(String(p.beat ?? ""))) return p?.own ?? null;
+  const sk = script?.skills?.find((x) => x.skillId === skillIdOf(r, script));
+  const b = sk?.explain?.find((x) => x.id === p.beat);
+  return b?.board && b.ask?.board && sameB(p.own, b.ask.board) && !sameB(b.board, b.ask.board) ? b.board : p.own;
+}
 export const D27_PREDICATES = {
   /** P1.1: every board on screen during a turn belongs to a part said in that turn or earlier in the lesson — never a card not yet said
    *  (a card's board belongs to the card from its first word). The board carried up from the turn before is not this turn's. */
@@ -209,7 +219,7 @@ export const D27_PREDICATES = {
     for (const pg of pages) {
       if (!pg.board || (pg.from === 0 && sameB(pg.board, st.up))) continue;
       if (st.said.has(keyOf(pg.board))) continue;
-      const mine = parts.find((p) => p.own && sameB(p.own, pg.board) && (!CARDISH.has(p.part) || p.from <= pg.from));
+      const mine = parts.find((p) => p.own && sameB(pointOwnOf(p, r, ctx.script), pg.board) && (!CARDISH.has(p.part) || p.from <= pg.from));
       if (mine) continue;
       const card = parts.find((p) => CARDISH.has(p.part) && sameB(p.own, pg.board));
       return card ? `the ${card.beat} card's board drawn at ${pg.from}, before the card's first word (${card.from})` : `a board drawn at ${pg.from} that no part said belongs to: ${brief(pg.board)}`;

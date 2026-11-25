@@ -6066,7 +6066,12 @@ function replyPoint(prev, input, out) {
   const heldPoint = !lm.point && lm.heldSaid?.length && [lm.scriptBeat?.kind, lm.heldBeat?.kind].includes("explain");
   if (!(lm.point && String(lm.point).trim()) && !heldPoint) return out;
   const id = ui.ask.itemId;
-  const sp = splitTeach(heldPoint ? { ...out, move: { ...lm, point: (lm.sayFirst ?? []).join(" ") } } : out, input, -1, 0);
+  // (RULING-G item 1, d37 steady c4-ch01-t02 46, steering c4-ch01-t02 38, steady c4-ch06-t01 42, offtopic c4-ch06-t01 58: the point held
+  // behind her AI line carried the CARD's beat — the held half is the card's move — so the point was paged on the card's board, a card not
+  // yet said. It is paged on its own beat's board (heldBeat, the beat of the turn that held it), as a point said with its card is; the card's
+  // board comes up with the card, on the next turn)
+  const ownBeat = heldPoint && lm.heldBeat?.kind === "explain" && lm.heldBeat.board ? { scriptBeat: lm.heldBeat } : {};
+  const sp = splitTeach(heldPoint ? { ...out, move: { ...lm, point: (lm.sayFirst ?? []).join(" "), ...ownBeat } } : out, input, -1, 0);
   if (sp === out || !sp?.state?.splitHold) return out;
   let m = sp.state.lastMove;
   if (heldPoint) {
