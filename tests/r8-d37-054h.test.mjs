@@ -182,3 +182,55 @@ describe("item 17b: a told key whose why names the key as written is the why alo
     } finally { rmSync(out, { recursive: true, force: true }); }
   });
 });
+
+// Item 18d (pr8): the reply slot's person words — the family words the data list lacks are never the slot either.
+describe("item 18d: maa, mom, mumma, uncle, aunty, aunt, bua, mausi, chachu, tau, tai, bhabhi are person words", async () => {
+  const { replyWordOf, hasPersonWord } = await import("../server/brain/asideReplies.js");
+  test("never the slot; another content word of the line is", () => {
+    for (const w of ["maa", "mom", "mumma", "uncle", "aunty", "aunt", "bua", "mausi", "chachu", "tau", "tai", "bhabhi"]) assert.ok(hasPersonWord(w), w);
+    assert.equal(replyWordOf(["mausi", "biryani"], "mausi ne biryani banayi"), "biryani");
+    assert.equal(replyWordOf(["bua"], "bua aayi thi"), null);
+    assert.equal(replyWordOf(["cricket"], "maine cricket khela"), "cricket");
+  });
+});
+
+// Item 18c (pr8): item 6 walked through step() and textReply — a liking line parked at a card, then the told line said on the turn where
+// that park comes due: the return reads the told line ("sixer"), not the park's words (no liking question).
+describe("item 18c: item 6 walked — the told line said where its park comes due gets the told return", async () => {
+  const LIKE = ["mujhe cricket pasand hai", { outcome: "no_evidence", request: { type: "uptake" } }];
+  const TOLD = ["kal maine cricket khela, sixer maara", { outcome: "no_evidence", request: { type: "uptake" } }];
+  const kit0 = { topic: "c4-maths-ch05-t01" };
+  const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
+  replyDeps.chat = async () => ({ text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" }); replyDeps.chatStream = replyDeps.chat;
+  const kit = kitFromFile(getTopic(kit0.topic));
+  const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
+    interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: kit0.topic, classLevel: 4, sessionId: "d37-054h-6", lessonKey: "d37-054h-6", teacher: "director" };
+  let r = step(initLessonState({ topicId: kit0.topic, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+  const sayOn = async (rr, text) => textReply({ instructions: "x", state: rr.state, kit, childText: text, history: rr.state.recent ?? [], ui: rr.ui, module: null });
+  r.state.recent = [...(r.state.recent ?? []), { who: "teacher", text: (await sayOn(r, "")).reply }];
+  const stepOn = (rr, text, cls) => step({ ...rr.state, recent: [...(rr.state.recent ?? []), { who: "child", text }] }, { event: "turn", kit, text, cls: { confidence: 0.9, flags: {}, ...cls }, now: (rr.state.turn + 1) * 20_000 });
+  const advance = async (text, cls) => { r = stepOn(r, text, cls); const t = await sayOn(r, text); r.state.recent = [...(r.state.recent ?? []), { who: "teacher", text: t.reply }]; return t; };
+  // (to the lesson's second card, every question before answered right; then the liking line, parked)
+  for (let i = 0, skip = 1; i < 300; i++) {
+    if (String(r.state.lastUi?.ask?.itemId ?? "").startsWith("script:") && !(r.state.lastMove?.stepAsk?.prompt && !r.state.lastMove.splitClose)) { if (skip-- <= 0) break; }
+    const it = r.state.activeItemId ? findItem(r.state, kit, r.state.activeItemId) : null;
+    await advance(it ? String(it.answer) : "haan", { outcome: it ? "correct" : "no_evidence" });
+  }
+  const parkT = await advance(...LIKE);
+  // (then each next turn: the told line tried on a copy of the walk; where its turn says the return, that is the turn the park came due)
+  let hit = null;
+  for (let i = 0; i < 40 && !hit; i++) {
+    const trial = stepOn(structuredClone(r), ...TOLD);
+    const t = await sayOn(trial, TOLD[0]);
+    if ((t.guard?.seams ?? []).some((x) => x.right === "return")) hit = { text: String(t.reply), lm: trial.state.lastMove, later: trial.state.later ?? [] };
+    else { const it = r.state.activeItemId ? findItem(r.state, kit, r.state.activeItemId) : null; await advance(it ? String(it.answer) : "haan", { outcome: it ? "correct" : "no_evidence" }); }
+  }
+  replyDeps.chat = chat0; replyDeps.chatStream = stream0;
+  test("the liking line is parked", () => { assert.ok((parkT.guard?.seams ?? []).some((x) => x.right === "park"), (parkT.guard?.seams ?? []).map((x) => x.right).join(">")); });
+  test("the told line on the due turn: the cricket park is served there, and the return keeps what was told and asks no liking question", () => {
+    assert.ok(hit, "no turn where the park came due with the told line said again");
+    assert.ok(hit.later.some((e) => String(e.topic) === "cricket" && e.servedAt != null), JSON.stringify(hit.later));
+    assert.match(hit.text, /sixer/i, hit.text);
+    assert.ok(!/pasand|achha lag/i.test(hit.text), hit.text);
+  });
+});

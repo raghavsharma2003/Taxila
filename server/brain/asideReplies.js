@@ -73,7 +73,9 @@ export const FUNCTION_WORDS = new Set(["hoon", "hun", "hu", "hai", "hain", "ho",
  *  — is never the reply's slot, any more than a function word: another content word of the child's line that fits, else a slot-less form. */
 const personWord = (w) => PERSON_SET().has(String(w ?? "").trim().toLowerCase());
 let PERSON_SET0 = null;
-const PERSON_SET = () => (PERSON_SET0 ??= new Set((KINDS.people?.match ?? []).map((x) => String(x).toLowerCase())));
+// (d37 item 18d, pr8: the data list lacks the family words below — the slot rule reads them too; the people kind's matching is unchanged)
+const MORE_PEOPLE = ["maa", "mom", "mumma", "uncle", "aunty", "aunt", "bua", "mausi", "chachu", "tau", "tai", "bhabhi"];
+const PERSON_SET = () => (PERSON_SET0 ??= new Set([...(KINDS.people?.match ?? []), ...MORE_PEOPLE].map((x) => String(x).toLowerCase())));
 /** A phrase with a person word in it — "papa", "papa aur Rohit", "mummy ki biryani" — is no slot's phrase (a word form or a plain one). */
 export const hasPersonWord = (p) => String(p ?? "").toLowerCase().split(/[^\p{L}]+/u).some(personWord);
 const slotPhrase = (p) => (p && !hasPersonWord(p) ? p : null);
