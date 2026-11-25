@@ -43,6 +43,7 @@
 // claimed; tests/r7-games-aakash.test.mjs checks both against the kit.
 import type { AakashAct, Candidate, Facts, FamilyLogic, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withLooks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export const AAKASH_MODES = ["chakkar", "ritu", "grahan"] as const;
@@ -223,7 +224,7 @@ export interface AakashW {
   /** dhoop: the ice blocks melted (one per card item done) */
   melted: number;
 }
-export interface AakashState extends Undoable<AakashState> {
+export interface AakashState extends Undoable<AakashState>, Law4Marks {
   w: AakashW;
   /** the law's last answer for the view ("" when the last act just happened) */
   why: string;
@@ -296,7 +297,7 @@ const mom = (kind: Moment["kind"], seq: number, facts: Facts, mis?: string): Mom
 
 // ───────────────────────────── apply (THE LAW) ─────────────────────────────
 type Out = { state: AakashState; moments: Moment[]; refused?: string };
-function apply(level: PlayLevel<AakashParams>, s: AakashState, act: AakashAct, seq: number): Out {
+function applyLaw(level: PlayLevel<AakashParams>, s: AakashState, act: AakashAct, seq: number): Out {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -389,6 +390,8 @@ function apply(level: PlayLevel<AakashParams>, s: AakashState, act: AakashAct, s
     }
   }
 }
+/** law 4 (ruling 005; src/play/core/law4.ts): an experiment done again on the same set-up is a look, not a check */
+const apply = withLooks<PlayLevel<AakashParams>, AakashState, AakashAct>(applyLaw, (_l, a) => a.kind === "use", (s) => s.w);
 const goalMet = (_l: PlayLevel<AakashParams>, s: AakashState) => s.done;
 
 // ───────────────────────────── solve, shortcut, malActs ─────────────────────────────

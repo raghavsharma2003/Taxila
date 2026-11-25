@@ -17,9 +17,18 @@
 //      (FamilyLogic.oneDecision, chancePicks) the grade never keeps the misconception (gradeLevel reports it at chance
 //      weight as `chanceMis`). Reported for review (not failed): a mal-rule fired by a single input act on a goal not so
 //      declared.
-//   4. After a miss the check waits until her act changes (dc-r8-gate2-shadow S4): the act that missed, pressed again on the
-//      same answer, is off (its control disabled or gone) or refused without playing the miss again or counting a check
-//      (checkWaits; the views use src/play/core/viewkit.ts missWait). CHECK_WAITS_OPEN lists the modes still open.
+//   4. After a miss the check waits until her act changes (dc-r8-gate2-shadow S4; main's ruling 005, 2026-11-16): the act that
+//      missed, pressed again on the same answer, keeps one of three forms (checkWaits; the views use
+//      src/play/core/viewkit.ts missWait, the logic src/play/core/law4.ts):
+//        off      its control is disabled or gone (a check button waits; a pick's missed option is greyed until the level,
+//                 or the card's item, ends);
+//        refused  the law refuses it without playing the miss again or counting a check (a typed number equal to the one
+//                 that missed: "unchanged", as kon/name's Yahi naam; a greyed pick pressed anyway: "missed_option");
+//        a look   an experiment act (a tool used, a thing tried) is for looking: run again on the same set-up it shows its
+//                 result as a result, raises no count of checks and plays no miss.
+//      A sighting (gate 2) is a level's first check only: a pick after a miss on the same level is never one and never
+//      counts toward a repeat (src/play/core/replay.ts gradeLevel). CHECK_WAITS_OPEN lists the modes still open; the play
+//      cert skips law 4 for them, and the list only shrinks (tests/r8-play-laws.test.mjs CHECK_WAITS_MAX).
 // Marks a key can be counted off (a triangle on unit ticks) and lines it can be traced from are not seen by these checks:
 // they are the family tests' and the judges' (LAWS-AUDIT.md lists them per family).
 import { register } from "node:module";
@@ -249,22 +258,17 @@ function howMade(acts, solve, at, frames) {
 }
 
 /**
- * Law 4 still open (dc-r8-gate2-shadow S4, 2026-11-16): in these modes the act that missed is her answer itself, not a
- * check control, so "the button waits" does not say what to do; each needs main's choice (LAWS-AUDIT.md, "Law 4"). Their
- * own check buttons (done, commit, run) already wait. tests/r8-play-laws holds each to law 4 only here.
- *   pick: a one-tap choice commits; greying the missed choice narrows the options (elimination), and on kon/place draw it
- *     changes the pick's blind chance that gate 2 reads.
- *   typed: a number committed in one act; the commit would wait while the number is the one that missed (a logic refusal,
- *     as kon/name's "unchanged", so the server's replay agrees).
- *   experiment: the miss is an experiment (a tool used, a jar marked, a thing sorted); doing it again plays its
- *     consequence again. Is a repeated experiment a check?
+ * Law 4 still open (dc-r8-gate2-shadow S4, 2026-11-16; main's ruling 005 decides each kind): the modes whose act that missed
+ * is her answer itself and that do not yet keep one of law 4's three forms. Each is fixed by its kind's form:
+ *   pick: the option that missed is greyed until the level (or the card's item) ends (off; refused "missed_option" if
+ *     pressed anyway), and a pick after a miss is never a sighting (gradeLevel);
+ *   typed: a number equal to the one that missed is refused ("unchanged") and the control is off until the number changes;
+ *   experiment: a repeat on the same set-up is a look (no miss moment, no check counted).
+ * The play cert skips law 4 for the modes listed here, and the list only shrinks (tests/r8-play-laws CHECK_WAITS_MAX).
  */
 export const CHECK_WAITS_OPEN = {
-  "todo-jodo/strips": "pick", "nishana/place": "pick", "kyun-lab/dhruv": "pick", "kon/place": "pick, typed", "rang/milao": "pick",
-  "todo-jodo/atoms": "typed, experiment", "nazariya/floor": "typed", "nazariya/powers": "typed", "taraazu/equality": "typed",
-  "aakash/chakkar": "experiment", "aakash/ritu": "experiment", "badlaav/aag": "experiment", "badlaav/palat": "experiment, pick",
-  "bhaap/chakra": "experiment", "bhaap/hawa": "experiment", "chhaano/geela": "experiment", "chhaano/sukha": "experiment",
-  "jaanch/daag": "experiment", "jaanch/neela": "experiment", "rang/pehchaan": "experiment",
+  // empty since claude/r8-law4-open (2026-11-16): the 20 modes S4 left open keep law 4 by their kind's form (LAWS-AUDIT.md,
+  // "Law 4": pick greyed, typed refused "unchanged", experiment a look; src/play/core/law4.ts)
 };
 const MISSED = (r) => !!r && (r.refused === "missed" || (r.moments ?? []).some((x) => x.kind === "misconception_consequence" || x.kind === "near_miss" || x.kind === "law_refused"));
 /** the control on screen whose press dispatches `act` (each control's press caught, nothing applied), or null */
@@ -289,27 +293,49 @@ async function playedTo(level, opts, acts, n) {
 /** the numbers the facts keep of her checks and tries */
 const checkCounts = (f) => Object.entries(f ?? {}).filter(([k, v]) => typeof v === "number" && /check|tries|tried|attempt|miss/i.test(k));
 /**
- * Law 4 (dc-r8-gate2-shadow S4): after a miss while a try remains, the check waits until her act changes. The check is the
- * act that missed (acts[missAt]); its control, where a control made it, is the one whose press dispatches that act. Pressed
- * again on the same answer it is off (disabled, or gone from the screen), or the law refuses it without playing the miss
- * out again and without counting a check. `m` is the mount just after the miss; it is pressed. → a break line, or null
+ * Law 4 (dc-r8-gate2-shadow S4; ruling 005): after a miss while a try remains, the check waits until her act changes. The
+ * check is the act that missed (acts[missAt]); its control, where a control made it, is the one whose press dispatches that
+ * act. Pressed again on the same answer it keeps one of the three forms:
+ *   off      the control is disabled, or gone from the screen;
+ *   refused  the law refuses it without playing the miss again and without raising a facts count of checks or tries;
+ *   a look   (an experiment) it runs and shows its result, with no miss moment and no count of checks raised.
+ * `m` is the mount just after the miss; it is pressed. → { form } when it holds, { break } when not
  */
-async function checkWaits(level, opts, acts, missAt, m) {
+async function checkWaitsForm(level, opts, acts, missAt, m) {
   const act = acts[missAt];
   const before = controlFor(await playedTo(level, opts, acts, missAt), act);
   const after = controlFor(m, act);
-  if (before && !after) return null;
-  if (after?.disabled) return null;
+  if (before && !after) return { form: "off" };
+  if (after?.disabled) return { form: "off" };
   let r = null;
   const was = checkCounts(m.ctl.facts());
   if (after) { const real = m.ctl.dispatch; m.ctl.dispatch = function (a) { r = real.call(this, a); return r; }; try { after.onPress(); } finally { m.ctl.dispatch = real; } }
   else r = m.ctl.dispatch(act);
   const how = after ? `"${after.id}"` : `the act ${JSON.stringify(act).slice(0, 50)}`;
-  if (MISSED(r)) return `after a miss, ${how} on the same answer plays the miss again`;
-  if (r?.refused) return null;
+  if (MISSED(r)) return { break: `after a miss, ${how} on the same answer plays the miss again` };
   const now = new Map(checkCounts(m.ctl.facts()));
   const cost = was.find(([k, v]) => (now.get(k) ?? v) > v);
-  return cost ? `after a miss, ${how} on the same answer counts a check (${cost[0]})` : null;
+  if (cost) return { break: `after a miss, ${how} on the same answer counts a check (${cost[0]})` };
+  // refused by law 4 itself (a typed number or a greyed pick pressed anyway); anything else that plays no miss is a look
+  return { form: r?.refused === "unchanged" || r?.refused === "missed_option" ? "refused" : "look" };
+}
+async function checkWaits(level, opts, acts, missAt, m) { return (await checkWaitsForm(level, opts, acts, missAt, m)).break ?? null; }
+/** law 4's form on each mal-rule's miss of a level (the audit's per-mode table): [{ mal, act, form | break }] */
+export async function law4Forms(level, opts = {}) {
+  const M = await mods();
+  const logic = M.logicFor(level.family, level.mode), out = [];
+  for (const mal of Object.keys(level.mal ?? {}).filter((id) => (logic?.malRules ?? []).includes(id))) {
+    let acts = null;
+    try { acts = logic.malActs(level, mal); } catch { acts = null; }
+    if (!acts?.length) continue;
+    const m = await mount(level, opts);
+    let missAt = -1;
+    for (let i = 0; i < acts.length; i++) { m.api.t += 0.5; m.frame(); if (MISSED(m.ctl.dispatch(acts[i]))) { missAt = i; break; } }
+    if (missAt < 0 || logic.goalMet(level, m.ctl.state)) continue;
+    m.look();
+    out.push({ mal, act: acts[missAt], ...(await checkWaitsForm(level, opts, acts, missAt, m)) });
+  }
+  return out;
 }
 
 /**

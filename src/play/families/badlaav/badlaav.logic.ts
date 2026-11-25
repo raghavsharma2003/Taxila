@@ -46,6 +46,7 @@
 // data/kits/c7-science.json); every number here is a scene value with no fact claimed.
 import type { BadlaavAct, Candidate, Facts, FamilyLogic, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withLooks, withPicks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export const BADLAAV_MODES = ["palat", "aag"] as const;
@@ -284,7 +285,7 @@ export interface BadW {
   /** jang: each piece's place ("" not yet), its rust, the days gone */
   where: string[]; rust: number[]; day: number;
 }
-export interface BadState extends Undoable<BadState> {
+export interface BadState extends Undoable<BadState>, Law4Marks {
   w: BadW;
   /** the law's last answer for the view ("" when the last act just happened) */
   why: string;
@@ -370,7 +371,7 @@ function toolOf(a: BadlaavAct): string {
     default: return a.kind;
   }
 }
-function apply(level: PlayLevel<BadlaavParams>, s: BadState, act: BadlaavAct, seq: number): Out {
+function applyLaw(level: PlayLevel<BadlaavParams>, s: BadState, act: BadlaavAct, seq: number): Out {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -564,6 +565,8 @@ function apply(level: PlayLevel<BadlaavParams>, s: BadState, act: BadlaavAct, se
   }
   return no("unknown_act");
 }
+/** law 4 (ruling 005; src/play/core/law4.ts): an experiment done again on the same set-up is a look, not a check (and a pick that missed is greyed) */
+const apply = withLooks<PlayLevel<BadlaavParams>, BadState, BadlaavAct>(withPicks(applyLaw, (_l, _s, a) => (a.kind === "use" && a.m === "gone" ? "gone" : null)), (_l, a) => (a.kind === "use" && a.m !== "gone") || a.kind === "mark" || a.kind === "file" || a.kind === "put", (s) => s.w);
 const goalMet = (_l: PlayLevel<BadlaavParams>, s: BadState) => s.done;
 
 // ───────────────────────────── solve, shortcut, malActs ─────────────────────────────

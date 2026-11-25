@@ -425,6 +425,17 @@ function commitSize(p: PlaceParamsLike, s: PlaceState, mal: Record<string, strin
   return { pl: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "her_pick" } } };
 }
 
+/**
+ * Law 4 (ruling 005): the key of a committed place act, with what its rightness rests on. draw's join (a pick between two
+ * buttons): the end, at this placement and this dot; measure's reading (typed): the number, at this placement; size's pick:
+ * the answer. A key that missed is refused (a join or a size pick "missed_option", a reading "unchanged") and its control
+ * is off until the placement, the dot or the number changes; on draw, with one join left, the other button solves as before.
+ */
+const poseKey = (s: PlaceState) => `${s.locked ? "L" : "F"}:${s.pose.x},${s.pose.y},${s.pose.rot}`;
+export const placePickKey = (s: PlaceState, a: { kind: string; end?: unknown; which?: unknown }): string | null =>
+  a.kind === "join" ? `join:${String(a.end)}|${poseKey(s)}|${s.mark}` : a.kind === "pick" ? `pick:${String(a.which)}` : null;
+export const placeReadKey = (s: PlaceState, n: number): string => `read:${Math.round(Number(n))}|${poseKey(s)}`;
+
 /** the solver's acts */
 export function solvePlace(p: PlaceParamsLike): PlaceAct[] {
   if (p.goal === "size") return [{ kind: "pick", which: sizeAnswer(p) as "a" | "b" | "same" }];

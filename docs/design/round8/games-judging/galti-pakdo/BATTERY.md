@@ -4,6 +4,10 @@
 
 **Status.** galti-pakdo names today (it is not in `NAMING_OFF`). It still does after this pass: the battery passes on both goals. Nothing a child sees changed, and no served level changed (64,800 served bodies hash the same before and after, `proof.discriminates` included), so there is no re-cert.
 
+## Gate 2, law 4 (2026-11-16, ruling 005; branch `claude/r8-law4-open`)
+
+**A sighting is a level's first check only** (main's ruling 005, section 1). A pick made after a miss on the same level is never a sighting and never counts toward a repeat: `gradeLevel` (`src/play/core/replay.ts`) keeps a pick's `chanceMis` only when its moment is the level's first check (`firstCheckSeq`: the first miss of any kind, solve, `missed` or decisive refusal); a later pick keeps the chance weight and carries no `chanceMis`, so `afterLevelBody`, `nameOnRepeat` and the shadow reading never see it. Before this, the grade read the level's first *decisive* moment, which already held for every kon commit (a miss is the decisive refusal `missed`); the new rule closes the one gap, a plain `law_refused` miss before a pick. The battery's figures did not move (`tests/r8-habit-battery-*.test.mjs`, every printed line the same before and after). "Sab" already waits (S4); nothing in galti-pakdo changes.
+
 ## The pick and its exact options (`galtiLogic.pickOptions`, `galtiPickOptions`)
 
 A working of n lines has the question and n − 1 working lines; n is 3 or 4 (a neat working whose bug is its last step can be one shorter).

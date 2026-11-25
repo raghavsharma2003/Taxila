@@ -6,10 +6,11 @@
 import type { Moment, StripsAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { greyed } from "../../core/law4.ts";
 import { ease } from "../../core/juice.ts";
 import { withAlpha, roundRect, type Role } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
-import { stripsHelpers as H, type Bar, type StripsParams, type StripsState } from "./strips.logic.ts";
+import { chooseKey, stripsHelpers as H, type Bar, type StripsParams, type StripsState } from "./strips.logic.ts";
 
 interface Box { x: number; y: number; w: number; h: number }
 interface Fly { from: Box; to: Box; role: Role; t0: number; back: boolean }
@@ -202,9 +203,9 @@ export const makeStripsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (st().done) return [];
     const s = st(), out: ControlSpec[] = [];
     const choose = (): ControlSpec[] => [
-      { id: "choose-0", label: `A ${lang === "en" ? "more" : "zyada"}`, kind: "choice", group: "choose", onPress: () => act({ kind: "choose", bar: 0 }) },
-      { id: "choose-same", label: say(lang, "strips.same"), kind: "choice", group: "choose", onPress: () => act({ kind: "choose", bar: -1 }) },
-      { id: "choose-1", label: `B ${lang === "en" ? "more" : "zyada"}`, kind: "choice", group: "choose", onPress: () => act({ kind: "choose", bar: 1 }) },
+      { id: "choose-0", label: `A ${lang === "en" ? "more" : "zyada"}`, kind: "choice", group: "choose", disabled: greyed(st(), chooseKey(0)), onPress: () => act({ kind: "choose", bar: 0 }) },
+      { id: "choose-same", label: say(lang, "strips.same"), kind: "choice", group: "choose", disabled: greyed(st(), chooseKey(-1)), onPress: () => act({ kind: "choose", bar: -1 }) },
+      { id: "choose-1", label: `B ${lang === "en" ? "more" : "zyada"}`, kind: "choice", group: "choose", disabled: greyed(st(), chooseKey(1)), onPress: () => act({ kind: "choose", bar: 1 }) },
     ];
     if (cmpGoal && s.predicted === null) return choose();
     const b = s.bars[sel];

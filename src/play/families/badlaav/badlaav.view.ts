@@ -16,7 +16,8 @@
 import type { BadlaavAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material } from "../../core/styles.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait, isMiss } from "../../core/viewkit.ts";
+import { greyed } from "../../core/law4.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -66,6 +67,8 @@ export const makeBadlaavView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (goal === "jang" && !refused && last.kind === "put") { const i = st().w.where.findIndex((x) => !x); if (i >= 0) sel = i; }
     const mc = ms.some((m) => m.kind === "misconception_consequence");
     if (refused === "level_over" || refused === "ran" || refused === "placed" || refused === "looked") api.sfx("refuse");
+    // law 4 (ruling 005): a refusal that plays no miss (an experiment looked at again, a greyed pick) is a soft thup
+    else if (refused && !mc && !isMiss(ms, refused)) api.sfx("refuse");
     else if (refused || mc) { api.sfx("look"); if (!mc) api.fx.shake(2); }
     else api.sfx(last.kind === "use" || last.kind === "run" ? "drop" : last.kind === "mark" || last.kind === "file" || last.kind === "place" ? "land" : "tap");
     api.invalidate(); deps.changed();
@@ -537,7 +540,7 @@ export const makeBadlaavView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     // never "your move": no button hints which act is right
     if (goal === "nishaan" || goal === "ulta") out.push({ id: "run", label: W("badlaav.run"), aria: W("badlaav.run"), kind: "primary", group: "go", onPress: () => act({ kind: "run" }) });
     if (goal === "ghol") {
-      out.push({ id: "gone", label: W("badlaav.gone"), aria: W("badlaav.gone"), kind: "secondary", group: "go", onPress: () => act({ kind: "use", m: "gone" }) });
+      out.push({ id: "gone", label: W("badlaav.gone"), aria: W("badlaav.gone"), kind: "secondary", group: "go", disabled: greyed(st(), "gone"), onPress: () => act({ kind: "use", m: "gone" }) });
       out.push({ id: "done", label: W("badlaav.claim"), aria: W("badlaav.claim"), kind: "primary", group: "go", disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) });
     }
     if (goal === "trikon") out.push({ id: "wait", label: W("badlaav.tool.wait"), aria: W("badlaav.tool.wait"), kind: "primary", group: "go", onPress: () => act({ kind: "use", m: "wait" }) });

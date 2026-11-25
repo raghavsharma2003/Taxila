@@ -8,13 +8,14 @@
 import type { AtomsAct, Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { bigOmega, commonPrimes, factorPairs, gcd, isPrime, lcm, naturalPair, primeFactors, product } from "../../core/rat.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withLooks, withPicks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export type AtomsGoal = "atoms" | "two-trees" | "hcf" | "lcm";
 export interface AtomsParams { n: number; goal: AtomsGoal; m?: number; bench?: [number, number] }
 export interface AtomNode { id: string; v: number; kids: [string, string] | null }
 export interface AtomTree { root: string; nodes: Record<string, AtomNode>; locked: boolean }
-export interface AtomsState extends Undoable<AtomsState> {
+export interface AtomsState extends Undoable<AtomsState>, Law4Marks {
   trees: AtomTree[];
   predicted: boolean | null;
   pairs: [string, string][];
@@ -78,7 +79,7 @@ const mom = (kind: Moment["kind"], seq: number, facts: Facts, misconceptionId?: 
 const hcfOf = (p: AtomsParams) => gcd(p.n, p.m ?? p.n);
 const lcmOf = (p: AtomsParams) => lcm(p.n, p.m ?? p.n);
 
-function apply(level: PlayLevel<AtomsParams>, s: AtomsState, act: AtomsAct, seq: number): { state: AtomsState; moments: Moment[]; refused?: string } {
+function applyLaw(level: PlayLevel<AtomsParams>, s: AtomsState, act: AtomsAct, seq: number): { state: AtomsState; moments: Moment[]; refused?: string } {
   const p = level.params;
   const out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
@@ -170,6 +171,13 @@ function apply(level: PlayLevel<AtomsParams>, s: AtomsState, act: AtomsAct, seq:
   }
   return { state: bump(s), moments: out, refused: "unknown_act" };
 }
+/** the key of a typed HCF / LCM (law 4, typed: a number that missed is refused "unchanged" until she types another) */
+export const namedKey = (x: number) => `name:${Math.round(Number(x))}`;
+/** law 4 (ruling 005; src/play/core/law4.ts): a split done again on the same tree is a look, not a check (experiment); a
+ *  named value that missed as a value (not one named before its pairs) is refused when named again (typed) */
+const apply = withLooks<PlayLevel<AtomsParams>, AtomsState, AtomsAct>(
+  withPicks(applyLaw, (_l, _s, a) => (a.kind === "name" ? namedKey(a.x) : null), { code: "unchanged", when: (r) => r.refused === "wrong_value" }),
+  (_l, a) => a.kind === "split", (s) => [s.trees, s.pairs, s.predicted, s.named]);
 
 const goalMet = (level: PlayLevel<AtomsParams>, s: AtomsState) => s.done;
 
@@ -314,4 +322,4 @@ export const atomsLogic: FamilyLogic<AtomsParams, AtomsState, AtomsAct> = {
   chancePicks: ["two-trees:different-trees"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };
-export const atomsView = { leaves, leafValues, treeDone, stripOf, isPrime };
+export const atomsView = { leaves, leafValues, treeDone, stripOf, isPrime, namedKey };

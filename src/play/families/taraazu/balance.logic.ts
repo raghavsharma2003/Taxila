@@ -6,12 +6,13 @@
 // answer-next · use-all-numbers.
 import type { BalanceAct, Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withPicks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export interface Pan { bags: number; units: number }
 /** equation: L = a·x + b, R = c·x + d. equality: L = sum of `parts`, R = box + `units`. */
 export interface BalanceParams { goal: "solve" | "fill"; L: Pan; R: Pan; x: number; parts?: number[] }
-export interface BalanceState extends Undoable<BalanceState> {
+export interface BalanceState extends Undoable<BalanceState>, Law4Marks {
   L: Pan; R: Pan;
   box: number | null;                 // fill mode
   opened: boolean;
@@ -52,7 +53,7 @@ function init(level: PlayLevel<BalanceParams>): BalanceState {
   return { L: { ...p.L }, R: { ...p.R }, box: p.goal === "fill" ? null : null, opened: false, named: null, oneSided: false, done: false, acts: 0, prev: null, depth: 0 };
 }
 
-function apply(level: PlayLevel<BalanceParams>, s: BalanceState, act: BalanceAct, seq: number): { state: BalanceState; moments: Moment[]; refused?: string } {
+function applyLaw(level: PlayLevel<BalanceParams>, s: BalanceState, act: BalanceAct, seq: number): { state: BalanceState; moments: Moment[]; refused?: string } {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -120,6 +121,11 @@ function apply(level: PlayLevel<BalanceParams>, s: BalanceState, act: BalanceAct
   }
   return { state: bump(s), moments: out, refused: "unknown_act" };
 }
+/** law 4, typed (ruling 005): the key of a number she put in the box or named for x */
+export const typedKey = (a: BalanceAct): string | null => (a.kind === "drop" ? `drop:${Math.round(Number(a.n))}` : a.kind === "name" ? `name:${Math.round(Number(a.x))}` : null);
+/** law 4 (typed; src/play/core/law4.ts): a number that missed as a value ("not_level", "wrong_value") is refused "unchanged"
+ *  when given again; the view's pour / x = button is off while the pad holds it */
+const apply = withPicks<PlayLevel<BalanceParams>, BalanceState, BalanceAct>(applyLaw, (_l, _s, a) => typedKey(a), { code: "unchanged", when: (r) => r.refused === "not_level" || r.refused === "wrong_value" });
 const goalMet = (_l: PlayLevel<BalanceParams>, s: BalanceState) => s.done;
 
 /** Breadth-first search over (L, R) with the legal both-side moves; returns the shortest act list. */

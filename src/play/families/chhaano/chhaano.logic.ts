@@ -39,6 +39,7 @@
 // distance, time or amount is ever claimed (tests/r7-games-chhaano.test.mjs checks this against the kit).
 import type { Candidate, ChhaanoAct, Facts, FamilyLogic, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withLooks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export const CHHAANO_MODES = ["sukha", "geela"] as const;
@@ -133,7 +134,7 @@ export interface ChhaanoParams {
   lay: number;
 }
 export interface Vessel { k: "beaker" | "glass" | "paper" | "plate"; wet: boolean; parts: WetPart[]; settle: number; cloudy: boolean; gone: boolean }
-export interface ChhaanoState extends Undoable<ChhaanoState> {
+export interface ChhaanoState extends Undoable<ChhaanoState>, Law4Marks {
   /** sukha: the piles (each a sorted list of parts); a split keeps the first part at its index and adds the rest at the end */
   piles: DryPart[][];
   /** geela: the vessels (indices never shift: a vessel emptied is `gone`) */
@@ -265,7 +266,7 @@ function init(level: PlayLevel<ChhaanoParams>): ChhaanoState {
 const mom = (kind: Moment["kind"], seq: number, facts: Facts, mis?: string): Moment => ({ kind, seq, facts, ...(mis ? { misconceptionId: mis } : {}) });
 
 // ───────────────────────────── apply (THE LAW) ─────────────────────────────
-function apply(level: PlayLevel<ChhaanoParams>, s: ChhaanoState, act: ChhaanoAct, seq: number): { state: ChhaanoState; moments: Moment[]; refused?: string } {
+function applyLaw(level: PlayLevel<ChhaanoParams>, s: ChhaanoState, act: ChhaanoAct, seq: number): { state: ChhaanoState; moments: Moment[]; refused?: string } {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -389,6 +390,8 @@ function apply(level: PlayLevel<ChhaanoParams>, s: ChhaanoState, act: ChhaanoAct
     return no("unknown_act");
   }
 }
+/** law 4 (ruling 005; src/play/core/law4.ts): an experiment done again on the same set-up is a look, not a check */
+const apply = withLooks<PlayLevel<ChhaanoParams>, ChhaanoState, ChhaanoAct>(applyLaw, (_l, a) => a.kind === "use" || a.kind === "take", (s) => [s.piles, s.ves, s.jars, s.used, s.thrown]);
 const goalMet = (_l: PlayLevel<ChhaanoParams>, s: ChhaanoState) => s.done;
 
 // ───────────────────────────── solve, shortcut, malActs ─────────────────────────────

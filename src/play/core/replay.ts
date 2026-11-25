@@ -13,6 +13,9 @@
 //   - round 8 law 3 (dc-r8-game-modes-three-laws): a mix-up is named only by an act a guess rarely produces. A mal-rule
 //     signature on a goal decided by one pick among a few (oneDecision, chancePicks) enters at CHANCE_WEIGHT as
 //     `chanceMis`, never as misconceptionId: the server names it when it repeats on a level whose surface differs.
+//   - law 4 (main's ruling 005, 2026-11-16): a sighting is a level's FIRST CHECK only. A pick made after a miss on the same
+//     level (any miss: a law_refused, a near miss, a refusal the family counts as decisive or "missed") is never a sighting
+//     and never counts toward a repeat: its row keeps the chance weight but carries no chanceMis (firstCheckSeq).
 import { CHANCE_WEIGHT, GAME_WEIGHT, HABIT_RULES, type FamilyLogic, type GameWeight, type Moment, type PlayActBody, type PlayActEnvelope, type PlayEvidence, type PlayGrade, type PlayLevel, type PlayVerdict, type SightingValue } from "../../../shared/play.ts";
 
 export interface Replayed<S> { state: S; moments: Moment[]; refused: number; refusals: { seq: number; code: string }[] }
@@ -33,6 +36,18 @@ export function replayAll<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S, 
 
 /** Moments that settle the evidence for a level (in this order of precedence only when they share a seq). */
 const DECISIVE = new Set(["misconception_consequence", "near_miss", "solved", "decisive_refusal"]);
+/** a check: a moment that answered her act (law 4's miss kinds and a solve) */
+const CHECK_KINDS = new Set(["misconception_consequence", "near_miss", "law_refused", "solved"]);
+/**
+ * Law 4 (ruling 005): the seq of the level's first check: the first moment that answered her act as a check (a miss of any
+ * kind, or a solve), or a refusal that is a miss ("missed", or one the family counts as decisive). Infinity when none.
+ */
+export function firstCheckSeq(r: Pick<Replayed<unknown>, "moments" | "refusals">, decisiveRefusals: readonly string[] = []): number {
+  let at = Infinity;
+  for (const m of r.moments) if (CHECK_KINDS.has(m.kind) && m.seq < at) at = m.seq;
+  for (const f of r.refusals) if ((f.code === "missed" || decisiveRefusals.includes(f.code)) && f.seq < at) at = f.seq;
+  return at;
+}
 
 export interface GradeOpts {
   /** refusal codes that count as a committed wrong decision (e.g. atoms "composite_leaf") */
@@ -67,8 +82,10 @@ export function gradeLevel<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
     if (first.kind === "misconception_consequence") {
       const kit = first.mis ? level.mal[first.mis] : undefined;
       if (pick(first.mis, first.m)) {
-        const v = kit && first.mis && first.m ? actOf(first.mis, first.m, first.seq) : null;
-        evidence.push({ ...base, outcome: "incorrect", weight: CHANCE_WEIGHT, ...(kit ? { chanceMis: kit } : {}), ...(v !== null ? { chanceAct: v } : {}), actSeq: first.seq });
+        // a sighting is the level's first check only: a pick after a miss on this level is no sighting (law 4, ruling 005)
+        const sighting = !!kit && first.seq <= firstCheckSeq(r, opts.decisiveRefusals);
+        const v = sighting && first.mis && first.m ? actOf(first.mis, first.m, first.seq) : null;
+        evidence.push({ ...base, outcome: "incorrect", weight: CHANCE_WEIGHT, ...(sighting ? { chanceMis: kit } : {}), ...(v !== null ? { chanceAct: v } : {}), actSeq: first.seq });
       }
       else evidence.push({ ...base, outcome: "incorrect", ...(kit ? { misconceptionId: kit } : {}), actSeq: first.seq });
     } else if (first.kind === "near_miss") evidence.push({ ...base, outcome: "partial", actSeq: first.seq });
