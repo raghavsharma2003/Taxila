@@ -905,7 +905,11 @@ export const ORDER_LAWS = {
   /** dc-r8-director22 K: a key is said once — never the same key in two of her turns running (only its opener changed). */
   keyOnce(L, r, i, ctx) {
     const keyOf = (t) => { const x = String(t ?? ""); const m = /(?:jawab(?: hai)?:?|answer (?:here )?(?:is|was))\s+([^,.;]+)/i.exec(x) ?? /(?:^|[.!?]\s+)(haan|nahi|yes|no), (?:kyunki|because)\b/i.exec(x); return m ? m[1].trim().toLowerCase() : null; };
-    const k = keyOf(r.text), p = ctx.prevT ? keyOf(ctx.prevT.text) : null;
+    // (to-brain 054, dry offtopic c4-ch06-t01 34 to 36 once A moved the lesson: "uska jawab do." and "Pehle is sawaal ka jawab do." — the
+    // invitation's "give the answer", read as a key "do": a bare "do" or "batao" closing its sentence asks, it states no key)
+    const asks = (x) => /^(?:do|dena|do na|batao|bolo)$/.test(String(x ?? ""));
+    const k0 = keyOf(r.text), p0 = ctx.prevT ? keyOf(ctx.prevT.text) : null;
+    const k = asks(k0) ? null : k0, p = asks(p0) ? null : p0;
     return k && p && k === p ? `the key "${k}" said in two turns running` : null;
   },
   /** dc-r8-director23 S (on the seam pass's record): a miss verdict and its remediation always have their joint. Reads `seams` only. */
@@ -1029,6 +1033,9 @@ import { D35A_PREDICATES } from "./d35a-predicates.mjs"; Object.assign(PREDICATE
 // (to-brain 053, builder B: the lead-in after a right verdict, the aside reply's kind, each named reason against its own answer — d35b-predicates.mjs)
 import { D35B_PREDICATES } from "./d35b-predicates.mjs";
 Object.assign(PREDICATES, D35B_PREDICATES);
+// (to-brain 054 A, round d37's builder A: a turn holds one new thing — d37a-predicates.mjs, all four gated)
+import { D37A_PREDICATES } from "./d37a-predicates.mjs";
+Object.assign(PREDICATES, D37A_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

@@ -120,3 +120,42 @@ describe("A(iii): a right worked close and the next card over 70 words: the clos
     assert.equal(rs[10].ui.ask?.itemId, "script:c5-maths-ch02-t03-s1:c1");
   });
 });
+
+describe("A.5: the four predicates, gated, each on a made row that trips it and one that does not", async () => {
+  const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const seams = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
+  const T = (o) => ({ who: "teacher", text: "Ek do teen.", ...o });
+  const goOn = T({ noFit: "aside", noFitGoOn: true, seams: seams("asideReply", "goOn") });
+  test("all four are registered and gated", () => {
+    for (const k of ["replyIntoPoint", "asideGoOnNext", "startIntoCard", "closeCardLong"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); }
+  });
+  test("replyIntoPoint: a park, a point and its card trips it; the reply alone on its go-on line, or the turn straight after one, does not", () => {
+    assert.ok(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("park", "point", "card") }), 0, {}));
+    assert.ok(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("aiReply", "point", "card") }), 0, {}));
+    assert.equal(PREDICATES.replyIntoPoint({ rows: [] }, goOn, 0, {}), null);
+    assert.equal(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("asideReply", "card") }), 0, {}), null);
+    assert.equal(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: seams("park", "point", "card") }), 2, { prevT: goOn }), null);
+  });
+  test("asideGoOnNext: after the go-on line, a turn that is not the point and its card trips it; the point and card, a stop or the AI line do not", () => {
+    assert.ok(PREDICATES.asideGoOnNext({ rows: [] }, T({ seams: seams("help", "checkin") }), 2, { prevT: goOn }));
+    assert.equal(PREDICATES.asideGoOnNext({ rows: [] }, T({ seams: seams("point", "card") }), 2, { prevT: goOn }), null);
+    assert.equal(PREDICATES.asideGoOnNext({ rows: [] }, T({ move: "wrap", seams: seams("covered") }), 2, { prevT: goOn }), null);
+    assert.equal(PREDICATES.asideGoOnNext({ rows: [] }, T({ seams: seams("aiQuestion") }), 2, { prevT: goOn }), null);
+    assert.equal(PREDICATES.asideGoOnNext({ rows: [] }, T({ seams: seams("help", "checkin") }), 2, { prevT: T({ seams: seams("point", "card") }) }), null);
+  });
+  test("startIntoCard: the start line, hook, point and card trips it; the start line, hook and point on its check-in does not", () => {
+    const st = (...k) => { const s = seams(...k); s[0] = { ...s[0], joint: "startAnyway" }; return s; };
+    assert.ok(PREDICATES.startIntoCard({ rows: [] }, T({ seams: st("startAnyway", "hook", "point", "card") })));
+    assert.equal(PREDICATES.startIntoCard({ rows: [] }, T({ seams: st("startAnyway", "hook", "point", "checkin") })), null);
+  });
+  test("closeCardLong: a worked close and its card over 70 words trips it; at 70 or as two turns it does not", () => {
+    const sm = [{ left: "start", right: "verdict", joint: null }, { left: "verdict", right: "card", joint: "afterWorked" }];
+    assert.ok(PREDICATES.closeCardLong({ rows: [] }, T({ seams: sm, text: Array(71).fill("shabd").join(" ") })));
+    assert.equal(PREDICATES.closeCardLong({ rows: [] }, T({ seams: sm, text: Array(70).fill("shabd").join(" ") })), null);
+    assert.equal(PREDICATES.closeCardLong({ rows: [] }, T({ seams: [{ left: "start", right: "verdict" }, { left: "verdict", right: "aside" }], text: Array(80).fill("shabd").join(" ") })), null);
+  });
+  test("keyOnce no longer reads the invitation's \"jawab do.\" as a key", () => {
+    assert.equal(PREDICATES.keyOnce({ rows: [] }, T({ text: "Board wala sawaal abhi baaki hai, uska jawab do." }), 2, { prevT: T({ text: "Pehle is sawaal ka jawab do." }) }), null);
+    assert.ok(PREDICATES.keyOnce({ rows: [] }, T({ text: "Is sawaal ka jawab 4 hai." }), 2, { prevT: T({ text: "Iska jawab 4 hai." }) }));
+  });
+});
