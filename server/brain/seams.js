@@ -356,10 +356,15 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   let recLeft = "start";
   stripped.forEach((p, i) => {
     const k = kinds[i];
+    // (main's second ruling fix 3: after her reply's go-on line, her reply to the side-topic said again leads into the held point and card
+    // with no second go-on joint — "back to work" is never said in two turns running. The seam's left is that reply said again, replyAgain:
+    // the table has no row for it, so it takes no joint)
+    if (info.noReplyJoint && ["asideReply", "aiReply", "park", "aside", "aiQuestion", "aiLine"].includes(prevKind) && i > 0) prevKind = recLeft = "replyAgain";
     // (no joint between a point and its own card, a verdict and its own why: those are not in the table)
     // (help's joint is said by help, not by this table: its seam is recorded, with its form, below)
     let j = HELP_JOINT_KINDS.has(k) ? null : seamJoint(prevKind, k);
     if (j === "backTo" && info.afterKeyReturn) j = "afterKeyReturn";
+
     // (dc-r8-director30 Brain 046 Q5: a worked example's close — "Toh poora jawab: …" — into the next card or its point takes joints.afterWorked:
     // c5-t01 steady 26, 56, stuck 34, offtopic 48, steering 36; c5-t02 steady 26, 64, 82, stuck 34, offtopic 72, steering 36)
     if (!j && prevKind === "verdict" && ["card", "point"].includes(k) && i > 0 && stripped[i - 1]?.part === "close" && (state?.lastMove?.closeBeat?.beatId === "worked" || !!state?.lastMove?.workedDone)) j = "afterWorked";

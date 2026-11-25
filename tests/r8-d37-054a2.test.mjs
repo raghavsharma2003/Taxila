@@ -98,3 +98,62 @@ describe("fix 2: a side-topic at a check-in is the same rule", () => {
     assert.equal(P.replyIntoPoint({}, { ...row, seams: [{ right: "aside" }, { right: "goOn", joint: "afterAside" }] }, 2, { prevT: checkin }), null);
   });
 });
+
+describe("fix 3: after a go-on turn the next turn teaches; 'back to work' is never said twice running", () => {
+  const GO = { turn: 8, goOnTurn: 8, lastMove: { kind: "repair", noFit: "aside", vpcGoOn: "Abhi apne kaam par wapas chalte hain.", replyApart: "afterPark" } };
+  test("the side-topic said again after the go-on line: her said-again line, the held point and card, no second go-on joint", async () => {
+    const { _afterGoOnForTest: afterGoOn } = await import("../server/director/state.js");
+    const out = afterGoOn(GO, INPUT, turnOf({ lm: { asideAgain: { topic: "cricket" } } }));
+    assert.ok(out.state.lastMove.noReplyJoint && out.state.lastMove.point && !out.state.splitHold);
+    assert.equal(out.ui.ask.text, CARD.text);
+    // (replyApart never splits it into a second go-on turn)
+    const t = turnOf({ lm: { asideAgain: { topic: "cricket" } } });
+    assert.equal(replyApart(GO, INPUT, t), t);
+    // (nor the turn after her AI line said straight after a go-on line)
+    const ai = { turn: 9, goOnTurn: 8, lastMove: { kind: "repair", tasteAsked: { topic: "Virat" } } };
+    const t2 = turnOf({ turn: 10, lm: { asideAck: true } });
+    assert.equal(replyApart(ai, INPUT, t2), t2);
+  });
+  test("over 70 words with her line, the point ends on its check-in and the card is the next turn", async () => {
+    const { _afterGoOnForTest: afterGoOn } = await import("../server/director/state.js");
+    const long = "Ek do teen char paanch chhe saat aath nau das. ".repeat(6).trim();
+    const out = afterGoOn(GO, INPUT, turnOf({ lm: { asideAgain: { topic: "cricket" }, point: long } }));
+    assert.equal(out.state.lastMove.noFit, "point"); assert.ok(out.state.lastMove.noReplyJoint);
+    assert.equal(out.state.splitHold.ui.ask.text, CARD.text); assert.ok(out.state.splitHold.teach);
+  });
+  test("her AI line straight after the go-on line drops only its question back: the held point and card follow (tasteNoAsk)", async () => {
+    const { _afterGoOnForTest: afterGoOn } = await import("../server/director/state.js");
+    const out = afterGoOn(GO, { ...INPUT, text: "aapko virat pasand hai?" }, turnOf({ lm: { tasteAsked: { topic: "Virat", n: 1 } } }));
+    assert.ok(out.state.lastMove.tasteNoAsk && out.state.lastMove.noReplyJoint && out.state.lastMove.point);
+    // (not after a turn that was not a go-on line)
+    const t = turnOf({ lm: { tasteAsked: { topic: "Virat", n: 1 } } });
+    assert.equal(afterGoOn({ turn: 8, lastMove: { kind: "explain" } }, INPUT, t), t);
+  });
+  test("the seam pass: after her reply said again the seam is replyAgain, which the table gives no joint", () => {
+    const state = { turn: 9, ctx: { lang: "hinglish" }, lastMove: { noReplyJoint: true } };
+    const list = [{ part: "aside", text: "Cricket wali baat maine likh li hai." }, { part: "body", text: "Ab 1/3 wale 3 gap chalkar dekho." }, { part: "card", text: CARD.text }];
+    const r = applySeams(list.map((p) => p.text).join(" "), list, { kit: KIT, state, lang: "hinglish", info: { noReplyJoint: true } });
+    const s1 = r.seams.find((x) => x.right === "point");
+    assert.equal(s1?.left, "replyAgain"); assert.equal(s1.joint, null);
+    const r0 = applySeams(list.map((p) => p.text).join(" "), list, { kit: KIT, state: { ...state, lastMove: {} }, lang: "hinglish", info: {} });
+    assert.equal(r0.seams.find((x) => x.right === "point")?.joint, "afterAside");
+  });
+  test("goOnNoTeach and goOnJointTwice: made rows that trip each, and ones that do not", () => {
+    const go = (j) => ({ who: "teacher", text: "x", noFit: "aside", noFitGoOn: true, seams: [{ right: "park" }, { right: "goOn", joint: j }] });
+    const teach = { who: "teacher", text: "y", seams: [{ right: "aside" }, { right: "point", left: "replyAgain", joint: null }, { right: "card" }] };
+    const ai = { who: "teacher", text: "Main AI teacher hoon. Tumhe kya pasand hai?", seams: [{ right: "aiQuestion" }] };
+    const c = { who: "child", text: "k" };
+    const at = (rows) => P.goOnNoTeach({ rows }, rows.at(-1), rows.length - 1);
+    assert.ok(at([go("afterPark"), c, go("afterAside")]));
+    // (a go-on, the AI line, a go-on: the shape main's third ruling names)
+    assert.ok(at([go("afterAside"), c, ai, c, go("afterAiLine")]));
+    assert.equal(at([go("afterAside"), c, teach, c, go("afterAiLine")]), null);
+    assert.equal(at([go("afterAside"), c, teach]), null);
+    assert.equal(at([c, go("afterAiLine")]), null);
+    const joint = { who: "teacher", text: "z", seams: [{ right: "aside" }, { right: "point", joint: "afterAside" }, { right: "card" }] };
+    assert.ok(P.goOnJointTwice({}, joint, 3, { prevT: go("afterPark") }));
+    assert.equal(P.goOnJointTwice({}, teach, 3, { prevT: go("afterPark") }), null);
+    assert.equal(P.goOnJointTwice({}, joint, 3, { prevT: teach }), null);
+  });
+});
+

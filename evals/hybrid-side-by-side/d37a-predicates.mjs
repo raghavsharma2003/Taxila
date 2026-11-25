@@ -8,6 +8,11 @@
 //                   line, which ends on her question as built (O7).
 //   startIntoCard   A(ii): the start line (joints.startAnyway), the hook, the point and its card in one turn.
 //   closeCardLong   A(iii): a worked close (its afterWorked joint) and the next card said in one turn of more than 70 words.
+// Main's second ruling on cause A (fix 3, reader B1 and B2), both gated (tests/r8-d37-054a2.test.mjs):
+//   goOnNoTeach     two of her turns that end on a go-on line (noFit "vpc", or a split's go-on: noFitGoOn) with no teaching part between them
+//                   or in the second (main's third ruling item 4: a go-on, the AI line, a go-on is the shape that exists) — after a go-on turn
+//                   the lesson teaches.
+//   goOnJointTwice  a go-on joint (afterAside, afterPark, afterAiLine, afterKeyGoOn) said in two of her turns running — "back to work" twice.
 import { VPC_MAX } from "../../server/director/state.js";
 
 // (main's second ruling fix 2: and her said-again line — seam "aside" — wherever it occurs, a check-in before it too)
@@ -17,7 +22,29 @@ const wordsOf = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/
 const goOnRow = (r) => r?.who === "teacher" && r.noFit === "aside" && !!r.noFitGoOn;
 const cardIn = (k) => k.includes("card") || k.includes("returnCard");
 
+const goOnEnd = (r) => r?.who === "teacher" && (r.noFit === "vpc" || !!r.noFitGoOn);
+/** The seam kinds that teach: a point, a card, a bridge, the worked example's parts, help, a remediation, a verdict or a key. */
+const TEACH = new Set(["point", "card", "returnCard", "bridge", "workedProblem", "workedStep", "stepAsk", "remediation", "help", "simpler", "key", "verdict", "missVerdict", "caption", "held"]);
+const teaches = (r) => (r?.seams ?? []).some((x) => TEACH.has(String(x.right ?? "")));
+const GO_ON_JOINTS = new Set(["afterAside", "afterPark", "afterAiLine", "afterKeyGoOn"]);
+const goOnJoint = (r) => (r?.seams ?? []).find((x) => GO_ON_JOINTS.has(String(x.joint ?? "")))?.joint ?? null;
+
 export const D37A_PREDICATES = {
+  goOnNoTeach(L, r, i) {
+    if (r.who !== "teacher" || !goOnEnd(r) || teaches(r)) return null;
+    for (let j = i - 1; j >= 0; j--) {
+      const x = L.rows?.[j];
+      if (x?.who !== "teacher") continue;
+      if (goOnEnd(x)) return `two go-on turns (rows ${j} and ${i}) with nothing taught between them`;
+      if (teaches(x)) return null;
+    }
+    return null;
+  },
+  goOnJointTwice(L, r, i, ctx) {
+    if (r.who !== "teacher") return null;
+    const a = goOnJoint(ctx?.prevT), b = goOnJoint(r);
+    return a && b ? `a go-on joint in two turns running (${a}, then ${b})` : null;
+  },
   replyIntoPoint(L, r, i, ctx) {
     if (r.who !== "teacher" || goOnRow(ctx?.prevT)) return null;
     const k = rightsOf(r);
