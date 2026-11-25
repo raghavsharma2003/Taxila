@@ -235,9 +235,10 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
   }
   return rungs;
 }
-/** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole). */
+/** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole).
+ *  (RULING-C2 item 5: then_card and your_step as to-brain 054 C5 and C4 built them — the card's or the step's own simpler, then the key) */
 export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], checkin: ["pointAlt", "simpler"], card: ["ask.simpler", "pointAlt", "simpler"], check: ["simpler"],
-  then_card: ["simpler", "sayAlt", "simpler"], your_step: ["simpler", "simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
+  then_card: ["simpler"], your_step: ["simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
 
 /** The script-level joints help needs that a script lacks (Learning 014): helpSpent, afterKeyGoOn; and a hindiSwitch whose forms still
  *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */

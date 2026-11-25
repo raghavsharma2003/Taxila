@@ -346,3 +346,20 @@ describe("RULING-C2 item 2: C2, the key said as its why alone where the why name
     assert.deepEqual(flags([C("5/9"), tbRow], "teachbackKeyValueTwice"), [1]);
   });
 });
+
+// RULING-C2 item 5: LADDER_FIELDS lists the help fields the ladder now uses for then_card and your_step (C5, C4).
+describe("RULING-C2 item 5: LADDER_FIELDS names the then-card's and the your-step's ladders as built", async () => {
+  const { LADDER_FIELDS, ladderSpec, helpPart } = await import("../server/director/help.js");
+  test("then_card and your_step: their own simpler only — the same fields ladderSpec gives on three scripts", () => {
+    assert.deepEqual(LADDER_FIELDS.then_card, ["simpler"]);
+    assert.deepEqual(LADDER_FIELDS.your_step, ["simpler"]);
+    for (const t of ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c6-maths-ch06-t01"]) {
+      const sc = scriptOf(t), S = sc.skills[0].skillId;
+      for (const [id, kind] of [[`${S}:rem:0:then`, "then_card"], [`${S}:worked:yourStep`, "your_step"]]) {
+        const p = helpPart(sc, id);
+        assert.equal(p?.kind, kind, id);
+        assert.deepEqual(ladderSpec(sc, p).map((r) => r.field), LADDER_FIELDS[kind], id);
+      }
+    }
+  });
+});
