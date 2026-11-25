@@ -147,6 +147,52 @@ describe("item 18a: an acknowledgement straight after the go-ahead is wait one (
   });
 });
 
+// BRIEF-G5 item 1 (main's ruling on pr9's first blocking item): after the go-ahead ONLY a line the walk reads as a bare yes ("haan", a run of
+// yes words: "hmm, achha") is wait one; every other line, its tag missing or not, takes exactly the path it took at 5b9ede39f (before item
+// 18a), and the child's line is read as said. Each line below is sent with no classifier request or flag (as a missed tag leaves it); what
+// she says at c4-maths-ch05-t01's second card was probed at 5b9ede39f (G5 scratch i/probe-5b9.txt) with the same stubbed reply.
+describe("item 18a as ruled on pr9: after the go-ahead only a bare yes is the wait's; every other line goes as at 5b9ede39f", async () => {
+  const CARD = "Kya pizza ka ek chhota tukda poore pizza ka ek-tihaai hai?";
+  const RETURN = `Ab pehle wale sawaal ko phir se dekhte hain. ${CARD}`;
+  const HELP = `Pizza ka chhota tukda uske bade tukde ke saath milaa kar dekho. Phir cake ke tukdon ko aapas mein milao. ${CARD}`;
+  const TOLD = "Nahi, kyunki 3 tukde barabar nahi, toh gin kar 1/3 nahi keh sakte; bada tukda aadha pizza hai, chhota 1/3 se chhota. Yahan tak theek hai?";
+  // [line, cls, what she said at 5b9ede39f, the record's column there] — null: a bare yes, wait one now
+  const CASES = [
+    ["haan", {}, null, "yes"],
+    ["hmm, achha", {}, null, "yes"],
+    ["aage chalo", {}, TOLD, "other"],
+    ["ho gaya", {}, TOLD, "other"],
+    ["pata nahi", {}, HELP, "give_up"],
+    ["phir se bolo", {}, RETURN, "other"],
+    ["mujhe cricket pasand hai", {}, `Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. ${RETURN}`, "aside"],
+    ["7", { outcome: "incorrect" }, HELP, "wrong"],
+  ];
+  const got = [];
+  for (const [line, cls] of CASES) {
+    const w = await walkTo("c4-maths-ch05-t01", 1);
+    LINES.g5 = [line, { outcome: "no_evidence", ...cls }];
+    const t = await w.play(["try", "g5"]);
+    const child = w.rows.filter((r) => r.who === "child").at(-1)?.text;
+    w.done();
+    delete LINES.g5;
+    got.push({ line, goAhead: t[0].text, text: t[1].text, waitN: t[1].lm.waitN, col: t[1].lm.cell?.column ?? null, child });
+  }
+  test("the go-ahead alone before each line, and each line recorded as the child said it", () => {
+    for (const g of got) { assert.equal(g.goAhead, "Haan, pehle tum try karo.", g.line); assert.equal(g.child, g.line); }
+  });
+  test("the two bare-yes lines are wait one: the short ask, recorded yes", () => {
+    for (const g of got.filter((_, i) => CASES[i][2] === null)) {
+      assert.equal(g.waitN, 1, g.line); assert.equal(g.text, "Ab phir se socho, jawab kya hoga?", g.line); assert.equal(g.col, "yes", g.line);
+    }
+  });
+  test("every other line: what she says and the record's column are 5b9ede39f's, and no wait is counted", () => {
+    got.forEach((g, i) => {
+      if (CASES[i][2] === null) return;
+      assert.equal(g.text, CASES[i][2], g.line); assert.equal(g.col, CASES[i][3], g.line); assert.equal(g.waitN, undefined, g.line);
+    });
+  });
+});
+
 // Item 16: a miss verdict naming the child's answer is never word for word her turn before's miss verdict (g/dry2 stuck c5-ch02-t01 40 and
 // 42: "12 sahi nahi hai." twice, the child having said 12 twice) — there the plain miss form takes its place.
 describe("item 16: the same miss sentence two turns running", async () => {

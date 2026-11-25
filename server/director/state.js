@@ -1810,6 +1810,9 @@ function afterWhy(s, input, item) {
 const ALREADY_SAID = /(?<![\p{L}])(?:(?:maine|main|mai)\s+(?:toh\s+)?(?:bata|bol|de|likh|kar)\s*(?:diya|di|chuka|chuki|dia)|(?:woh|wo|yeh|ye)\s+(?:wala\s+|waala\s+)?(?:toh\s+)?(?:ho|kar)\s+(?:gaya|liya|diya)|(?:i\s+)?already\s+(?:told|answered|said|did))(?![\p{L}])/iu;
 export const GO_ON = /(?<![\p{L}])(?:aage\s+(?:chalo|badho|badhein|chalte\s+hain)|next|move\s+on|go\s+on|agla\s+(?:sawaal|wala))(?![\p{L}])/iu;
 const YES_REPLY = /^(?:haan|han|ha|haa|ji|ji haan|yes|yeah|ok|okay|theek hai|thik hai|samajh gaya|samajh gayi|samajh aa gaya|hmm+|achha|acha)[\s,.!]*$/i;
+/** d37 (BRIEF-G5 item 1, main's ruling on pr9): a line made only of the bare yes's own words, more than one ("hmm, achha", "haan ok") — the
+ *  walk reads nothing else in it (no answer, request, move-on, give-up or side-topic). Read as a bare yes only straight after the go-ahead. */
+const YES_RUN = /^(?:(?:haan|han|ha|haa|ji|yes|yeah|ok|okay|theek hai|thik hai|hmm+|achha|acha)[\s,.!]*)+$/i;
 export const STOP_WORD = /\b(?:ruk|ruko|rukna|band|stop|bas\s+karo|khatam|thak|break|baad\s+mein|chhutti)\b/i;
 const MOVE_ON = /(?<![\p{L}])(?:aage\s+(?:chalo|badho|badhein|chalte\s+hain)|next|(?:woh|wo|yeh)?\s*(?:wala\s+)?ho\s+gaya|bata\s+(?:diya|chuki|chuka)|move\s+on|go\s+on|let'?s\s+go)(?![\p{L}])/iu;
 function afterMiss(s, input, item) {
@@ -3733,9 +3736,10 @@ function waitOf(prev, input) {
   // keeps it over a try-first as over a side-topic)
   if (col === "try_first") return null;
   const yes = !col && (YES_REPLY.test(t) || (/(?<![\p{L}])(?:haan|han|yes|ji)(?![\p{L}])/iu.test(t) && !/\d/.test(t)));
-  // (d37 RULING-H item 18a: straight after the go-ahead alone, any line that is no answer, no request and no side-topic — "hmm, achha" — is
-  // the wait's turn as a bare yes is; step() reads it as "haan", the child's own words kept)
-  const ack = !yes && !col && String(prev.lastMove?.cell?.column ?? "") === "try_first" && !c.request?.type && !c.asideReply && !/\d/.test(t) && !!t
+  // (d37 RULING-H item 18a, as main ruled on pr9: straight after the go-ahead alone, only a line the walk reads as a bare yes — YES_REPLY, or
+  // a run of its own words, "hmm, achha" — is the wait's turn. Every other line ("aage chalo", "ho gaya", "phir se bolo", a side-topic, an
+  // answer), tagged or not, takes the path it took before the go-ahead counted: it is not read here. The line is not rewritten)
+  const ack = !yes && !col && String(prev.lastMove?.cell?.column ?? "") === "try_first" && YES_RUN.test(t) && !c.request?.type && !c.asideReply
     && [undefined, null, "no_evidence"].includes(c.outcome) && !Object.values(c.flags ?? {}).some(Boolean);
   if (!yes && !ack) return null;
   const lm = prev.lastMove ?? {};
@@ -4270,12 +4274,8 @@ export function step(prev, input) {
     childOwn = { text: input0.text, cls: input0.cls };
     const { request: _rq, ...restW } = input.cls ?? {};
     input = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P, ...(wait.n >= 4 ? { waitCap: true } : {}) };
-  } else if (wait?.ack) {
-    // (d37 RULING-H item 18a: an acknowledgement straight after the go-ahead is the wait's turn — read as the bare "haan" it stands for)
-    childOwn = { text: input0.text, cls: input0.cls };
-    const { request: _rq, ...restA } = input.cls ?? {};
-    input = { ...input, text: "haan", cls: { ...restA, outcome: "no_evidence", asideReply: false } };
   }
+  // (d37, main's ruling on pr9: a run of yes words straight after the go-ahead, waitOf's ack, is the wait's turn read as said — not rewritten)
   // (RULING-G item 2: a plain no at a comprehension check-in is read as "samajh nahi aaya" — what she says, nothing else; the child's own
   // words and cue are kept, as the wait's rewrite above keeps them)
   const noAt = !childOwn ? plainNoAtCheckin(prev, input) : null;
