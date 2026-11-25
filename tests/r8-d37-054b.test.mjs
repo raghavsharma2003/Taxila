@@ -320,6 +320,17 @@ describe("RULING-B2 item 1: cardWholeAfterTryOrYes, the first wait turn and the 
     assert.deepEqual(flags([...lead3, TC(`${CHELP} ${cPrompt}`, "yes", ["help", "card"])]), []);
     assert.deepEqual(flags([...lead3, TC(`${CHELP} ${cQ}`, "yes", ["help", "card"])]), []);
   });
+  test("RULING-B4: after an invitation, a told step ending on the next question is a new question (not flagged); the wait's own question whole with no help is flagged", () => {
+    const told = TS("Neeche wala number saare tukde ginta hai, yaani 5. Tumhari baari: plate par bache tukde poori barfi ka kaunsa fraction hain?", "yes", ["workedStep", "card"]);
+    const lead = [sAsked, C("pata nahi"), TS(`${HELP} ${sReask}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), TS(`${GO} ${invite}`, "try_first", ["tryFirst", "yourTurn"]), C("haan")];
+    assert.deepEqual(flags([...lead, told]), []);
+    assert.deepEqual(flags([...lead, TS(sPrompt, "yes", ["stepAsk"])]), [6]);
+    // (a card: after the invitation, the card whole with no help — flagged; the key then the next card — not)
+    const cLead = [cAsked, C("haan"), TC(invite, "yes", ["yourTurn"]), C("haan")];
+    assert.deepEqual(flags([...cLead, TC(cPrompt, "yes", ["card"])]), [4]);
+    const next = norm(questionObjectAt(script, ".skills[0].workedExample.steps[0].ask").prompt.hi);
+    assert.deepEqual(flags([...cLead, TC(`Is sawaal ka jawab 1/6 hai. ${next}`, "yes", ["key", "stepAsk"])]), []);
+  });
   test("the matrix row offtopic c4-ch01-t02 40 (b/dry1): wait two after the invitation, the step's reask after the go-ahead, passes", () => {
     const st = JSON.parse(readFileSync(new URL("../data/lesson-scripts-staged/c4-maths-ch01-t02.json", import.meta.url), "utf8"));
     const T = (text, column, seams) => ({ who: "teacher", text, cell: { part: "x", column }, seams: sx(...seams) });

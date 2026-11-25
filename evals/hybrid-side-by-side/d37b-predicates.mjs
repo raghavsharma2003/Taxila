@@ -116,6 +116,16 @@ function waitRowOf(L, i, script) {
   const p = j >= 0 ? waitAt(L, j, script) : null;
   return p ? { n: p.turns.length + 1, P: p.P, first: p.turns[0] } : null;
 }
+/** The question a short ask or an invitation at row j stands for: the last her turns said before it (a side-topic's turn, another short ask
+ *  or invitation passed over), or null. */
+function stoodFor(L, j, script) {
+  for (let k = prevTeacher(L, j); k >= 0; k = prevTeacher(L, k)) {
+    const t = L.rows[k].text, a = atQuestionOf(script, t);
+    if (a && a !== "?short") return a;
+    if (!(standsFor(script, t) || asideTurn(L.rows[k]))) return null;
+  }
+  return null;
+}
 /** RULING-B3: whether the turn that last said the wait's question before the wait (row `first`) ended on the question's own `reask`. */
 function reaskHeardBefore(L, first, script, P) {
   for (let k = prevTeacher(L, first); k >= 0; k = prevTeacher(L, k)) if (atQuestionOf(script, L.rows[k].text) === P) return endsOnReaskOf(script, P, L.rows[k].text);
@@ -185,6 +195,9 @@ export const D37B_PREDICATES = {
     const was = D35A_PREDICATES.cardWholeAfterTryOrYes(L, r, i, ctx);
     if (!was) return was;
     const script = ctx.script, P = atQuestionOf(script, r.text);
+    // (main's fourth ruling: a short ask or an invitation stands ONLY for the wait's own question — the question her turns last said before
+    // it; a different question after a told step or a key in the same turn is a new question, not said again)
+    if (standsFor(script, ctx.prevT?.text)) { const own = stoodFor(L, L.rows.lastIndexOf(ctx.prevT), script); if (own && own !== P) return null; }
     const w = waitAt(L, i, script);
     const second = standsFor(script, ctx.prevT?.text) || (!!w && w.P === P && w.turns.length >= 2);
     if (!second) return was;
