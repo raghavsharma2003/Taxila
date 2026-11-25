@@ -234,7 +234,10 @@ export const D37B_PREDICATES = {
     const script = ctx.script, P = atQuestionOf(script, r.text);
     // (main's fourth ruling: a short ask or an invitation stands ONLY for the wait's own question — the question her turns last said before
     // it; a different question after a told step or a key in the same turn is a new question, not said again)
-    if (standsFor(script, ctx.prevT?.text)) { const own = stoodFor(L, L.rows.lastIndexOf(ctx.prevT), script); if (own && own !== P) return null; }
+    // (main's sixth ruling, item 4 — pr3's A: only where the turn also ends the wait's own question — the step told, the key, or the cap — before
+    // the different question; a card dropped unanswered for another question is not passed)
+    const ended = !!(r.stepAnswer?.told || seamsOf(r).some((k) => ENDS.has(k)) || r.heardCap);
+    if (ended && standsFor(script, ctx.prevT?.text)) { const own = stoodFor(L, L.rows.lastIndexOf(ctx.prevT), script); if (own && own !== P) return null; }
     const w = waitAt(L, i, script);
     const second = standsFor(script, ctx.prevT?.text) || (!!w && w.P === P && w.turns.length >= 2);
     if (!second) return was;

@@ -537,3 +537,32 @@ describe("sixth ruling, item 3: at a yes-or-no card, haan is graded by the real 
     assert.ok(!endsOnShortAsk(w.script, turns[0].text), turns[0].text);
   });
 });
+
+// Main's sixth ruling on cause B, items 4 to 9: the checks (pr3.md's A to E, and stepToldEarly's place), each on made rows, both sides.
+describe("sixth ruling, items 4 to 9: the checks", async () => {
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const { readFileSync } = await import("node:fs");
+  const { questionObjectAt, yourTurnForms } = await import("../server/director/question-run.js");
+  const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c4-maths-ch05-t01.json", import.meta.url), "utf8"));
+  const sx = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
+  const C = (text) => ({ who: "child", text });
+  const flags = (rows, name, sc = script) => lessonFlags({ rows, script: sc }).filter((f) => f.predicate === name).map((f) => f.row);
+  const invite = yourTurnForms(script)[0];
+  const q = (P) => questionObjectAt(script, P);
+  const lastQ = (t) => norm(norm(t).split(/(?<=[.!?])\s+/).at(-1));
+  // (the first card, e1, and the yes-or-no card after it, e2)
+  const E1 = ".skills[0].explain[0].ask", E2 = ".skills[0].explain[1].ask";
+  const e1 = norm(q(E1).prompt.hi), e1Reask = norm(q(E1).reask.hi), e2 = norm(q(E2).prompt.hi);
+  const T1 = (text, column, seams, extra = {}) => ({ who: "teacher", text, cell: { part: "c4-maths-ch05-t01-s1:explain1:card", column }, seams: sx(...seams), ...extra });
+  const T2 = (text, column, seams, extra = {}) => ({ who: "teacher", text, cell: { part: "c4-maths-ch05-t01-s1:explain2:card", column }, seams: sx(...seams), ...extra });
+  const asked1 = T1(`Yeh roti dekho. ${e1}`, "yes", ["point", "card"]);
+  const short1 = T1(SHORT_ASK_FORMS[0], "yes", ["reaskShort"]);
+  const KEY1 = "Is sawaal ka jawab 1/2 hai, kyunki rangin tukda roti ke 2 barabar tukdon mein se 1 hai.";
+  test("item 4 (pr3 A): after an invitation, a different question passes cardWholeAfterTryOrYes only where the turn ends the wait's own (key, told step, cap)", () => {
+    const lead = [asked1, C("haan"), T1(invite, "yes", ["yourTurn"]), C("haan")];
+    // (the card dropped unanswered for the next card: flagged)
+    assert.deepEqual(flags([...lead, T2(lastQ(e2) === e2 ? e2 : `Pizza ka ek chhota tukda lo. ${lastQ(e2)}`, "yes", ["card"])], "cardWholeAfterTryOrYes"), [4]);
+    // (the key, then the next card: not flagged)
+    assert.deepEqual(flags([...lead, T2(`${KEY1} ${e2}`, "yes", ["key", "card"])], "cardWholeAfterTryOrYes"), []);
+  });
+});
