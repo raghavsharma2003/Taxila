@@ -8,10 +8,16 @@
 // And B.4's re-pins, by name, for exactly the turns main's ruling on question 3 names (read as before everywhere else):
 //   questionThreeRunning  (049 B4, d34c's reading) the wait's re-ask is no turn of a run: the run counts from the turn after it
 //   stepToldEarly         (d30, gated) the cap's turn at a wait — a step told on the fifth hearing after a try-first or a bare yes — is allowed
-import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion } from "../../server/director/question-run.js";
+// And main's second ruling on cause B (round d37, RULING-B2), by name:
+//   cardWholeAfterTryOrYes  (053 B2, gated) still flags any full form of the question on the wait's first turn (her turn before said the
+//                       question itself) and the card or step said whole as first written on ANY wait turn; from the wait's second turn on
+//                       (her turn before was the short ask, the invitation, or an earlier turn of this same wait) the question's `reask`
+//                       alone and a help turn ending on the question are allowed
+import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion, questionObjectAt } from "../../server/director/question-run.js";
 import { asideTurn, helpTurn } from "./d34b-predicates.mjs";
 import { D34C_PREDICATES } from "./d34c-predicates.mjs";
 import { D30_PREDICATES } from "./d30-predicates.mjs";
+import { D35A_PREDICATES } from "./d35a-predicates.mjs";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const SLOT = "zzslotzz";
@@ -55,6 +61,27 @@ export function waitAt(L, i, script) {
 }
 /** Whether row i is the wait's re-ask: the wait's second turn, ending on the question's own `reask`. */
 const waitReaskAt = (L, i, ctx) => { const w = waitAt(L, i, ctx?.script); return !!w && w.turns.length === 2 && D37B_PREDICATES.waitSecondNotReask(L, L.rows[i], i, ctx) === null; };
+/** Whether a text ends on the question's own `reask` (its closing question, {slots} matching any words). */
+function endsOnReask(script, P, text, lang = "hinglish") {
+  const reask = reaskOf(script, P, lang);
+  if (!reask) return false;
+  const want = qKey(closingQuestion(reask) ?? sentencesOf(reask).at(-1) ?? "");
+  const got = qKey(closingQuestion(text) ?? sentencesOf(text).at(-1) ?? "");
+  const re = new RegExp(`^${want.split(SLOT).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[\\p{L}\\p{N}/ ]+?")}$`, "u");
+  return !!want && re.test(got);
+}
+/** Whether a text says the card or step whole as first written: every sentence of the question's `prompt` (hi or en), in order, where the
+ *  prompt is more than its closing question (a one-sentence prompt is the question itself: a help turn may end on it). */
+function saysWholeAsWritten(script, P, text) {
+  const pr = questionObjectAt(script, P)?.prompt;
+  const T = qKey(text);
+  return [pr?.hi, pr?.en, typeof pr === "string" ? pr : null].filter((x) => typeof x === "string" && x.trim()).some((f) => {
+    const s = sentencesOf(f).map(qKey).filter(Boolean);
+    if (s.length < 2) return false;
+    const re = new RegExp(s.map((k) => k.split(SLOT).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[\\p{L}\\p{N}/ ]+?")).join(" (?:.* )?"), "u");
+    return re.test(T);
+  });
+}
 /** Whether a teacher row says the question (any form the script writes for it) or help. */
 const saysOrHelps = (script, r, P) => atQuestionOf(script, r.text) === P || helpTurn(r);
 
@@ -72,12 +99,8 @@ export const D37B_PREDICATES = {
     const w = waitAt(L, i, ctx?.script);
     if (!w || w.turns.length !== 2) return null;
     const lang = ctx?.lang === "english" ? "english" : "hinglish";
-    const reask = reaskOf(ctx.script, w.P, lang);
-    if (!reask) return null;
-    const want = qKey(closingQuestion(reask) ?? sentencesOf(reask).at(-1) ?? "");
-    const got = qKey(closingQuestion(r.text) ?? sentencesOf(r.text).at(-1) ?? "");
-    const re = new RegExp(`^${want.split(SLOT).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[\\p{L}\\p{N}/ ]+?")}$`, "u");
-    return want && re.test(got) ? null : `the wait's second turn at ${w.P} does not end on its reask: "${sentencesOf(r.text).at(-1) ?? ""}"`;
+    if (!reaskOf(ctx.script, w.P, lang)) return null;
+    return endsOnReask(ctx.script, w.P, r.text, lang) ? null : `the wait's second turn at ${w.P} does not end on its reask: "${sentencesOf(r.text).at(-1) ?? ""}"`;
   },
   /** B.4 (main's ruling on question 3): 049 B4's count with the wait's re-ask exempt — the re-ask overrides the third-turn invitation, so it
    *  is no turn of a run: a run that holds it is counted from the turn after it. Gated, as d34c's. */
@@ -96,5 +119,19 @@ export const D37B_PREDICATES = {
   stepToldEarly(L, r, i, ctx) {
     if (r.who === "teacher" && r.heardCap && waitCue(r) && r.stepAnswer?.told) return null;
     return D30_PREDICATES.stepToldEarly(L, r, i, ctx);
+  },
+  /** Main's second ruling on cause B, item 1 (053 B2 re-pinned by name): the first wait turn (her turn before said the question itself) says
+   *  no full form of the question, and no wait turn says the card or step whole as first written; from the wait's second turn on (her turn
+   *  before was the short ask, the invitation, or an earlier turn of this same wait) the question's `reask` alone and a help turn ending on
+   *  the question are allowed. Gated, as d35a's. */
+  cardWholeAfterTryOrYes(L, r, i, ctx) {
+    const was = D35A_PREDICATES.cardWholeAfterTryOrYes(L, r, i, ctx);
+    if (!was) return was;
+    const script = ctx.script, P = atQuestionOf(script, r.text);
+    if (saysWholeAsWritten(script, P, r.text)) return was;
+    const w = waitAt(L, i, script);
+    const second = standsFor(script, ctx.prevT?.text) || (!!w && w.P === P && w.turns.length >= 2);
+    if (!second) return was;
+    return helpTurn(r) || endsOnReask(script, P, r.text, ctx?.lang === "english" ? "english" : "hinglish") ? null : was;
   },
 };

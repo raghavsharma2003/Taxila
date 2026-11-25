@@ -185,3 +185,74 @@ describe("B.4: questionThreeRunning exempts the wait's re-ask; stepToldEarly exe
     assert.deepEqual(flags([...lead, told({})], "stepToldEarly"), [6]);
   });
 });
+
+// Main's second ruling on cause B (RULING-B2), item 1: 053 B2's `cardWholeAfterTryOrYes` re-pinned by name. Still flagged: any full form of
+// the question on the wait's first turn (her turn before said the question itself), and the card or step said whole as first written on any
+// wait turn. Allowed from the wait's second turn on (her turn before was the short ask, the invitation, or an earlier turn of this wait): the
+// question's `reask` alone, and a help turn ending on the question. Made rows on the live c4-maths-ch05-t01 script (a one-sentence step and
+// a four-sentence card), and the matrix row that tripped the old reading (b/dry1 offtopic c4-ch01-t02 40, staged script).
+describe("RULING-B2 item 1: cardWholeAfterTryOrYes, the first wait turn and the card whole flagged, the reask and help from wait two allowed", async () => {
+  const { lessonFlags, PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const { readFileSync } = await import("node:fs");
+  const { questionObjectAt, yourTurnForms } = await import("../server/director/question-run.js");
+  const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c4-maths-ch05-t01.json", import.meta.url), "utf8"));
+  const sx = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
+  const C = (text) => ({ who: "child", text });
+  const flags = (rows, sc = script) => lessonFlags({ rows, script: sc }).filter((f) => f.predicate === "cardWholeAfterTryOrYes").map((f) => f.row);
+  const invite = yourTurnForms(script)[0];
+  const GO = "Haan, pehle tum try karo.";
+  test("still gated", () => { assert.ok(PREDICATES.cardWholeAfterTryOrYes); assert.ok(!PENDING.has("cardWholeAfterTryOrYes")); });
+  // (an asked step: its prompt is one sentence, the question itself)
+  const SP = ".skills[0].workedExample.steps[0].ask", sa = questionObjectAt(script, SP);
+  const sPrompt = norm(sa.prompt.hi), sReask = norm(sa.reask.hi);
+  const HELP = "Khaane se pehle wali poori barfi yaad karo, jab ek bhi tukda khaya nahi gaya tha.";
+  const TS = (text, column, seams) => ({ who: "teacher", text, cell: { part: "c4-maths-ch05-t01-s1:worked:step1:ask", column }, seams: sx(...seams) });
+  const sAsked = TS(`Aao, agla sawaal main aur tum saath mein karenge. ${sPrompt}`, "right", ["verdict", "workedProblem", "stepAsk"]);
+  const sShort = TS(`${GO} ${SHORT_ASK_FORMS[0]}`, "try_first", ["tryFirst", "reaskShort"]);
+  test("step, wait one (her turn before said the question): the reask, the question and help ending on it are each flagged", () => {
+    for (const t of [TS(`${GO} ${sReask}`, "try_first", ["tryFirst", "stepAsk"]), TS(`${GO} ${sPrompt}`, "try_first", ["tryFirst", "stepAsk"]), TS(`${HELP} ${sPrompt}`, "try_first", ["help", "stepAsk"])])
+      assert.deepEqual(flags([sAsked, C("pehle main try karun?"), t]), [2], t.text);
+  });
+  test("step, wait two after the short ask: the reask alone and help ending on the question pass; the question as first written is flagged", () => {
+    const lead = [sAsked, C("pehle main try karun?"), sShort, C("haan")];
+    assert.deepEqual(flags([...lead, TS(sReask, "yes", ["stepAsk"])]), []);
+    assert.deepEqual(flags([...lead, TS(`${HELP} ${sPrompt}`, "yes", ["help", "stepAsk"])]), []);
+    assert.deepEqual(flags([...lead, TS(sPrompt, "yes", ["stepAsk"])]), [4]);
+  });
+  test("step, wait three after the reask (an earlier turn of this wait): help ending on the question passes; the question as first written is flagged", () => {
+    const lead = [sAsked, C("pehle main try karun?"), sShort, C("haan"), TS(sReask, "yes", ["stepAsk"]), C("haan")];
+    assert.deepEqual(flags([...lead, TS(`${HELP} ${sPrompt}`, "yes", ["help", "stepAsk"])]), []);
+    assert.deepEqual(flags([...lead, TS(sReask, "yes", ["stepAsk"])]), []);
+    assert.deepEqual(flags([...lead, TS(sPrompt, "yes", ["stepAsk"])]), [6]);
+  });
+  // (a card: its prompt is four sentences — said whole as first written on ANY wait turn is flagged, help or not)
+  const CP = ".skills[0].explain[3].ask", ca = questionObjectAt(script, CP);
+  const cPrompt = norm(ca.prompt.hi), cReask = norm(ca.reask.hi), cQ = norm(cPrompt.split(/(?<=[.!?])\s+/).at(-1));
+  const CHELP = "Patti ke saare tukde gino, sirf bache hue nahi.";
+  const TC = (text, column, seams) => ({ who: "teacher", text, cell: { part: "c4-maths-ch05-t01-s1:explain4:card", column }, seams: sx(...seams) });
+  const cAsked = TC(`Ab yeh dekho. ${cPrompt}`, "right", ["verdict", "card"]);
+  test("card, wait one: the reask is flagged; card, wait two after the invitation: the reask alone and help ending on the question pass", () => {
+    assert.deepEqual(flags([cAsked, C("haan"), TC(cReask, "yes", ["card"])]), [2]);
+    const lead = [cAsked, C("haan"), TC(invite, "yes", ["yourTurn"]), C("haan")];
+    assert.deepEqual(flags([...lead, TC(cReask, "yes", ["card"])]), []);
+    assert.deepEqual(flags([...lead, TC(`${CHELP} ${cQ}`, "yes", ["help", "card"])]), []);
+  });
+  test("card, wait two and three: the card said whole as first written is flagged, alone or after help", () => {
+    const lead = [cAsked, C("haan"), TC(invite, "yes", ["yourTurn"]), C("haan")];
+    assert.deepEqual(flags([...lead, TC(cPrompt, "yes", ["card"])]), [4]);
+    assert.deepEqual(flags([...lead, TC(`${CHELP} ${cPrompt}`, "yes", ["help", "card"])]), [4]);
+    const lead3 = [...lead, TC(cReask, "yes", ["card"]), C("haan")];
+    assert.deepEqual(flags([...lead3, TC(`${CHELP} ${cPrompt}`, "yes", ["help", "card"])]), [6]);
+    assert.deepEqual(flags([...lead3, TC(`${CHELP} ${cQ}`, "yes", ["help", "card"])]), []);
+  });
+  test("the matrix row offtopic c4-ch01-t02 40 (b/dry1): wait two after the invitation, the step's reask after the go-ahead, passes", () => {
+    const st = JSON.parse(readFileSync(new URL("../data/lesson-scripts-staged/c4-maths-ch01-t02.json", import.meta.url), "utf8"));
+    const T = (text, column, seams) => ({ who: "teacher", text, cell: { part: "x", column }, seams: sx(...seams) });
+    const rows = [T("Haan, Hindi mein sunati hoon. Sonu ka tester seedha tha, par tile tirchi. Socho, kya tester ke dono seedhe kinaare tile ki bhujaon ke saath pade the; tester fit na hone ki wajah wahi ho sakti hai. Tile tedhi lagi hai. Tester ko bhi tile jitna ghumaoge, ya seedha hi rakhoge?", "hindi", ["hindiSwitch", "help", "help", "stepAsk"]),
+      C("haan"), T("Chalo, ab tumhari baari.", "yes", ["yourTurn"]), C("mujhe khud try karne do"),
+      T("Haan, pehle tum try karo. Toh sawaal yeh hai. Tirchi tile par tester seedha rakhoge, ya ghuma kar?", "try_first", ["tryFirst", "stepAsk"])];
+    assert.deepEqual(flags(rows, st), []);
+    // (the same turn as the wait's first — her turn before said the question — is still flagged)
+    assert.deepEqual(flags([rows[0], C("mujhe khud try karne do"), rows[4]], st), [2]);
+  });
+});
