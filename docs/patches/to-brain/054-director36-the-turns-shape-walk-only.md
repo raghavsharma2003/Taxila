@@ -24,7 +24,7 @@ around a safety turn is the owner's; `server/safety/` and what calls it are froz
   ending, and the only one added. D2 is the reversal, not an option.
 - **A(ii): design II-B.** The whole point, then the check-in; the card is the next turn. This amends the words of
   `dc-r8-director36` item 3(a) ("the point's first sentence"): a point is never broken inside itself.
-- **A(iii): as written.** The roti-then-ribbon turn and the verdict, lead-in, problem and step turn are left.
+- **A(iii): as written (TAKEN OUT again after the first whole read: see "The last read before the full run" below).** The roti-then-ribbon turn and the verdict, lead-in, problem and step turn are left.
 - **A was measured on 2026-11-25** (pair run of c5-maths-ch02-t01 and c6-maths-ch07-t01, 8 lessons, 577 calls, $0.42; two judges).
   Gates clean; turns over 70 words 6 → 1; but both judges heard every go-on turn of D1 as a dead turn (8 of 8), register rows
   under length or shape did not fall (15 → 19), register stayed 3.5 and the offtopic lessons reached less of the script. **A.7's
@@ -74,6 +74,80 @@ around a safety turn is the owner's; `server/safety/` and what calls it are froz
 - **C6's reversal is the order's proposal** (two judges count `whyShort` as nothing new: `helpSpent` returns as built).
 - **D4 is out of d37 (question 6): YES.** A goodbye reply chosen from what the child said needs `wrap.ack` forms by kind, which
   only Learning writes (025). D1 to D3 are built as written; D1's and the order's D.7 reversal stand.
+- **C as built, measured and kept (2026-11-25), amending C4, C5 and C6 above.** Four builders, five rulings. Three of the
+  order's six rules did not survive an as-heard read of the offline walk and were undone before any spend: **C5** (drop a
+  remediation's wordings at its follow-up card: it took 22 help turns away to cure one judged row, and read side by side the
+  older ladder was plainly better), **C6** (`whyShort` after a told answer: it is the answer again, 3 of 3), **C4** (drop the
+  worked wording at the child's own step: it left "this is the simplest way I have" untrue at stuck c5-ch02-t02 46). Kept:
+  **C1** an own step's told answer is the step's own answer with its own reason, and if the child still does not
+  understand, the worked problem's reason is the next help before "nothing easier"; **C2** where a reason names every
+  number of its answer the told answer is the reason alone (also word answers, teach-backs, and values said as Hindi number
+  words); **C3** as ruled above. Measured on c5-maths-ch02-t02 and c5-maths-ch02-t01 (8 lessons, 647 calls, $0.49, two
+  judges): gates clean, nothing gated, both judges keep; register unchanged at 3.5. Pending counts for Learning 025:
+  `thenHelpOtherBoard` (a remediation's wording at its follow-up card over the remediation's board), `ownStepWorkedHelp`.
+- **D as built and accepted (2026-11-25), amending D1 above.** **D1** a return led by a verdict opens on a back-to word
+  where the script has such a form; where it has none the verdict leads as before (pending `returnColdAfterVerdict` counts
+  them for Learning). The builder's fallback, the return split from its verdict as a go-on turn, was dead on 16 of 23
+  returns and was taken out before any run. **D2** a park of something the child told is always returned to (gated
+  `shareParkUnreturned`, which reads a return of THAT park). **D3** the AI line never asks what the child's own question
+  named (gated `aiAsksTold`); a second taste ask takes the first form not yet answered. **D had no paid pair measure**: the
+  rule-based children reach it in two topics only; it was read as heard and its checks reviewed.
+- **The closing pass (2026-11-25), thirteen items**, each with its test: the first turn after two greeting requests never
+  takes a check-in form that asks "samajh aaya"; a new gated `cardDroppedAfterShortAsk`; the live reply lane refuses a
+  model-written opener that repeats the last verdict's reason lead-in ("kyunki" twice running, flagged on pair run a2);
+  `keyValueTwice` counts to the end of the reason's sentence and reads number words; a miss verdict keeps the board that
+  was up until a picture's own board draws; the reply's slot never takes a function word; a plain no at a held-card
+  check-in takes the clarify path; and, in the harness, the offtopic child answers the AI line's "kab …?" with a when and
+  the stuck and steering children answer a yes-or-no check-in with yes or "nahi".
+- **The last read before the full run said NO (2026-11-25; decision item 4 of director36).** Three readers who built
+  nothing read all 36 lessons of the round's final walk against the walk the round started from. They found the round
+  better turn by turn and four regressions of its own, and main ruled each fixed or taken out (not argued with):
+  1. **A(i)'s reply turn said its point over the next card's board** where the two differ (four rows; an unsaid board by the
+     gate's text; no check read it because the record named the held card's board as the point's own). Fixed: the point
+     pages on its own board, the card's board comes with the card; `boardOfSaidPart` reads it.
+  2. **A plain "nahi" at any comprehension check-in was passed over as a yes** (six rows). The rule-based children had never
+     said "nahi" at a check-in until the closing pass, so no walk of this project had shown it. Fixed: a plain no there is
+     "samajh nahi aaya" and takes that path; gated `plainNoUnhelped`.
+  3. **A(iii) is TAKEN OUT.** The worked close split from its card made a turn with no question in every lesson of two
+     topics (go-on turns with no question 5 to 13 in the matrix) and left a clarify after it without help. It had been
+     "kept" above on a pair measure in whose topics it never fired: main's mistake. A worked close and its card are one
+     turn again, as at a23e5c45d; `closeCardLong` is removed. The 66 to 74 word close + card turns director36 faulted are
+     back with it and are a script matter (Learning 025: shorter closes), not a split.
+  4. **A Hindi request at a held-card check-in** got "seedhe shabdon mein" and the point's other wording, not Hindi. Fixed:
+     the switch line is the turn's lead over the board already up, then the held card in its Hindi form on the card's own
+     board; where the card has no Hindi form, the easier-words line as before.
+  And smaller, new in the round, each fixed: her reply's slot never takes a function word or a word for a person ("Achha,
+  papa!"), and after the AI line's "kab …?" it takes a form with no slot; a told side-topic said again where its park
+  comes due gets the told return; help in the point's wording at a card ends on the card's question (its `reask`), not on
+  an invitation; a turn that opens on her reply to a side-topic holds one go-on or back-to-work line, and a joint never
+  opens on the words the sentence before it opened on. `returnAsksAgain` counts an earlier liking answer only for the
+  same subject (asking about Virat after the child raised Virat is right). Three builders (G1 to G3), two independent
+  reviews of their checks.
+- **c4-maths-ch05-t01 runs its rewritten script** (decision item 2 of director36): the script of 6ec62ad79 with the one
+  sentence that failed it returned to its director35 text (dc435ad8f). The only data change of the round.
+- **The second whole read (2026-11-25): yes, yes, and no on one fault.** Three fresh readers, 36 lessons of the walk after
+  those fixes: every finding of the first read gone; c4-maths-ch05-t01's rewritten script true of its boards sentence by
+  sentence. One fault of the round's own was left and is fixed: **a child who asks to try alone is told to go ahead and
+  nothing more.** The round's builds had turned 21 of 36 replies to a try-first into the go-ahead plus a short ask or an
+  invitation (6 of 36 before the round), each added to satisfy "never two turns running with no question". Every reply to
+  a try-first is "Haan, pehle tum try karo." alone; the turn after it, when the child says only a bare yes or nothing the
+  walk reads, is wait one (or the next count of a wait already running); any other line takes its own path. New gated
+  `tryFirstNotAlone`; the go-ahead alone is excused from `endsOnQuestion` and `stepTryFirst` and from nothing else. Also
+  built: a miss verdict that names the child's answer is never word for word her previous turn's miss verdict; a told
+  answer whose reason names the answer as written is the reason alone (found by `tests/r8-main-034`'s fixture walk);
+  `plainNoUnhelped` reads an earlier clarify or give-up helped at the same check-in as it reads an earlier plain no
+  (a third request there goes on, as built). A re-read of every changed row: yes, no row a judge would count.
+- **Set aside and put to the judges by name (decision item 4 of director36), each with its reversal in the judges' clauses:**
+  help at turn 12 of the stuck lessons ending on the card's short question that the help two turns before also ended on
+  (clause 87); a side-topic at the check-in after a told answer answered with the let-go line, the park line and a
+  back-to-work line (steady c4-ch01-t02 40: first on the next walk round's list); the picture a child asked for giving way
+  to the card's own board when the card is said after "Iski aur koi drawing mere paas nahi hai."; and, the scripts' own
+  forms, for Learning 025: a reply to a name in the forms "Arre wah, X!" and "Oho, X!", and a told side-topic's return that
+  asks a liking question.
+- **The round on the offline matrix** (nine topics by four children, no model; the walk the round started from against the
+  walk the paid run runs): rows 2800 to 2752; her turns over 60 words 240 to 217, over 70 words 22 to 15; turns ending on a
+  check-in 84 to 132; answers told 20 to 14; help turns 325 to 347; go-on turns with no question 5 to 3; try-firsts
+  answered alone 30 of 36 to 36 of 36. Gated checks 171 to 190, every one 0.
 
 ## A. A turn holds one new thing
 
