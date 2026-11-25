@@ -115,11 +115,11 @@ describe("item 18a: an acknowledgement straight after the go-ahead is wait one (
   const turns = await w.play(["try", "ack", "haan"]);
   w.done();
   Object.assign(LINES, LINES0);
-  test("the go-ahead alone; then wait one (the short ask), never the question in full, the key or help; recorded as said; then wait two", () => {
+  test("the go-ahead alone; then wait one (the short ask), never the question in full, the key or help; the child's words recorded as said, read as a yes (column yes); then wait two", () => {
     assert.equal(turns[0].text, "Haan, pehle tum try karo.");
     assert.equal(turns[1].lm.waitN, 1); assert.ok(endsOnShortAsk(w.script, turns[1].text) || turns[1].seams.at(-1) === "yourTurn", turns[1].text);
     assert.ok(!turns[1].lm.gave && !turns[1].seams.includes("help"), turns[1].text);
-    assert.equal(turns[1].lm.cell?.column, "other");
+    assert.equal(turns[1].lm.cell?.column, "yes");
     assert.equal(w.rows.filter((r) => r.who === "child").at(-2).text, "hmm, achha");
     assert.equal(turns[2].lm.waitN, 2);
   });

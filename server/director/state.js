@@ -4538,7 +4538,10 @@ export function step(prev, input) {
   const cell2 = picGot ? { ...cell1, picture: picGot } : cell1;
   // (Brain 049 B6, the record: every teacher row names a part — an answer at the teachback or the wrap is that part's; a turn whose reading
   // named none (a stop, an aside at practice) keeps the part her turn before was on)
-  const cell = cell2 && cell2.part == null ? { ...cell2, part: recordPartOf(prev, input) } : cell2;
+  const cell3 = cell2 && cell2.part == null ? { ...cell2, part: recordPartOf(prev, input) } : cell2;
+  // (d37 item 18a: an acknowledgement straight after the go-ahead is read as the bare yes it stands for — the record's column says so, the
+  // child's words kept as said: h/dry1 offtopic c4-ch01-t02 41 "hmm, achha", a wait turn, was recorded "other", a no-answer cue)
+  const cell = wait?.ack && cell3?.column === "other" ? { ...cell3, column: "yes" } : cell3;
   if (input?.event === "turn" && out?.state) {
     // (the wording help says this turn is said on it: in the set now, whatever the reply around it — the next turn adds her whole line)
     out.state.said = helped && out.state.lastMove?.simpler ? addSaid(said, out.state.lastMove.simpler, out.state.turn ?? 0) : said;
