@@ -592,4 +592,20 @@ describe("sixth ruling, items 4 to 9: the checks", async () => {
     assert.deepEqual(flags([...L, T2(VERDICT, "yes", ["verdict", "checkin"], { heardCap: E2 })], "waitFourNotTold"), []);
     assert.deepEqual(flags([...L, T2(VERDICT, "yes", ["verdict", "checkin"])], "waitFourNotTold"), [18]);
   });
+  // (an asked step: its prompt is one sentence, the question itself)
+  const SP = ".skills[0].workedExample.steps[0].ask";
+  const sPrompt = norm(q(SP).prompt.hi), sReask = norm(q(SP).reask.hi);
+  const TS = (text, column, seams, extra = {}) => ({ who: "teacher", text, cell: { part: "c4-maths-ch05-t01-s1:worked:step1:ask", column }, seams: sx(...seams), ...extra });
+  const sAsked = TS(`Aao, agla sawaal main aur tum saath mein karenge. ${sPrompt}`, "right", ["verdict", "workedProblem", "stepAsk"]);
+  const park = TS("Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Pehle is sawaal ka jawab do.", "aside", ["park", "answerFirst"]);
+  test("item 8 (pr3 E): a park's pointed invitation as the child's first line at a question is wait one, as the walk counts it (dry4 steady c6-ch07-t01 38, 40)", async () => {
+    const { waitAt } = await import("../evals/hybrid-side-by-side/d37b-predicates.mjs");
+    const lead = [sAsked, C("kal maine cricket khela, sixer maara"), park, C("haan samajh gayi")];
+    assert.deepEqual(waitAt({ rows: [...lead, TS(sReask, "yes", ["stepAsk"])] }, 4, script)?.turns, [2, 4]);
+    // (so the turn after the park is wait two: the reask passes, a short ask there is flagged — before, it read as wait one)
+    assert.deepEqual(flags([...lead, TS(sReask, "yes", ["stepAsk"])], "waitSecondNotReask"), []);
+    assert.deepEqual(flags([...lead, TS(SHORT_ASK_FORMS[0], "yes", ["reaskShort"])], "waitSecondNotReask"), [4]);
+    // (a park inside a wait is still passed over: the count is neither restarted nor advanced)
+    assert.deepEqual(waitAt({ rows: [sAsked, C("haan"), TS(SHORT_ASK_FORMS[0], "yes", ["reaskShort"]), C("sixer maara"), park, C("haan"), TS(sReask, "yes", ["stepAsk"])] }, 6, script)?.turns, [2, 6]);
+  });
 });

@@ -50,6 +50,8 @@ const prevTeacher = (L, i) => { for (let j = i - 1; j >= 0; j--) if (L.rows[j].w
 /** Whether a teacher text stands for a question without saying it (a short ask, an invitation, a pointed invitation). */
 const standsFor = (script, t) => atQuestionOf(script, t) === "?short" || endsOnYourTurn(script, t) || endsOnAnswerFirst(script, t);
 
+/** Whether a teacher text stands for a question without saying it. */
+const standsForOnly = (script, t) => standsFor(script, t) && [null, "?short"].includes(atQuestionOf(script, t));
 /** Whether teacher row j poses its question: it says a question the turn before it (a side-topic's turn passed over) neither said nor stood
  *  for, and that turn is no wait turn — a card or step asked after a bare yes (a check-in's "haan") is where its wait starts, not one of its
  *  turns (RULING-B2 walks: the lesson's first card, asked on the greeting's "haan"). */
@@ -100,8 +102,10 @@ export function waitAt(L, i, script) {
   // invitation without saying the question (a help turn that ended on "Ab tum batao.", 049 B4's third-turn invitation), is wait one)
   // (sixth ruling, item 1: her turn on a try-first right before the wait's first turn, where it stands for the question without saying it, is
   // that wait one — waitOf reads her last turn — and is no wait turn itself)
+  // (main's sixth ruling, item 8 — pr3's E: and so is a side-topic's park right before it, ending on the pointed invitation: waitOf counts it as
+  // wait one, so waitAt does — dry4 steady c6-ch07-t01 40)
   const k0 = at.length ? prevTeacher(L, at[0]) : -1;
-  const tryOne = !from && k0 >= 0 && tryCue(L.rows[k0]) && standsFor(script, L.rows[k0].text) && [null, "?short"].includes(atQuestionOf(script, L.rows[k0].text));
+  const tryOne = !from && k0 >= 0 && (tryCue(L.rows[k0]) || (asideTurn(L.rows[k0]) && !waitCue(L.rows[k0]))) && standsForOnly(script, L.rows[k0].text);
   if (tryOne) at.unshift(k0);
   else if (!from && at.length && j >= 0 && !waitCue(L.rows[j]) && standsFor(script, L.rows[j].text) && [null, "?short"].includes(atQuestionOf(script, L.rows[j].text))) at.unshift(j);
   return at.length && at.at(-1) === i ? { P, turns: at } : null;
@@ -143,6 +147,7 @@ function waitRowOf(L, i, script) {
   const r = L.rows[i];
   if (!waitCue(r) || tryCue(r) || !(r.stepAnswer?.told || seamsOf(r).some((k) => ENDS.has(k)))) return null;
   let j = prevTeacher(L, i);
+  const k0 = j;
   while (j >= 0 && ((asideTurn(L.rows[j]) && !waitCue(L.rows[j])) || tryPassed(L, j, script))) j = prevTeacher(L, j);
   // (sixth ruling, item 1: her turn on a try-first that stands for the question with no wait before it is wait one — waitOf's stand-in)
   if (j >= 0 && tryCue(L.rows[j])) {
@@ -150,7 +155,10 @@ function waitRowOf(L, i, script) {
     return P0 ? { n: 2, P: P0, first: j } : null;
   }
   const p = j >= 0 ? waitAt(L, j, script) : null;
-  return p ? { n: p.turns.length + 1, P: p.P, first: p.turns[0] } : null;
+  if (p) return { n: p.turns.length + 1, P: p.P, first: p.turns[0] };
+  // (sixth ruling, item 8: a side-topic's park right before it, ending on the pointed invitation with no wait before it, is wait one)
+  if (k0 >= 0 && asideTurn(L.rows[k0]) && !waitCue(L.rows[k0]) && standsForOnly(script, L.rows[k0].text)) { const P0 = stoodFor(L, k0, script); return P0 ? { n: 2, P: P0, first: k0 } : null; }
+  return null;
 }
 /** The question a short ask or an invitation at row j stands for: the last her turns said before it (a side-topic's turn, another short ask
  *  or invitation passed over), or null. */
