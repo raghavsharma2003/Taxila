@@ -157,7 +157,7 @@ import { readMethod, keepMethod, METHOD_NOTE } from "../conversation/methods.js"
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
-import { yourTurnPass, atQuestionOf, endsOnYourTurn, endsOnAnswerFirst } from "./question-run.js";
+import { yourTurnPass, atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, endsOnReaskOf } from "./question-run.js";
 import { isSadAside } from "../brain/asideReplies.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
@@ -3673,7 +3673,11 @@ function waitOf(prev, input) {
   const last = String((prev.recent ?? []).filter((x) => x.who === "teacher").at(-1)?.text ?? "");
   const aL = atQuestionOf(script, last);
   if (!(aL === P || aL === "?short" || endsOnYourTurn(script, last) || endsOnAnswerFirst(script, last))) return null;
-  return { P, n: (prev.waitQ?.P === P ? prev.waitQ.n ?? 0 : 0) + 1 };
+  const n = (prev.waitQ?.P === P ? prev.waitQ.n ?? 0 : 0) + 1;
+  // (RULING-B3: wait two never says a reask the child has just heard — where the turn that last said the question ended on its reask, wait
+  // two is what wait three is)
+  const lastQ = n === 2 ? (prev.recent ?? []).filter((x) => x.who === "teacher").map((x) => String(x.text ?? "")).reverse().find((x) => atQuestionOf(script, x) === P) : null;
+  return { P, n, ...(lastQ && endsOnReaskOf(script, P, lastQ) ? { reaskHeard: true } : {}) };
 }
 /** The columns never capped (and see capCueOf, R1: only a miss, a give-up or no answer is). Was: an answer that is not right, a give-up, a request to hear it again or in Hindi,
  *  a yes or a try-first, an aside (her turn would come back to the question). Never a picture request (director32: a picture request never
@@ -4161,7 +4165,7 @@ export function step(prev, input) {
   // told step or the key with its reason; the question is never said again in its place: a child who has said "haan" four times is not
   // about to answer, and the same re-ask twice in three turns is the nagging B.7 warns of. Gated stepToldEarly allows that told step)
   const wait = waitOf(prev, input);
-  if (wait && wait.n >= 3) {
+  if (wait && (wait.n >= 3 || wait.reaskHeard)) {
     const { request: _rq, ...restW } = input.cls ?? {};
     input = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P };
   }
@@ -4450,10 +4454,11 @@ export function step(prev, input) {
   if (input?.event === "turn" && out?.state && scriptOn() && !recordedNow) {
     const keep = !wait && prev?.waitQ && ["aside", "aside_reply"].includes(String(columnName(input0, prev) ?? ""));
     if (wait) out.state.waitQ = wait; else if (!keep) delete out.state.waitQ;
-    const strip = (m) => { if (!m || typeof m !== "object" || !("waitN" in m || "waitP" in m)) return m; const { waitN: _n, waitP: _p, ...o } = m; return o; };
+    const strip = (m) => { if (!m || typeof m !== "object" || !("waitN" in m || "waitP" in m)) return m; const { waitN: _n, waitP: _p, waitGive: _g, ...o } = m; return o; };
     out.state.lastMove = strip(out.state.lastMove);
     if (out.move) out.move = strip(out.move);
-    if (wait && out.state.lastMove) { out.state.lastMove = { ...out.state.lastMove, waitN: wait.n, waitP: wait.P }; if (out.move) out.move = { ...out.move, waitN: wait.n, waitP: wait.P }; }
+    const wg = wait?.reaskHeard ? { waitGive: true } : {};
+    if (wait && out.state.lastMove) { out.state.lastMove = { ...out.state.lastMove, waitN: wait.n, waitP: wait.P, ...wg }; if (out.move) out.move = { ...out.move, waitN: wait.n, waitP: wait.P, ...wg }; }
   }
   if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "");
   if (out?.state && prev?.answerAt && !out.state.answerAt) out.state.answerAt = prev.answerAt;

@@ -109,20 +109,42 @@ describe("B.3: a side-topic in a wait is parked once and neither restarts nor ad
   });
 });
 
-// (main's second ruling, item 2: where help is spent before the wait — a give-up got the step's simpler — wait three is the give-up with
-// nothing left: the step told, not the question again)
-for (const TOPIC of ["c4-maths-ch05-t01", "c6-maths-ch07-t01"]) describe(`RULING-B2 item 2 at ${TOPIC}'s step: help spent before the wait, wait three tells the step`, async () => {
+// (main's second ruling, item 2, and third ruling, item 2: where help is spent before the wait — a give-up got the step's simpler, its turn
+// ending on the step's reask — wait two never says that reask again: it is what wait three is, the give-up with nothing left: the step told)
+for (const TOPIC of ["c4-maths-ch05-t01", "c6-maths-ch07-t01"]) describe(`RULING-B3 item 2 at ${TOPIC}'s step: help spent before the wait, the reask just heard, wait two tells the step`, async () => {
   const w = await walkTo(TOPIC, "step");
-  const turns = await w.play(["give", "try", "haan", "haan"]);
+  const turns = await w.play(["give", "try", "haan"]);
   w.done();
-  test("the give-up gets the step's simpler; wait one, wait two the reask; wait three the step told (no cap: the fifth hearing is not due)", () => {
+  test("the give-up gets the step's simpler, ending on the reask; wait one; wait two the step told, not the reask again (no cap)", () => {
     assert.ok(turns[0].seams.includes("help"), turns[0].seams.join(">"));
+    assert.ok(turns[0].text.endsWith(reaskFilled(w.script, w.P)), turns[0].text);
     assert.equal(turns[1].lm.waitN, 1);
     assert.equal(turns[2].lm.waitN, 2);
-    assert.ok(turns[2].text.endsWith(reaskFilled(w.script, w.P)), turns[2].text);
-    assert.equal(turns[3].lm.waitN, 3);
-    assert.ok(turns[3].lm.stepReply?.told, turns[3].text);
-    assert.ok(!turns[3].lm.heardCap);
+    assert.ok(!turns[2].text.endsWith(reaskFilled(w.script, w.P)), turns[2].text);
+    assert.ok(turns[2].lm.stepReply?.told, turns[2].text);
+    assert.ok(!turns[2].lm.heardCap);
+  });
+});
+// (RULING-B3 item 2 at a card: two give-ups, the first's help ending on the card's reask; wait two is help ending on the question, not the
+// reask again; wait three the key)
+for (const TOPIC of ["c4-maths-ch05-t01", "c6-maths-ch07-t01"]) describe(`RULING-B3 item 2 at ${TOPIC}'s first card: the reask heard in help, wait two is help`, async () => {
+  const w = await walkTo(TOPIC, "card");
+  const turns = await w.play(["give", "give", "haan", "haan", "haan"]);
+  w.done();
+  test("wait two is help ending on the question (never the reask alone); wait three the key", () => {
+    assert.ok(turns[0].text.endsWith(reaskFilled(w.script, w.P)), turns[0].text);
+    assert.equal(turns[3].lm.waitN, 2);
+    assert.ok(turns[3].seams.includes("help"), turns[3].seams.join(">"));
+    assert.equal(atQuestionOf(w.script, turns[3].text), w.P, turns[3].text);
+    assert.ok(!turns[3].text.endsWith(reaskFilled(w.script, w.P)), turns[3].text);
+    assert.ok(turns[4].lm.gave, turns[4].text);
+  });
+  test("where the reask was not heard (a bare haan from the card), wait two is the reask as ruled", async () => {
+    const w2 = await walkTo(TOPIC, "card");
+    const t2 = await w2.play(["haan", "haan"]);
+    w2.done();
+    assert.equal(t2[1].lm.waitN, 2);
+    assert.ok(t2[1].text.endsWith(reaskFilled(w2.script, w2.P)), t2[1].text);
   });
 });
 
@@ -217,8 +239,23 @@ describe("B.4: questionThreeRunning exempts the wait's re-ask; stepToldEarly exe
     // (the simpler unsaid: help was left — flagged)
     const unsaid = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan"), T(`Kuch aur socho. ${prompt}`, "yes", ["stepAsk"]), C("haan")];
     assert.deepEqual(flags([...unsaid, told], "stepToldEarly"), [8]);
-    // (wait two, the simpler said: no give-up yet — flagged)
-    assert.deepEqual(flags([asked, C("pata nahi"), T(`${simpler} ${reask}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), told], "stepToldEarly"), [6]);
+    // (wait two, the simpler said but the question last said in its first form: no give-up yet — flagged)
+    assert.deepEqual(flags([asked, C("pata nahi"), T(`${simpler} ${prompt}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), told], "stepToldEarly"), [6]);
+    // (RULING-B3: wait two where the turn that last said the question ended on its reask — wait two is what wait three is: passes)
+    assert.deepEqual(flags([asked, C("pata nahi"), T(`${simpler} ${reask}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), told], "stepToldEarly"), []);
+    // (… but not with the simpler unsaid)
+    assert.deepEqual(flags([asked, C("pata nahi"), T(`Kuch aur socho. ${reask}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), told], "stepToldEarly"), [6]);
+  });
+  test("waitSecondNotReask (RULING-B3): wait two as help passes where the question was last said as its reask; flagged where it was last said whole", () => {
+    const simpler = norm(script.skills[0].workedExample.steps[0].simpler.hi);
+    const help2 = T(`Neeche wala number poori barfi ki baat karta hai. ${prompt}`, "yes", ["help", "stepAsk"]);
+    const heard = [asked, C("pata nahi"), T(`${simpler} ${reask}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), help2];
+    assert.deepEqual(lessonFlags({ rows: heard, script }).filter((f) => f.predicate === "waitSecondNotReask").map((f) => f.row), []);
+    const whole = [asked, C("pata nahi"), T(`${simpler} ${prompt}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), help2];
+    assert.deepEqual(lessonFlags({ rows: whole, script }).filter((f) => f.predicate === "waitSecondNotReask").map((f) => f.row), [6]);
+    // (the reask heard, but wait two no help — the question bare in its first form: flagged)
+    const bare = [...heard.slice(0, 6), T(prompt, "yes", ["stepAsk"])];
+    assert.deepEqual(lessonFlags({ rows: bare, script }).filter((f) => f.predicate === "waitSecondNotReask").map((f) => f.row), [6]);
   });
 });
 

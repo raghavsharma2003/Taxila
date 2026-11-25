@@ -4,7 +4,8 @@
 //                       "Haan, pehle tum try karo."'s cue or a bare yes — cell column try_first or yes — at the question her turn before
 //                       was at), none of the three saying the question (any form the script writes for it) or help. A side-topic's turn in
 //                       the wait is passed over: it neither restarts nor advances the wait (052 B4). director36 c4 steady 28 to 48.
-//   waitSecondNotReask  the wait's second turn does not end on the question's own `reask`.
+//   waitSecondNotReask  the wait's second turn does not end on the question's own `reask` (RULING-B3: allowed where the turn that last
+//                       said the question before the wait ended on that reask and wait two is help — what wait three is).
 // And B.4's re-pins, by name, for exactly the turns main's ruling on question 3 names (read as before everywhere else):
 //   questionThreeRunning  (049 B4, d34c's reading) the wait's re-ask is no turn of a run: the run counts from the turn after it
 //   stepToldEarly         (d30, gated) the cap's turn at a wait — a step told on the fifth hearing after a try-first or a bare yes — is allowed
@@ -16,7 +17,7 @@
 //                       give-up's help at a card ends on the card's own ask, which is the card whole where the ask is the card's sentences)
 //   stepToldEarly       also allows the step told on a wait's third-or-later turn where the give-up path had nothing left unsaid (the
 //                       step's own simpler said before the turn, as help.js reads an asked step's give-up)
-import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion, questionObjectAt } from "../../server/director/question-run.js";
+import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion, questionObjectAt, endsOnReaskOf } from "../../server/director/question-run.js";
 import { asideTurn, helpTurn } from "./d34b-predicates.mjs";
 import { D34C_PREDICATES } from "./d34c-predicates.mjs";
 import { D30_PREDICATES } from "./d30-predicates.mjs";
@@ -104,14 +105,21 @@ const saysOrHelps = (script, r, P) => atQuestionOf(script, r.text) === P || help
 
 /** A wait turn's place in its wait (1, 2, …), or 0. A turn that ends the wait by telling the step or keying the card ends on the next
  *  question, so waitAt does not read it: its place is one more than the wait turn before it (a side-topic's turn passed over). */
-function waitPlace(L, i, script) {
+function waitPlace(L, i, script) { return waitRowOf(L, i, script)?.n ?? 0; }
+/** waitPlace with the wait: { n, P, first } (first: the wait's first turn's row), or null. */
+function waitRowOf(L, i, script) {
   const w = waitAt(L, i, script);
-  if (w) return w.turns.length;
-  if (!waitCue(L.rows[i])) return 0;
+  if (w) return { n: w.turns.length, P: w.P, first: w.turns[0] };
+  if (!waitCue(L.rows[i])) return null;
   let j = prevTeacher(L, i);
   while (j >= 0 && asideTurn(L.rows[j]) && !waitCue(L.rows[j])) j = prevTeacher(L, j);
   const p = j >= 0 ? waitAt(L, j, script) : null;
-  return p ? p.turns.length + 1 : 0;
+  return p ? { n: p.turns.length + 1, P: p.P, first: p.turns[0] } : null;
+}
+/** RULING-B3: whether the turn that last said the wait's question before the wait (row `first`) ended on the question's own `reask`. */
+function reaskHeardBefore(L, first, script, P) {
+  for (let k = prevTeacher(L, first); k >= 0; k = prevTeacher(L, k)) if (atQuestionOf(script, L.rows[k].text) === P) return endsOnReaskOf(script, P, L.rows[k].text);
+  return false;
 }
 /** Whether the give-up path at a told step's row had nothing left unsaid, as help.js pickHelp reads an asked step (dc-r8-director29 P3): the
  *  step's own simpler, its first rung, said before row i (any sentence of it), or the step has none. */
@@ -141,6 +149,9 @@ export const D37B_PREDICATES = {
     if (!w || w.turns.length !== 2) return null;
     const lang = ctx?.lang === "english" ? "english" : "hinglish";
     if (!reaskOf(ctx.script, w.P, lang)) return null;
+    // (RULING-B3: wait two never says a reask the child has just heard — where the turn that last said the question ended on it, wait two
+    // is what wait three is: help ending on the question (a told step or a key ends on another question, so waitAt never reads it))
+    if (helpTurn(r) && reaskHeardBefore(L, w.turns[0], ctx.script, w.P)) return null;
     return endsOnReask(ctx.script, w.P, r.text, lang) ? null : `the wait's second turn at ${w.P} does not end on its reask: "${sentencesOf(r.text).at(-1) ?? ""}"`;
   },
   /** B.4 (main's ruling on question 3): 049 B4's count with the wait's re-ask exempt — the re-ask overrides the third-turn invitation, so it
@@ -161,6 +172,9 @@ export const D37B_PREDICATES = {
     if (r.who === "teacher" && r.heardCap && waitCue(r) && r.stepAnswer?.told) return null;
     // (main's second ruling, item 2: wait three and after IS a give-up — where its path had nothing left unsaid, the step told)
     if (r.who === "teacher" && waitCue(r) && r.stepAnswer?.told && waitPlace(L, i, ctx?.script) >= 3 && stepHelpSpent(L, r, i, ctx?.script)) return null;
+    // (RULING-B3: and on wait two where the turn that last said the question ended on its reask — wait two is then what wait three is)
+    { const w = r.who === "teacher" && waitCue(r) && r.stepAnswer?.told ? waitRowOf(L, i, ctx?.script) : null;
+      if (w?.n === 2 && reaskHeardBefore(L, w.first, ctx.script, w.P) && stepHelpSpent(L, r, i, ctx?.script)) return null; }
     return D30_PREDICATES.stepToldEarly(L, r, i, ctx);
   },
   /** Main's second ruling on cause B, item 1 (053 B2 re-pinned by name): the first wait turn (her turn before said the question itself) says

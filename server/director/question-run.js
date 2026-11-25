@@ -67,6 +67,19 @@ export function reaskOf(script, path, lang = "hinglish") {
   const t = typeof r === "string" ? r : lang === "english" ? r?.en ?? r?.hi : r?.hi ?? r?.en;
   return typeof t === "string" && t.trim() ? t.replace(/\s+/g, " ").trim() : null;
 }
+/** RULING-B3 (main's third ruling on cause B): whether a text ends on the question's own `reask` (its closing question, {slots} matching
+ *  any words), in either language. */
+export function endsOnReaskOf(script, path, text) {
+  const got = qKey(closingQuestion(text) ?? "");
+  if (!got) return false;
+  return ["hinglish", "english"].some((lang) => {
+    const r = reaskOf(script, path, lang);
+    const want = r ? qKey(closingQuestion(r) ?? sentencesOf(r).at(-1) ?? "") : "";
+    if (!want) return false;
+    const re = new RegExp(`^${want.split(SLOT).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[\\p{L}\\p{N}/ ]+?")}$`, "u");
+    return re.test(got);
+  });
+}
 /** The script's `joints.yourTurn` forms in a lesson language (Hindi and Hinglish say `hi`): string[]. */
 export function yourTurnForms(script, lang = "hinglish") {
   return (script?.joints?.yourTurn ?? []).map((f) => (typeof f === "string" ? f : lang === "english" ? f?.en ?? f?.hi : f?.hi ?? f?.en)).filter((x) => typeof x === "string" && x.trim()).map((x) => x.replace(/\s+/g, " ").trim());
@@ -208,7 +221,9 @@ export function yourTurnPass(prev, out, script, childText = "") {
   // question (state.js reads the turn as a give-up): no invitation in its place, and the fifth hearing is the cap as built)
   if (lm.waitN >= 2 && lm.waitP) {
     // (at an asked step the move's prompt becomes the reask said, so the next turn's stepAskAgain takes the other wording: 049 B1)
-    if (lm.waitN === 2) {
+    // (RULING-B3: where the turn that last said the question ended on its reask, wait two is read as a give-up — state.js waitOf's
+    // `reaskHeard`, the move's waitGive — and says no reask again)
+    if (lm.waitN === 2 && !lm.waitGive) {
       const t = reaskOf(script, lm.waitP, s.ctx?.lang === "english" ? "english" : "hinglish");
       if (t) set({ waitReask: t, ...(lm.stepAsk?.prompt && !lm.splitClose ? { stepAsk: { ...lm.stepAsk, prompt: fillFriend(t, s.ctx?.firstName ?? "") } } : {}) });
     }
