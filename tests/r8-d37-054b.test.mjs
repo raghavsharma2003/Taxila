@@ -585,4 +585,11 @@ describe("sixth ruling, items 4 to 9: the checks", async () => {
     // (a yes-cued turn that did NOT end its wait is still one of the wait's turns: the card said after it is no new wait)
     assert.deepEqual(waitAt({ rows: [asked1, C("haan"), short1, C("haan"), T1(e1, "yes", ["card"])] }, 4, script)?.turns, [2, 4]);
   });
+  test("item 7 (pr3 D): waitFourNotTold passes a fourth wait turn that carries the cap (a yes-or-no card's verdict and check-in); without the cap it is flagged", () => {
+    const L = [...capped, C("haan"), T2(SHORT_ASK_FORMS[0], "yes", ["reaskShort"]), C("haan"), T2(norm(q(E2).reask.hi), "yes", ["card"]), C("haan"),
+      T2(`Pizza ka chhota tukda uske bade tukde ke saath milaa kar dekho. ${lastQ(e2)}`, "yes", ["help", "card"]), C("haan")];
+    const VERDICT = "3 tukde barabar nahi, toh gin kar 1/3 nahi keh sakte. Yahan tak theek hai?";
+    assert.deepEqual(flags([...L, T2(VERDICT, "yes", ["verdict", "checkin"], { heardCap: E2 })], "waitFourNotTold"), []);
+    assert.deepEqual(flags([...L, T2(VERDICT, "yes", ["verdict", "checkin"])], "waitFourNotTold"), [18]);
+  });
 });

@@ -193,7 +193,8 @@ export const D37B_PREDICATES = {
   /** RULING-B5 item 3: a fourth wait turn (the wait counted from her turns) that is not the cap — the step told or the key. Gated. */
   waitFourNotTold(L, r, i, ctx) {
     if (r.who !== "teacher" || waitPlace(L, i, ctx?.script) !== 4) return null;
-    return r.stepAnswer?.told || seamsOf(r).some((k) => k === "key" || k === "workedStep") ? null : `the wait's fourth turn is not the step told or the key: "${sentencesOf(r.text).at(-1) ?? ""}"`;
+    // (main's sixth ruling, item 7 — pr3's D: or a turn that carries the cap — a yes-or-no card's cap is said as its verdict and check-in)
+    return r.stepAnswer?.told || seamsOf(r).some((k) => k === "key" || k === "workedStep") || r.heardCap ? null : `the wait's fourth turn is not the step told or the key: "${sentencesOf(r.text).at(-1) ?? ""}"`;
   },
   /** B.5: the wait's second turn ends on the question's own `reask`. Gated. */
   waitSecondNotReask(L, r, i, ctx) {
