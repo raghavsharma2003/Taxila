@@ -3294,7 +3294,7 @@ function decide(s, input, item) {
   // (v6.7 V1′: an answer to a live scripted card goes the scripted way — the frustration break waits for a turn that answered nothing)
   // (v6.9 T1, main on director17 c4 stuck 54: "haan" to her own check-in during a worked step got the break menu — a yes to her
   // question is an answer, never disengagement: the walk goes on to the next step)
-  const yesToCheckin = responseShape("yes", "worked_checkin") === "next_step" && YES_REPLY.test(String(input.text ?? "").trim()) && (s.lastMove?.checkinOk || s.lastMove?.kind === "worked_example" || /[?？]\s*$/.test(String([...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "")));
+  const yesToCheckin = responseShape("yes", "worked_checkin") === "next_step" && (YES_REPLY.test(String(input.text ?? "").trim()) || !!input.waitYes) && (s.lastMove?.checkinOk || s.lastMove?.kind === "worked_example" || /[?？]\s*$/.test(String([...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "")));
   if (frustrationLoop(s.affect) && ["warmup", "practice"].includes(s.phase) && s.turn - s.lastBreakTurn >= LIMITS.breakGapTurns && !answeredCard && !yesToCheckin) {
     s.lastBreakTurn = s.turn;
     s.affect = { ...s.affect, dontKnowStreak: 0, minimalStreak: 0 };
@@ -3367,7 +3367,8 @@ function capPlan(s, input, p) {
   // (dc-r8-director29 Brain 045 P3: a key is never the answer to an aside or to a yes — c5-t01 offtopic 32, steering 20: the aside is parked or
   // replied to as anywhere else, a yes to a re-ask gets the question again; the card is let go on an answer, a give-up or the stall guard)
   { const answered = ["correct", "incorrect", "partial", "misconception"].includes(String(input.cls?.outcome ?? ""));
-    const yesNow = /^\s*(?:haan|ha|han|haanji|haan\s+ji|ji|yes|yeah|ok|okay|theek\s+hai)\s*[.!]?\s*$/i.test(String(input.text ?? ""));
+    // (d37, pr9: a run of yes words straight after the go-ahead, read by the wait as a bare yes — step()'s waitYes — is a yes here too)
+    const yesNow = /^\s*(?:haan|ha|han|haanji|haan\s+ji|ji|yes|yeah|ok|okay|theek\s+hai)\s*[.!]?\s*$/i.test(String(input.text ?? "")) || !!input.waitYes;
     const asideNow = (() => { try { return columnName(input, s) === "aside"; } catch { return false; } })() || !!input.cls?.asideReply;
     // (dc-r7-script-walk-v6-10 T2.7, kept under P3: "haan, woh maine bata diya" — a yes that says the answer was given — is no give-up: the card
     // stays, its question again; director18 offtopic c5-t01 24 walked on today's ladder reached its key on it)
@@ -3781,6 +3782,8 @@ function capCueOf(input, col) {
   const cls = input.cls ?? {}, t = String(input.text ?? "").trim();
   if (cls.request?.type || cls.asideReply) return false;
   if (YES_REPLY.test(t) || (/(?<![\p{L}])(?:haan|han|yes|ji)(?![\p{L}])/iu.test(t) && !/\d/.test(t))) return false;
+  // (d37, pr9: a run of yes words straight after the go-ahead, which the wait reads as a bare yes — step()'s waitYes)
+  if (input.waitYes) return false;
   return true;
 }
 /** to-brain 053 B3 — director34 c4-ch01-t02 offtopic 10 to 30 (one step seven times), c5-t02 steering 6 to 20 (one follow-up card eight turns,
@@ -4274,8 +4277,11 @@ export function step(prev, input) {
     childOwn = { text: input0.text, cls: input0.cls };
     const { request: _rq, ...restW } = input.cls ?? {};
     input = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P, ...(wait.n >= 4 ? { waitCap: true } : {}) };
+  } else if (wait?.ack) {
+    // (d37, main's ruling on pr9: a run of yes words straight after the go-ahead, waitOf's ack, is the wait's turn read as said — not
+    // rewritten; the walk's yes readings read it as the bare yes it is (capCueOf: no "no answer"; a card's yesNow; yesToCheckin), as for "haan")
+    input = { ...input, waitYes: true };
   }
-  // (d37, main's ruling on pr9: a run of yes words straight after the go-ahead, waitOf's ack, is the wait's turn read as said — not rewritten)
   // (RULING-G item 2: a plain no at a comprehension check-in is read as "samajh nahi aaya" — what she says, nothing else; the child's own
   // words and cue are kept, as the wait's rewrite above keeps them)
   const noAt = !childOwn ? plainNoAtCheckin(prev, input) : null;

@@ -193,6 +193,28 @@ describe("item 18a as ruled on pr9: after the go-ahead only a bare yes is the wa
   });
 });
 
+// BRIEF-G5 item 1 (pr9): the line is not rewritten, so the walk's own yes readings must read "hmm, achha" straight after the go-ahead as they
+// read "haan" there — the cap's no-answer cue, a card's yes (its let-go), a yes at a check-in (step()'s waitYes). G5's close-out matrix
+// found the cap (offtopic c4-ch01-t02 42 told the step) and a probe found the card's let-go (after a bare haan, then the try-first).
+describe("item 18a as ruled on pr9: \"hmm, achha\" after the go-ahead goes as \"haan\" does there, read as said", async () => {
+  const runs = [];
+  for (const lead of [[], ["haan"]]) for (const x of ["haan", "ack"]) {
+    const w = await walkTo("c4-maths-ch05-t01", 1);
+    LINES.ack = ["hmm, achha", { outcome: "no_evidence" }];
+    const t = await w.play([...lead, "try", x]);
+    w.done();
+    delete LINES.ack;
+    runs.push({ lead: lead.join(","), x, last: t.at(-1) });
+  }
+  test("after the go-ahead alone, and after a bare haan then the go-ahead: what she says, the wait's count and the cap are haan's", () => {
+    for (const lead of ["", "haan"]) {
+      const [h, a] = ["haan", "ack"].map((x) => runs.find((r) => r.lead === lead && r.x === x).last);
+      assert.equal(a.text, h.text, `lead [${lead}]`); assert.equal(a.lm.waitN, h.lm.waitN, `lead [${lead}]`);
+      assert.equal(!!a.lm.heardCap, !!h.lm.heardCap); assert.equal(!!a.lm.gave, !!h.lm.gave, a.text);
+    }
+  });
+});
+
 // Item 16: a miss verdict naming the child's answer is never word for word her turn before's miss verdict (g/dry2 stuck c5-ch02-t01 40 and
 // 42: "12 sahi nahi hai." twice, the child having said 12 twice) — there the plain miss form takes its place.
 describe("item 16: the same miss sentence two turns running", async () => {
