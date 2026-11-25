@@ -199,8 +199,8 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
   // picker decides before any joint does; the go-on line was said with the worked example's simpler unsaid)
   // (to-brain 054 C6 — director36 steering 20 of c5-t01, c5-t02, c6, c6-ch07-t03: "nothing easier" said straight after a key: the card's
   // whyShort, the key's reason in other words, is the keyed ladder's last rung — said once, on the answer board, before the "nothing easier"
-  // line)
-  if (keyed) return CARD_KINDS.has(part.kind) ? [rung("whyAlt", `${part.path}.whyAlt`, part.answerBoard), ...ladderSpec(script, part), rung("whyShort", `${part.path}.whyShort`, part.answerBoard)] : [];
+  // line; a card with none has no such rung — no hole for Learning)
+  if (keyed) return CARD_KINDS.has(part.kind) ? [rung("whyAlt", `${part.path}.whyAlt`, part.answerBoard), ...ladderSpec(script, part), rung("whyShort", `${part.path}.whyShort`, part.answerBoard)].filter((r) => r.field !== "whyShort" || r.present) : [];
   switch (part.kind) {
     case "point": case "checkin": rungs = [rung("pointAlt", `${part.point}.pointAlt`, part.board), rung("simpler", `${part.point}.simpler`, part.board)]; break;
     case "card": {
