@@ -4156,15 +4156,14 @@ export function step(prev, input) {
   if (heard) prev = { ...prev, qHeard: heard };
   // (to-brain 054 B3: wait three and after at one question is a turn with no answer — help as for a give-up, ending on the question, a
   // hearing; where the question has been heard four times it is the cap as built (heardCap: the key with its reason, or the step told).
-  // Read as a give-up, as heardCap reads a step's cap; the record keeps the child's own words. Where help has nothing left and the cap is
-  // not due, the turn is not read as a give-up — that would key the card or tell the step before the fifth hearing (gated stepToldEarly
-  // exempts the cap's turn only): the question is said again, a hearing, and the next wait is the cap)
+  // Read as a give-up, as heardCap reads a step's cap; the record keeps the child's own words. (Main's second ruling on cause B, item 2:
+  // wait three and after IS a give-up, with nothing held back — where help has nothing left unsaid it gets what a give-up gets there, the
+  // told step or the key with its reason; the question is never said again in its place: a child who has said "haan" four times is not
+  // about to answer, and the same re-ask twice in three turns is the nagging B.7 warns of. Gated stepToldEarly allows that told step)
   const wait = waitOf(prev, input);
   if (wait && wait.n >= 3) {
     const { request: _rq, ...restW } = input.cls ?? {};
-    const gaveUp = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P };
-    const d = (heard?.[wait.P] ?? 0) >= 4 ? null : helpDecision(prev, gaveUp, "give_up", saidNowOf(prev));
-    if ((heard?.[wait.P] ?? 0) >= 4 || (d?.rung?.text && d.card !== "close")) input = gaveUp;
+    input = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P };
   }
   const greetAgain = !recordedWalk(input) && !!prev?.lastMove?.greetHelp && input?.event === "turn" && !input.branch && ["clarify", "give_up", "hindi"].includes(columnName(input, prev)) && !input.cls?.flags?.distress && !input.cls?.flags?.wantsToStop;
   if (greetAgain)

@@ -14,11 +14,15 @@
 //                       (her turn before was the short ask, the invitation, or an earlier turn of this same wait) the question's `reask`
 //                       alone and a help turn ending on the question are allowed (a help turn whatever form of the question it ends on: a
 //                       give-up's help at a card ends on the card's own ask, which is the card whole where the ask is the card's sentences)
+//   stepToldEarly       also allows the step told on a wait's third-or-later turn where the give-up path had nothing left unsaid (the
+//                       step's own simpler said before the turn, as help.js reads an asked step's give-up)
 import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion, questionObjectAt } from "../../server/director/question-run.js";
 import { asideTurn, helpTurn } from "./d34b-predicates.mjs";
 import { D34C_PREDICATES } from "./d34c-predicates.mjs";
 import { D30_PREDICATES } from "./d30-predicates.mjs";
 import { D35A_PREDICATES } from "./d35a-predicates.mjs";
+import { helpPart, ladderOf, sentencesOf as helpSentences, normSentence } from "../../server/director/help.js";
+import { saidIn } from "../../server/director/script.js";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const SLOT = "zzslotzz";
@@ -33,6 +37,18 @@ const prevTeacher = (L, i) => { for (let j = i - 1; j >= 0; j--) if (L.rows[j].w
 /** Whether a teacher text stands for a question without saying it (a short ask, an invitation, a pointed invitation). */
 const standsFor = (script, t) => atQuestionOf(script, t) === "?short" || endsOnYourTurn(script, t) || endsOnAnswerFirst(script, t);
 
+/** Whether teacher row j poses its question: it says a question the turn before it (a side-topic's turn passed over) neither said nor stood
+ *  for, and that turn is no wait turn — a card or step asked after a bare yes (a check-in's "haan") is where its wait starts, not one of its
+ *  turns (RULING-B2 walks: the lesson's first card, asked on the greeting's "haan"). */
+function posesAt(L, j, script) {
+  const a = atQuestionOf(script, L.rows[j].text);
+  if (!a || a === "?short") return false;
+  let k = prevTeacher(L, j);
+  while (k >= 0 && asideTurn(L.rows[k]) && !waitCue(L.rows[k])) k = prevTeacher(L, k);
+  if (k < 0) return true;
+  const t = L.rows[k].text;
+  return !(atQuestionOf(script, t) === a || standsFor(script, t) || waitCue(L.rows[k]));
+}
 /** The wait whose turns end at row i: { P, turns } — P the question's path (the last her turns said before the wait), turns the wait's
  *  teacher rows in order (side-topic turns passed over) — or null where row i is no wait turn. */
 export function waitAt(L, i, script) {
@@ -42,7 +58,7 @@ export function waitAt(L, i, script) {
   let j = prevTeacher(L, i);
   for (; j >= 0; j = prevTeacher(L, j)) {
     const y = L.rows[j];
-    if (waitCue(y) && !seamsOf(y).some((k) => ENDS.has(k))) { turns.unshift(j); continue; }
+    if (waitCue(y) && !seamsOf(y).some((k) => ENDS.has(k)) && !posesAt(L, j, script)) { turns.unshift(j); continue; }
     if (asideTurn(y) && !waitCue(y)) continue;
     break;
   }
@@ -86,6 +102,30 @@ function saysWholeAsWritten(script, P, text) {
 /** Whether a teacher row says the question (any form the script writes for it) or help. */
 const saysOrHelps = (script, r, P) => atQuestionOf(script, r.text) === P || helpTurn(r);
 
+/** A wait turn's place in its wait (1, 2, …), or 0. A turn that ends the wait by telling the step or keying the card ends on the next
+ *  question, so waitAt does not read it: its place is one more than the wait turn before it (a side-topic's turn passed over). */
+function waitPlace(L, i, script) {
+  const w = waitAt(L, i, script);
+  if (w) return w.turns.length;
+  if (!waitCue(L.rows[i])) return 0;
+  let j = prevTeacher(L, i);
+  while (j >= 0 && asideTurn(L.rows[j]) && !waitCue(L.rows[j])) j = prevTeacher(L, j);
+  const p = j >= 0 ? waitAt(L, j, script) : null;
+  return p ? p.turns.length + 1 : 0;
+}
+/** Whether the give-up path at a told step's row had nothing left unsaid, as help.js pickHelp reads an asked step (dc-r8-director29 P3): the
+ *  step's own simpler, its first rung, said before row i (any sentence of it), or the step has none. */
+function stepHelpSpent(L, r, i, script) {
+  const part = (() => { try { return helpPart(script, String(r.stepAnswer?.beat ?? "")); } catch { return null; } })();
+  if (!part || part.kind !== "worked_step") return false;
+  const r0 = (() => { try { return ladderOf(script, part)[0]; } catch { return null; } })();
+  const t = r0?.field === "simpler" ? saidIn(r0.value, "hinglish") : null;
+  if (!t || !String(t).trim()) return true;
+  const said = new Set();
+  for (const x of L.rows.slice(0, i)) if (x.who === "teacher") for (const s of helpSentences(x.text)) { const k = normSentence(s); if (k) said.add(k); }
+  return helpSentences(t).some((s) => said.has(normSentence(s)));
+}
+
 export const D37B_PREDICATES = {
   /** B.5: three of her turns at one question after a try-first or a bare yes, none saying the question or help. Gated. */
   waitNoQuestion(L, r, i, ctx) {
@@ -119,6 +159,8 @@ export const D37B_PREDICATES = {
    *  record's heardCap) after a try-first or a bare yes. Gated, as d30's. */
   stepToldEarly(L, r, i, ctx) {
     if (r.who === "teacher" && r.heardCap && waitCue(r) && r.stepAnswer?.told) return null;
+    // (main's second ruling, item 2: wait three and after IS a give-up — where its path had nothing left unsaid, the step told)
+    if (r.who === "teacher" && waitCue(r) && r.stepAnswer?.told && waitPlace(L, i, ctx?.script) >= 3 && stepHelpSpent(L, r, i, ctx?.script)) return null;
     return D30_PREDICATES.stepToldEarly(L, r, i, ctx);
   },
   /** Main's second ruling on cause B, item 1 (053 B2 re-pinned by name): the first wait turn (her turn before said the question itself) says

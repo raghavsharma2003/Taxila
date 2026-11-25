@@ -79,12 +79,15 @@ for (const [TOPIC, which, skip] of [["c4-maths-ch05-t01", "step", 0], ["c6-maths
       assert.equal(atQuestionOf(w.script, turns[2].text), w.P, turns[2].text);
       assert.ok(!turns[2].text.endsWith(reaskFilled(w.script, w.P)), turns[2].text);
     });
-    test("no wait turn tells the step or gives the key before the fifth hearing; the cap comes by the fifth wait", () => {
-      const capAt = turns.findIndex((t) => t.lm.heardCap);
-      for (const [n, t] of turns.entries()) if (n !== capAt) assert.ok(!t.lm.gave && !t.lm.stepReply?.told, `${n}: ${t.text}`);
-      assert.ok(capAt >= 3, `cap at ${capAt}`);
-      const c = turns[capAt];
-      assert.ok(c.lm.gave || c.lm.stepReply?.told, c.text);
+    // (main's second ruling, item 2: wait three and after IS a give-up with nothing held back — help while the give-up path has any, then what a
+    // give-up gets with nothing left, the told step or the key with its reason; the cap where the fifth hearing comes first. The question is
+    // never said again bare in help's place: no wait turn from three on is the reask alone)
+    test("from wait three every turn is a give-up's: help, or the step told or the key; never the reask alone again; the wait ends by the fifth", () => {
+      const end = turns.findIndex((t) => t.lm.gave || t.lm.stepReply?.told);
+      assert.ok(end >= 3 && end <= 4, `ends at ${end}`);
+      for (const t of turns.slice(2, end)) assert.ok(t.seams.includes("help"), `${t.lm.waitN}: ${t.seams.join(">")} ${t.text}`);
+      for (const t of turns.slice(2, end + 1)) assert.ok(t.text !== reaskFilled(w.script, w.P), t.text);
+      assert.ok(turns[end].lm.heardCap || which === "step", `${end}: a card keyed before the cap — ${turns[end].text}`);
     });
   });
 }
@@ -103,6 +106,23 @@ describe("B.3: a side-topic in a wait is parked once and neither restarts nor ad
     assert.ok(turns[2].text.endsWith(reaskFilled(w.script, w.P)), turns[2].text);
     assert.equal(turns[3].lm.waitN, 3);
     assert.ok(turns[3].seams.includes("help"), turns[3].seams.join(">"));
+  });
+});
+
+// (main's second ruling, item 2: where help is spent before the wait — a give-up got the step's simpler — wait three is the give-up with
+// nothing left: the step told, not the question again)
+for (const TOPIC of ["c4-maths-ch05-t01", "c6-maths-ch07-t01"]) describe(`RULING-B2 item 2 at ${TOPIC}'s step: help spent before the wait, wait three tells the step`, async () => {
+  const w = await walkTo(TOPIC, "step");
+  const turns = await w.play(["give", "try", "haan", "haan"]);
+  w.done();
+  test("the give-up gets the step's simpler; wait one, wait two the reask; wait three the step told (no cap: the fifth hearing is not due)", () => {
+    assert.ok(turns[0].seams.includes("help"), turns[0].seams.join(">"));
+    assert.equal(turns[1].lm.waitN, 1);
+    assert.equal(turns[2].lm.waitN, 2);
+    assert.ok(turns[2].text.endsWith(reaskFilled(w.script, w.P)), turns[2].text);
+    assert.equal(turns[3].lm.waitN, 3);
+    assert.ok(turns[3].lm.stepReply?.told, turns[3].text);
+    assert.ok(!turns[3].lm.heardCap);
   });
 });
 
@@ -183,6 +203,22 @@ describe("B.4: questionThreeRunning exempts the wait's re-ask; stepToldEarly exe
     const lead = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan")];
     assert.deepEqual(flags([...lead, told({ heardCap: P })], "stepToldEarly"), []);
     assert.deepEqual(flags([...lead, told({})], "stepToldEarly"), [6]);
+  });
+  // (main's second ruling, item 2: also allowed on a wait's third-or-later turn where the give-up path had nothing left unsaid — the step's
+  // own simpler said before it; everywhere else read as before)
+  test("stepToldEarly (RULING-B2 item 2): the step told at wait three or four with its simpler said passes; with it unsaid, or at wait two, flagged", () => {
+    const told = T("Neeche wala number saare tukde ginta hai, yaani 5. Tumhari baari: plate par bache tukde poori barfi ka kaunsa fraction hain?", "yes",
+      ["workedStep", "card"], { stepAnswer: { beat: "c4-maths-ch05-t01-s1:worked:step1", right: false, told: true } });
+    const simpler = norm(ask && script.skills[0].workedExample.steps[0].simpler.hi);
+    const spent = [asked, C("pata nahi"), T(`${simpler} ${reask}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), T(prompt, "yes", ["stepAsk"]), C("haan")];
+    assert.deepEqual(flags([...spent, told], "stepToldEarly"), []);
+    // (wait four, a help turn between)
+    assert.deepEqual(flags([...spent, T(`Neeche wala number poori barfi ki baat karta hai. ${prompt}`, "yes", ["help", "stepAsk"]), C("haan"), told], "stepToldEarly"), []);
+    // (the simpler unsaid: help was left — flagged)
+    const unsaid = [asked, C("pehle main try karun?"), short, C("haan"), T(reask, "yes", ["stepAsk"]), C("haan"), T(`Kuch aur socho. ${prompt}`, "yes", ["stepAsk"]), C("haan")];
+    assert.deepEqual(flags([...unsaid, told], "stepToldEarly"), [8]);
+    // (wait two, the simpler said: no give-up yet — flagged)
+    assert.deepEqual(flags([asked, C("pata nahi"), T(`${simpler} ${reask}`, "give_up", ["help", "stepAsk"]), C("pehle main try karun?"), short, C("haan"), told], "stepToldEarly"), [6]);
   });
 });
 
