@@ -5982,7 +5982,8 @@ function replyPoint(prev, input, out) {
 export const _replyPointForTest = (prev, input, out) => replyPoint(prev, input, out);
 /** D2, the turn after her reply's point turn: a side-topic at that check-in — her park line, her said-again line, her reply — leads into the
  *  card with no joint of its own. Her point turn said "back to work" (afterAside, afterPark, afterAiLine) one turn ago; it is never said in two
- *  turns running (main's second ruling fix 3, gated goOnJointTwice, kept by the fifth ruling item 2). noReplyJoint: brain/seams.js. */
+ *  turns running (main's second ruling fix 3, gated goOnJointTwice, kept by the fifth ruling item 2). Main's sixth ruling item 7 rules it so:
+ *  the park or said-again line and the card, with NO back-to-work joint (amending the fifth ruling's item 1). noReplyJoint: brain/seams.js. */
 function afterReplyPoint(prev, input, out) {
   const s = out?.state;
   if (input?.event !== "turn" || !prev?.lastMove?.replyPoint || !s?.lastMove || out.end || s.lastMove.replyPoint) return out;
