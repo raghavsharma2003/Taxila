@@ -279,6 +279,16 @@ export const asideAgainLine = (topic, lang = "hinglish", state = null, kit = nul
   }
   return freshForm(ASIDE_AGAIN[lang === "english" ? "english" : "hinglish"], state, t);
 };
+/** to-brain 054 D3: the child answered a question of hers asking what they like in it (her turn's last question, ASKS_LIKE_Q; their next line). */
+export function likeToldBefore(state) {
+  const rs = (state?.recent ?? []).slice(0, -1);
+  for (let i = 1; i < rs.length; i++) {
+    if (rs[i].who === "teacher" || rs[i - 1].who !== "teacher" || !String(rs[i].text ?? "").trim()) continue;
+    const q = String(rs[i - 1].text ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+/).filter((x) => /[?？]\s*$/.test(x)).at(-1) ?? "";
+    if (ASKS_LIKE_Q.test(q)) return true;
+  }
+  return false;
+}
 /** v6.6 A2: how many times her honest line was said this lesson, plus this one (her recent turns). */
 const herLines = (state) => (state?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
 const honestN = (state) => 1 + [...(state?.recent ?? [])].filter((t) => t.who === "teacher" && /\b(?:main\s+ai|i'?m\s+an?\s+ai|meri\s+(?:apni\s+)?(?:koi\s+)?pasand\s+nahi|no\s+favourites)/i.test(String(t.text ?? ""))).length;
@@ -3647,7 +3657,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const closedP = once([doneApart ? d2 : null, c2]);
     first.splice(0, first.length, ...once(first));
     // v6.6 A2: asked her own taste this turn — the honest line now, ending on its one question to them (never dropped for the card's)
-    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state), herLines(state), !!toldOf(state.lastMove.tasteAsked.topic, null, state), !!state.lastMove.tasteAsked.alone) : null;
+    // (to-brain 054 D3: her first AI line asks nothing the child told — after they answered her question what they like in it, "batting sabse
+    // achhi lagti hai" to a return, the line's told form: dry offtopic c6-ch07-t01 48, returnAsksAgain)
+    const tasteN = state.lastMove?.tasteAsked?.n ?? honestN(state);
+    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, tasteN, herLines(state), !!toldOf(state.lastMove.tasteAsked.topic, null, state) || (tasteN <= 1 && likeToldBefore(state)), !!state.lastMove.tasteAsked.alone) : null;
     if (honestLine) guard.honestNow = true;
     // (with the honest line said now, no other line of hers about being an AI or her taste rides beside it)
     // (the return line itself — the honest line ends on its question to them — is never cut as a second question)

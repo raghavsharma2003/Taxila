@@ -6,11 +6,11 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-const { initLessonState, step, requeueMissedReturn } = await import("../server/director/state.js");
+const { initLessonState, step, requeueMissedReturn, _ledGoOnForTest: ledGoOn } = await import("../server/director/state.js");
 const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { findItem } = await import("../server/director/items.js");
-const { textReply, replyDeps, returnQuestion, honestTasteLine, asideAgainLine, BACK_TO_LEAD } = await import("../server/brain/say.js");
+const { textReply, replyDeps, returnQuestion, honestTasteLine, asideAgainLine, BACK_TO_LEAD, likeToldBefore } = await import("../server/brain/say.js");
 const { jointsSaid } = await import("../server/brain/turn.js");
 const { classifyFast, targetFor } = await import("../server/director/classify.js");
 const { dryReading } = await import("../evals/hybrid-side-by-side/dry-reader.mjs");
@@ -180,6 +180,33 @@ describe("the said-again line (RULING-A7 item 5): the script's own park form tha
   });
 });
 
+describe("the matrix's own rows (d/dry1, d/dry2 of round d37's builder D): the walk fixed where D's turns met causes A to C", async () => {
+  test("D1's go-on line: a plain afterKeyGoOn form not in her recent turns, and not the one the rotation says next (dry steering c4-ch05-t01 28/58, c5-t03 32/36: jointRotation)", () => {
+    const kit = kitOf("c5-maths-ch02-t03");
+    const base = { ctx: { lang: "hinglish", lessonKey: "c5-maths-ch02-t03:steering:" }, helpJointN: { afterKeyGoOn: 1 } };
+    const a = ledGoOn({ ...base, recent: [] }, { kit });
+    assert.ok(a?.text && !/koi baat nahi/i.test(a.text), a?.text);
+    const b = ledGoOn({ ...base, recent: [{ who: "teacher", text: `Sahi jawab. ${a.text}` }] }, { kit });
+    assert.ok(b?.text && b.text !== a.text, `${a.text} / ${b?.text}`);
+  });
+  test("a child who answered her question what they like in it gets the AI line's told form at the first ask (dry offtopic c6-ch07-t01 48: returnAsksAgain)", () => {
+    const recent = [{ who: "teacher", text: "Haan, bilkul theek. Chalo, cricket ke baare mein batao, tumhe woh kyun pasand hai?" }, { who: "child", text: "batting sabse achhi lagti hai" },
+      { who: "teacher", text: "Achha, toh tumhe batting pasand hai! Do ek hi size ki chocolate … Yahan tak theek hai?" }, { who: "child", text: "aapko virat pasand hai?" }];
+    assert.equal(likeToldBefore({ recent }), true);
+    assert.equal(likeToldBefore({ recent: recent.slice(2) }), false);
+    assert.doesNotMatch(honestTasteLine("Virat", "hinglish", 1, [], true), /sabse achha/);
+  });
+  const LINES = ["haan, samajh aaya", "3", "one sixth", "3", "ek bata teen", "8 gap", "1/10 wala", "2", "1/3 km", "gyarah marks lagenge", "1/4 kilometer", "samajh nahi aaya", "drawing karke samjhao", "1/10", "1/11 hai na", "Hindi mein bolo", "1/4", "after 1/5", "ruko, main khud karti hoon", "between 0 and 1/5 hai na", "1/12", "pehle mark pe 1/9 hai", "mujhe cricket pasand hai", SIXER, "8/5", "8/5", "5/8 par", "aapko virat pasand hai?", "batting", "haan"];
+  const { out } = await walkSay("c5-maths-ch02-t01", LINES);
+  test("offtopic c5-t01: the verdict's go-on, the AI line, her reply carrying the held point and its check-in, then the card — the return waits (replyPointCardNext)", () => {
+    const [v, ai, rp, next] = out.slice(-4);
+    assert.equal(v.lm.noFit, "return"); assert.deepEqual(ai.seams, ["aiQuestion"]);
+    assert.deepEqual(rp.seams.slice(-2), ["point", "checkin"]);
+    assert.deepEqual(next.seams, ["card"]); assert.ok(next.ui?.ask?.itemId);
+    assert.ok((next.state.later ?? []).some((e) => e.topic === "cricket" && e.servedAt == null), "the return still due");
+  });
+});
+
 describe("D.5 predicates, gated: each trips on a made row and passes its fixed twin", () => {
   const T = (o) => ({ who: "teacher", ...o, seams: (o.seams ?? []).map((right) => ({ right })) });
   const C = (text, intent = null) => ({ who: "child", text, ...(intent ? { intent } : {}) });
@@ -204,6 +231,10 @@ describe("D.5 predicates, gated: each trips on a made row and passes its fixed t
     const good = [C(SIXER, "aside"), park, C("haan"), ret, C("Rohit"), bye];
     assert.equal(P.shareParkUnreturned({ rows: good }, bye, 5), null);
     assert.equal(P.shareParkUnreturned({ rows: bad }, ai, 3), null, "read at the end row only");
+    // (a return D1 held for the turn after the verdict's go-on line, the child leaving on that turn: dry stuck c4-ch06-t01 66)
+    const goOn = T({ text: "Bilkul sahi: … 100 − 70 = 30 centimetre bacha. Theek hai, abhi agli baat dekhte hain.", noFit: "return", seams: ["verdict", "aside"] });
+    const left = [C(SIXER, "aside"), park, C("70 cm"), goOn, C("ab main jaati hoon, bye"), bye];
+    assert.equal(P.shareParkUnreturned({ rows: left }, bye, 5), null);
   });
   test("aiAsksTold", () => {
     const fav = T({ text: "Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?", seams: ["aiQuestion"] });
