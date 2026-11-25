@@ -114,3 +114,28 @@ describe("D2: her AI exchange does not serve a park of something the child told;
   });
 });
 
+describe("D3: the AI line never asks a favourite the child's question named; a later ask asks the first form not asked, else the line alone; \"kya kehna tha\" asks what was told", () => {
+  const first = "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein sabse achha kya lagta hai?";
+  test("a later ask with a topic named: not \"Tumhara favourite kaun hai?\" but the next form; with both asked, the honest line alone", () => {
+    assert.equal(honestTasteLine("Virat", "hinglish", 2, [first]), "Main AI hoon, meri koi pasand nahi hoti. Virat ko tum kiske saath dekhte ho?");
+    const both = [first, "Main AI hoon, meri koi pasand nahi hoti. Virat ko tum kiske saath dekhte ho?", "Meri apni pasand nahi hoti, main AI hoon. Tumne pehli baar Virat ko kab dekha tha?"];
+    assert.equal(honestTasteLine("Virat", "hinglish", 4, both), "Main AI hoon, meri koi pasand nahi hoti.");
+    for (let n = 2; n < 6; n++) assert.doesNotMatch(honestTasteLine("Virat", "hinglish", n, [first]), /favourite/i);
+    // (no topic named: the favourite form is still a question she may ask)
+    assert.match(honestTasteLine("", "hinglish", 2, [first]), /Tumhara favourite kaun hai\?$/);
+  });
+  test("the AI line's first form and its told form are unchanged (the AI line itself is never dropped)", () => {
+    assert.equal(honestTasteLine("Virat", "hinglish", 1, []), first);
+    assert.match(honestTasteLine("Virat", "hinglish", 1, [], true), /^Main AI teacher hoon, isliye meri apni koi pasand nahi hoti\. /);
+  });
+  test("\"… kya kehna tha?\" is a question about what was told: a told aside's return never asks it (staged c4-ch01-t02's own form)", async () => {
+    const { readFileSync } = await import("node:fs");
+    const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts-staged/c4-maths-ch01-t02.json", import.meta.url), "utf8"));
+    const kit = { topicId: "c4-maths-ch01-t02", __joints: { asideReturn: script.joints.asideReturn } };
+    for (const seed of [1, 2, 3, 4, 5, 6, 7]) {
+      const q = returnQuestion("cricket", "hinglish", { seed, turn: 9, later: [], recent: [] }, { said: SIXER, kit });
+      assert.doesNotMatch(q, /kya kehna tha/, `seed ${seed}`);
+    }
+  });
+});
+

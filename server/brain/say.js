@@ -133,7 +133,10 @@ export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = [], tol
   }
   if (n <= 1) return first;
   const said = (asked ?? []).map((x) => String(x ?? "").toLowerCase()).join(" | ");
-  const q = TASTE_QS[L].map((f) => f(t)).find((x) => !said.includes(x.toLowerCase().replace(/[?？]$/, "")));
+  // (to-brain 054 D3, director36 c5-t02 and c6 offtopic 28: "Tumhara favourite kaun hai?" to "aapko virat pasand hai?" — the AI line never asks a
+  // favourite the child's question named: with a topic named, the favourite form is not asked)
+  const named = !!String(topic ?? "").trim();
+  const q = TASTE_QS[L].map((f) => f(t)).filter((x, i) => !(named && i === 0)).find((x) => !said.includes(x.toLowerCase().replace(/[?？]$/, "")));
   const head = L === "english" ? (n % 2 ? "No favourites for me, I'm an AI." : "I'm an AI, so no favourites for me.") : (n % 2 ? "Meri apni pasand nahi hoti, main AI hoon." : "Main AI hoon, meri koi pasand nahi hoti.");
   return q ? `${head} ${q}` : head;
 }
@@ -161,7 +164,7 @@ export const rotated = (xs, n) => (Array.isArray(xs) && xs.length ? [...xs.slice
 export const jointsAt = (kit, kind, lang, state, slots = {}) => rotated(jointOf(kit, kind, lang, slots), jointCount(state, kind));
 /** to-brain 049 B6.3, main's ruling of 2026-11-23: a return (or the honest line's question) that asks what the child likes in it or asks them to
  *  tell about it — the questions an aside that named its thing has already answered (evals d33-predicates returnAsksAgain's LIKE_Q / TELL_Q). */
-const ASKS_TOLD = /(?:sabse (?:achha|achhi|mazedaar|pasand)|kyun pasand|kya cheez|kya-kya hota|aur kya bataoge|kuch aur bataoge|thoda aur batao|kya bata rahe the|kya batana chahoge|baare mein batao|favou?rite|like most|most fun|tell me (?:more )?about)/i;
+const ASKS_TOLD = /(?:sabse (?:achha|achhi|mazedaar|pasand)|kyun pasand|kya cheez|kya-kya hota|aur kya bataoge|kuch aur bataoge|thoda aur batao|kya bata rahe the|kya batana chahoge|kya kehna tha|baare mein batao|favou?rite|like most|most fun|tell me (?:more )?about)/i;
 /** The lines the child said before the one now (her recent turns' other side, and the parked asides' own words), lower-cased. */
 function childLinesBefore(state, now = null) {
   const xs = [...(state?.recent ?? []).filter((t) => t.who && t.who !== "teacher").map((t) => t.text), ...(state?.later ?? []).map((e) => e.said)]
