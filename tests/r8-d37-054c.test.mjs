@@ -170,30 +170,6 @@ describe("C5 undone (RULING-C3 item 1): at a follow-up card help is its simpler,
   });
 });
 
-describe("C6: at a keyed card's check-in, a give-up or clarify with nothing unsaid gets the card's whyShort, then as built", () => {
-  const script = scriptOf("c5-maths-ch02-t01"), sk = script.skills[0], k = sk.remediation.findIndex((r) => r.then?.whyShort), then = sk.remediation[k].then;
-  const part = `${sk.skillId}:rem:${k}:then`;
-  const allSaid = [then.whyAlt?.hi, then.simpler?.hi, then.why?.hi].filter(Boolean).reduce((s, t, n) => addSaid(s, t, n), []);
-  test("whyShort first, on the answer board, the check-in kept (card wait)", () => {
-    for (const request of ["give_up", "clarify"]) {
-      const d = pickHelp({ script, part, keyed: true, request, said: allSaid });
-      assert.equal(d.rung?.field, "whyShort", JSON.stringify(d)); assert.equal(d.card, "wait");
-      assert.ok(nk(d.rung.text).includes(nk(then.whyShort.hi)));
-    }
-  });
-  test("with whyShort said, the \"nothing easier\" line as built", () => {
-    const d = pickHelp({ script, part, keyed: true, request: "give_up", said: addSaid(allSaid, then.whyShort.hi, 9) });
-    assert.equal(d.rung, null); assert.equal(d.joint?.kind, "helpSpent");
-  });
-  test("spentWithShortUnsaid (gated) trips on the line after a key with whyShort unsaid, not once it is said", () => {
-    assert.ok(!PENDING.has("spentWithShortUnsaid"));
-    const key = T(`Nahi. Is sawaal ka jawab ${then.key} hai. Yahan tak saaf hai?`, part, "misconception", ["missVerdict", "key", "checkin"]);
-    const spent = T("Koi baat nahi, isse aasaan shabd abhi mere paas nahi hain. Ab agla sawaal.", part, "give_up", ["helpSpent", "card"]);
-    assert.deepEqual(flagsOf([key, C("pata nahi"), spent], "spentWithShortUnsaid", script), [2]);
-    assert.deepEqual(flagsOf([key, C("pata nahi"), T(`${then.whyShort.hi}. Ab samjhe?`, part, "give_up", ["help", "checkin"]), C("pata nahi"), spent], "spentWithShortUnsaid", script), []);
-  });
-});
-
 // Main's second ruling on cause C (RULING-C2), item 1 — step 0, the park after a short ask: a side-topic raised where the question has been
 // heard once since it was posed and her last turn said no question gets the park, its joint and the question's reask (its second hearing);
 // with two or more hearings the park ends on 049 B4's pointed invitation, as built. The four readings re-pinned by main, each both sides.

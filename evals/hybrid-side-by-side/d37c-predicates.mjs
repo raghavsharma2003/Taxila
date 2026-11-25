@@ -1,5 +1,6 @@
 // to-brain 054 C (docs/patches/to-brain/054-director36-the-turns-shape-walk-only.md, C.5; main's rulings on C3, C5, C6): keys, reasons and
-// help as said. Registered in dry-predicates.mjs after d37b; all six gated (tests/r8-d37-054c.test.mjs pins each on made rows).
+// help as said. Registered in dry-predicates.mjs after d37b; gated but the pending ones named in dry-predicates.mjs's PENDING
+// (tests/r8-d37-054c.test.mjs pins each on made rows).
 //   ownKeyNoReason      C1: an own step's key after a miss or a request (the worked example's your-step, her turn's cell at it, not a right
 //                       answer) that does not say the step's own `why`, or says "Toh poora jawab" after it.
 //   keyValueTwice       C2: a key whose value (every number of the card's `key`) is said twice in the key and its reason.
@@ -15,7 +16,7 @@
 //   questionFiveTimes   (053 B3, gated, as d35a's) allows a fifth hearing only on a turn whose body is the card's named wrong answer's reason
 //                       (its marked whyAlt, or that answer's wrongAnswers why) said for the first time at that card, the child's line before
 //                       it being that answer; reads as before everywhere else.
-//   spentWithShortUnsaid C6: the "nothing easier" line (seam helpSpent) at a keyed card whose `whyShort` she has not said.
+// (spentWithShortUnsaid, C6's, is removed: main's third ruling on cause C, item 2 — C6 is taken out, its premise was wrong)
 import { helpPart, at, normSentence, sentencesOf, TEACHBACK_PART } from "../../server/director/help.js";
 import { saidIn } from "../../server/director/script.js";
 import { wrongList } from "../../server/grading/script-answer.js";
@@ -122,19 +123,5 @@ export const D37C_PREDICATES = {
     const rem = sk?.remediation?.[Number(m[2])];
     const w = [hi(rem?.sayAlt), hi(rem?.simpler)].filter(Boolean).find((x) => saysAny(r.text, x));
     return w ? `help at a follow-up card in its remediation's wording ("${w.slice(0, 50)}…")` : null;
-  },
-  spentWithShortUnsaid(L, r, i, ctx) {
-    if (r.who !== "teacher" || !seamsOf(r).includes("helpSpent")) return null;
-    // (the card keyed: her turn's cell, else the last key row before it)
-    let part = partOf(r);
-    let n = nodeOfPart(ctx?.script, part)?.node;
-    if (!n?.whyShort) for (let j = i - 1; j >= 0; j--) if (keyRow(L.rows[j])) { part = partOf(L.rows[j]); n = nodeOfPart(ctx?.script, part)?.node; break; }
-    const ws = hi(n?.whyShort);
-    if (!ws) return null;
-    let k = -1;
-    for (let j = i - 1; j >= 0; j--) if (keyRow(L.rows[j]) && partOf(L.rows[j]) === part) { k = j; break; }
-    if (k < 0) return null;
-    const said = [...before(L, i), String(r.text ?? "")].some((t) => saysAny(t, ws));
-    return said ? null : `"nothing easier" at a keyed card with its whyShort unsaid ("${ws.slice(0, 50)}…")`;
   },
 };
