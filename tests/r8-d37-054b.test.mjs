@@ -52,7 +52,7 @@ async function walkTo(TOPIC, which, skip = 0) {
   const P = atQuestionOf(script, q);
   const play = async (seq) => { const out = []; for (const k of seq) out.push(await turn(...LINES[k])); return out; };
   const done = () => { replyDeps.chat = chat0; replyDeps.chatStream = stream0; };
-  return { P, script, play, done, kit };
+  return { P, script, play, done, kit, now: () => r.state };
 }
 const reaskFilled = (script, P) => norm(fillFriend(reaskOf(script, P), "Riya"));
 
@@ -500,5 +500,40 @@ describe("sixth ruling, item 2: a wait turn read as a give-up keeps the child's 
     assert.equal(ev?.said, LONG.slice(0, 80).trim());
     // (the record's cell: the cue yes)
     assert.equal(lm.cell?.column, "yes");
+  });
+});
+
+// Main's sixth ruling on cause B, item 3: a "haan" at a yes-or-no question is an answer. Found with the REAL read — classify.js classifyFast,
+// the code that turns the child's text and the open item into the outcome before any model (production's classify() returns its result
+// as is; the dry matrix harness reads the same way): at a card keyed yes or no, a bare yes or no is graded in code against the key and the
+// listed wrong answers (the script-card reader's `yesNoKey`; "haan" = "yes" in its one normal form), so it reaches the walk as an answer,
+// never as a bare yes, and no wait starts there. Pinned at c4-maths-ch05-t01's second card ("…Kya woh pizza ka ek-tihaai hai, haan ya
+// nahi?", key "No", listed wrong answer "Yes").
+describe("sixth ruling, item 3: at a yes-or-no card, haan is graded by the real read, and no wait starts on it", async () => {
+  const { classifyFast, targetFor } = await import("../server/director/classify.js");
+  const w = await walkTo("c4-maths-ch05-t01", "card", 1);
+  const s0 = w.now();
+  const item = findItem(s0, w.kit, s0.activeItemId);
+  const target = targetFor(s0, w.kit, item);
+  const read = (t) => classifyFast({ target, childText: t, lang: "hinglish", classLevel: 4, typed: true }).result;
+  test("the card is the yes-or-no card", () => {
+    assert.match(String(item?.prompt_hi ?? ""), /haan ya nahi\?$/);
+    assert.equal(String(target.key).toLowerCase(), "no");
+  });
+  test("haan, yes, haan ji, mujhe lagta hai haan: the listed wrong answer, in code; nahi and no: right, in code", () => {
+    for (const t of ["haan", "yes", "haan ji", "mujhe lagta hai haan"]) {
+      const r = read(t);
+      assert.equal(r?.outcome, "misconception", t); assert.equal(r?.source, "script_key", t); assert.ok(r?.wrongListed, t);
+    }
+    for (const t of ["nahi", "no"]) assert.equal(read(t)?.outcome, "correct", t);
+  });
+  // (walked here, while the reply stub is in place: every line of the turn is the script's or code's)
+  // (its own line key: the other walks of this file share LINES)
+  LINES.haanGraded = ["haan", read("haan")];
+  const turns = await w.play(["haanGraded"]).finally(() => w.done());
+  test("walked with that reading, haan there is a miss — never a wait turn, never the short ask", () => {
+    assert.equal(turns[0].lm.waitN, undefined);
+    assert.equal(turns[0].lm.cell?.column, "misconception");
+    assert.ok(!endsOnShortAsk(w.script, turns[0].text), turns[0].text);
   });
 });
