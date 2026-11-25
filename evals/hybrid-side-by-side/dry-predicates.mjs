@@ -1065,6 +1065,10 @@ Object.assign(PREDICATES, D37G_PREDICATES);
 // (d37 builder H, RULING-H item 15: every reply to a try-first is the go-ahead alone — d37h-predicates.mjs, gated)
 import { D37H_PREDICATES, goAheadAloneAt } from "./d37h-predicates.mjs";
 Object.assign(PREDICATES, D37H_PREDICATES);
+// (d38 builder A, to-brain 055 C1 and C3: the cap — no told answer while a wording of the part is unsaid, no fifth hearing on her own —
+// d38a-predicates.mjs, both gated)
+import { D38A_PREDICATES } from "./d38a-predicates.mjs";
+Object.assign(PREDICATES, D38A_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {
