@@ -242,7 +242,10 @@ describe("r7-brain-v68.test.mjs", () => {
       const { out, last } = await at("steering", "c6", 10);
       const h = last.state.lastMove.help;
       assert.equal(h?.part, "c6-maths-ch06-t01-s1:rem:0:then", JSON.stringify(h));
-      if (last.state.lastMove.gave) { assert.equal(h.card, "close"); assert.match(out.reply, /Is sawaal ka (?:sahi )?jawab/); }
+      // (to-brain 054 C2, RULING-C2 item 2: where the key's why names every number of its value the key is the why alone — "P se wapas P
+      // tak paanchon bhujayein: 8 + 5 + 7 + 6 + 3 = 29 m." — so the key is read as either form)
+      const whyAlone = (g) => { const w = norm(said(g?.why ?? "")).replace(/[.!?]+$/, ""); return !!w && norm(out.reply).toLowerCase().includes(w.toLowerCase()); };
+      if (last.state.lastMove.gave) { assert.equal(h.card, "close"); assert.ok(/Is sawaal ka (?:sahi )?jawab/.test(out.reply) || whyAlone(last.state.lastMove.gave), out.reply); }
       else { assert.equal(h.card, "keep"); assert.doesNotMatch(out.reply, /Is sawaal ka (?:sahi )?jawab/); }
     });
     for (const topic of ["c6", "c5-t01"]) test(`steady ${topic} 38: a closed card (answered, its why pending) is never reopened by a Hindi request`, async () => {
