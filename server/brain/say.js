@@ -806,8 +806,16 @@ export function notRightLead(said, lang = "hinglish", state = null) {
   // echo's forms with three fixed words at most there: "40 cm nahi, yeh jawab theek nahi baitha." — the form before d31's "Nahi, X theek nahi." — ran stuck c6 38 to 63)
   const tight = state?.lastMove?.scriptBeat?.kind === "remediation" && !!state?.lastMove?.rendered?.length;
   const echo = (fs) => (tight ? fs.filter((f) => String(f("\u0000")).split(/\s+/).filter((w) => w && w !== "\u0000").length <= 3) : fs);
-  if (lang === "english") return short ? freshForm(echo(ECHO_NOT_RIGHT.english), state, short) : freshOf(FRAMES.notRight.english, state);
-  return short ? freshForm(echo(ECHO_NOT_RIGHT.hinglish), state, short) : freshOf(FRAMES.notRight.hinglish, state);
+  const L = lang === "english" ? "english" : "hinglish";
+  if (!short) return freshOf(FRAMES.notRight[L], state);
+  const named = freshForm(echo(ECHO_NOT_RIGHT[L]), state, short);
+  // (d37 RULING-H item 16 — g/dry2 stuck c5-ch02-t01 40 and 42, "12 sahi nahi hai." two turns running after "12" twice: with every echo form's
+  // fixed words in her last four turns, freshForm fell back to the first form, her turn before's verdict word for word. A verdict naming the
+  // answer is never her turn before's miss verdict again: there the plain miss form takes its place — "Nahi, yeh jawab nahi hai." and its like)
+  const k = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+  const prevT = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").at(-1)?.text ?? "";
+  const prevFirst = String(prevT).replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+/)[0] ?? "";
+  return prevFirst && k(prevFirst) === k(named) ? freshOf(FRAMES.notRight[L], state) : named;
 }
 /** Her line with the negation of their answer taken out ("Riya, 4 nahi—rectangle mein…" → "Riya, rectangle mein…"). */
 export function withoutNegation(text, childText) {

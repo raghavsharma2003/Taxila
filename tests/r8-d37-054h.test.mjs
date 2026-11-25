@@ -132,3 +132,19 @@ describe("item 18a: an acknowledgement straight after the go-ahead is wait one (
   });
 });
 
+// Item 16: a miss verdict naming the child's answer is never word for word her turn before's miss verdict (g/dry2 stuck c5-ch02-t01 40 and
+// 42: "12 sahi nahi hai." twice, the child having said 12 twice) — there the plain miss form takes its place.
+describe("item 16: the same miss sentence two turns running", async () => {
+  const { notRightLead, FRAMES } = await import("../server/brain/say.js");
+  const st = (texts) => ({ recent: texts.map((text) => ({ who: "teacher", text })), lastMove: { scriptBeat: { kind: "remediation" }, rendered: ["x"] } });
+  test("with every echo form's words said lately, the naming verdict her turn before said is not said again: the plain miss form", () => {
+    const her = ["12 se baat nahi bani. Ribbon par gaps aur chalk ke marks dono gino.", "Yeh theek nahi hai, phir dekho.", "12 sahi nahi hai. Do deewaron ke beech rassi socho."];
+    const v = notRightLead("12", "hinglish", st(her));
+    assert.notEqual(v, "12 sahi nahi hai.");
+    assert.ok(FRAMES.notRight.hinglish.includes(v), v);
+  });
+  test("where it differs from her turn before's verdict, the verdict still names the answer (as built)", () => {
+    assert.equal(notRightLead("12", "hinglish", st(["12 se baat nahi bani. Ribbon par gaps.", "Yeh theek nahi hai, phir dekho."])), "12 sahi nahi hai.");
+    assert.match(notRightLead("12", "hinglish", st(["Kitne gaps hain?"])), /12/);
+  });
+});
