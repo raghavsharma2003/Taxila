@@ -148,3 +148,37 @@ describe("item 16: the same miss sentence two turns running", async () => {
     assert.match(notRightLead("12", "hinglish", st(["Kitne gaps hain?"])), /12/);
   });
 });
+
+// Item 17 (main, after G3's run of tests/r8-main-034.test.mjs): (b) the fixture walk's steady c4-ch05-t01 118 said the key "Sonu" twice —
+// "Is sawaal ka sahi jawab: sonu ka, kyunki … Sonu ki roti …": its Hindi form "sonu ka" is not in the why word for word, but the why names
+// the key's own value, so (cause C2) the told answer is the why alone. The told key carries the card's key as written (gave.key).
+describe("item 17b: a told key whose why names the key as written is the why alone", async () => {
+  const { whyNamesKey } = await import("../server/director/help.js");
+  const why = "Meena ka tukda 1/2, jo 1/3 se bada; Sonu ki roti 9 tukdon mein kati, toh uska 1/9 tukda 1/3 se chhota";
+  test("the cause: the Hindi form is not named by the why, the key as written is", () => {
+    assert.equal(whyNamesKey("sonu ka", why), false);
+    assert.equal(whyNamesKey("Sonu", why), true);
+    assert.equal(whyNamesKey("Meena", "Sonu ki roti 9 tukdon mein kati"), false);
+  });
+  test("the fixture walk (r8-main-034's): the told key at that card says Sonu once, and keyValueTwice reads 0", { timeout: 150_000 }, async () => {
+    const { execFileSync } = await import("node:child_process");
+    const { mkdtempSync, readFileSync, rmSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    const ROOT = new URL("..", import.meta.url).pathname, FX = join(ROOT, "tests/fixtures/scripts-point-card-one-turn");
+    const out = mkdtempSync(join(tmpdir(), "taxila-054h-"));
+    try {
+      const env = { ...process.env, DATABASE_URL: "", DATABASE_URL_DIRECT: "", TAXILA_DB: "", TAXILA_R7_SCRIPT_DIR: FX };
+      delete env.NODE_TEST_CONTEXT;
+      execFileSync(process.execPath, [join(ROOT, "evals/hybrid-side-by-side.mjs"), "--matrix", "--director-only", "--reactive", "--topics", "c4-maths-ch05-t01", "--dry", "--out", out],
+        { cwd: ROOT, env, stdio: ["ignore", "ignore", "pipe"], timeout: 140_000, maxBuffer: 64 * 1024 * 1024 });
+      const script = JSON.parse(readFileSync(join(FX, "c4-maths-ch05-t01.json"), "utf8"));
+      const rows = JSON.parse(readFileSync(join(out, "steady-c4-ch05-t01.json"), "utf8")).director;
+      const keyed = rows.filter((r) => r.who === "teacher" && /Sonu ki roti 9 tukdon/.test(r.text ?? "") && (r.seams ?? []).some((x) => x.right === "key"));
+      assert.ok(keyed.length >= 1);
+      for (const r of keyed) assert.equal((r.text.match(/(?<![\p{L}])sonu(?![\p{L}])/giu) ?? []).length, 1, r.text);
+      assert.deepEqual(lessonFlags({ rows, script }).filter((x) => x.predicate === "keyValueTwice"), []);
+    } finally { rmSync(out, { recursive: true, force: true }); }
+  });
+});

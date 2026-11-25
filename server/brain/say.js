@@ -3057,7 +3057,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (to-brain 054 C2 — director36 c4 steady 134, c5-t01 steering 18, c5-t02 steady 102, steering 18: where the key's why names every number
     // of its value, the key is the why alone, its own sentence, as a yes-or-no key's is: "Yeh sadak 6 barabar gaps mein kati hai, … toh 1/6
     // kilometre par." — the value said once)
-    const whyKey = gaveA && !yesNo(gaveA) && gw && whyNamesKey(gaveA, state.lastMove?.gave?.why) ? (() => { const w = joinable(spokenMarks(String(state.lastMove.gave.why), lang)).replace(/[.!?।]+$/, ""); return w ? `${w.charAt(0).toUpperCase()}${w.slice(1)}.` : null; })() : null;
+    // (d37 item 17b — the fixture walk of r8-main-034, steady c4-ch05-t01 118: "Is sawaal ka sahi jawab: sonu ka, kyunki … Sonu ki roti …" — the
+    // key "Sonu" said in its Hindi form "sonu ka", which the why does not say word for word, while the why names the key's own value: the
+    // why is read against the card's key as written too)
+    const keyRaw = state.lastMove?.gave?.key != null ? String(state.lastMove.gave.key) : null;
+    const whyKey = gaveA && !yesNo(gaveA) && gw && (whyNamesKey(gaveA, state.lastMove?.gave?.why) || (!!keyRaw && !yesNo(keyRaw) && whyNamesKey(keyRaw, state.lastMove?.gave?.why))) ? (() => { const w = joinable(spokenMarks(String(state.lastMove.gave.why), lang)).replace(/[.!?।]+$/, ""); return w ? `${w.charAt(0).toUpperCase()}${w.slice(1)}.` : null; })() : null;
     if (whyKey) guard.whyKey = whyKey;
     const ynSentence = ynFact ?? helpYn ?? whyKey ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
     const gaveS = gaveA ? ynSentence ?? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;

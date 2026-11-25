@@ -3394,9 +3394,9 @@ function capPlan(s, input, p) {
   s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
   return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave",
     // (S3: the answer and its why are said in code, brain/say.js: director2 shipped "assert" turns that never said it)
-    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: (scriptCardOf(item) ? gaveWhyOf(kit, item, s.ctx.lang) : whyOf(kit, item, s.ctx.lang)) ?? "" } } : {}),
+    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: (scriptCardOf(item) ? gaveWhyOf(kit, item, s.ctx.lang) : whyOf(kit, item, s.ctx.lang)) ?? "", key: item?.answer ?? null } } : {}),
     // v3 K2: a script card that is let go is never left unanswered: its key is said in code (c4 director5: "2/3" never said)
-    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: gaveWhyOf(kit, item, s.ctx.lang) ?? "" } } : {}) };
+    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: gaveWhyOf(kit, item, s.ctx.lang) ?? "", key: item?.answer ?? null } } : {}) };
 }
 const scriptCardOf = (item) => !!(item?.scriptAsk || item?.scriptCheck || item?.scriptThen);
 const isScriptCard = scriptCardOf;
@@ -5072,7 +5072,7 @@ function step0(prev, input) {
     const closedByVerdict = !!prev.pendingWhy && prev.pendingWhy === was;
     if (was && !closedByVerdict && !move.gave && move.kind !== "safeguard" && move.scriptBeat?.kind !== "remediation" && s.skipped.includes(was) && !(prev.skipped ?? []).includes(was)) {
       const left = findItem(prev, input.kit, was);
-      if (left) move.gave = { answer: keyInLang(left, s.ctx.lang), why: gaveWhyOf(input.kit, left, s.ctx.lang) ?? "" };
+      if (left) move.gave = { answer: keyInLang(left, s.ctx.lang), why: gaveWhyOf(input.kit, left, s.ctx.lang) ?? "", key: left?.answer ?? null };
     }
   }
   // v4 W6: a parked topic served this turn rides on the move, so the reply keeps (or says) its return
