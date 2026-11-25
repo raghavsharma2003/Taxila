@@ -166,3 +166,25 @@ describe("item 9 (pr6 section 3): closing item 5's kept-split fallback only wher
     assert.notDeepEqual(pages(r)[0], [0, "wholes@1"]);
   });
 });
+
+// G2: items 12 (evals only), 4, 5, 6, 7, 8, 10 and 11 (evals only).
+describe("item 12 (main's ruling on G1's clash): returnAsksAgain's fallback counts an earlier answer only to a liking question of the same subject", async () => {
+  const { D33_PREDICATES, sameLikeSubject } = await import("../evals/hybrid-side-by-side/d33-predicates.mjs");
+  const T = (text) => ({ who: "teacher", text });
+  const C = (text, intent = "aside_reply") => ({ who: "child", text, intent });
+  const ai = (q) => T(`Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. ${q}`);
+  const lesson = (q2, q1 = "Haan, sahi hai: 15/20. Chalo, cricket ke baare mein batao, tumhe woh kyun pasand hai?") => {
+    const rows = [C("mujhe cricket pasand hai", "aside"), T(q1), C("fielding karna, catch pakadna"), T("Achha, toh tumhe catch pakadna pasand hai! Ab tak samajh aaya?"), C("aapko virat pasand hai?", "aside"), ai(q2)];
+    return D33_PREDICATES.returnAsksAgain({ rows }, rows[5], 5);
+  };
+  test("g/dry1 offtopic c6-ch07-t03 48: the child raised Virat, she asks about Virat after an answer about cricket: passes", () => {
+    assert.equal(lesson("Tumhe Virat ke baare mein sabse achha kya lagta hai?"), null);
+    assert.equal(sameLikeSubject("Chalo, cricket ke baare mein batao, tumhe woh kyun pasand hai?", "Tumhe Virat ke baare mein sabse achha kya lagta hai?"), false);
+  });
+  test("the other side: the same subject asked twice still flags", () => {
+    assert.match(lesson("Tumhe cricket mein sabse achha kya lagta hai?"), /after they said "fielding karna/);
+  });
+  test("the other side: a liking question that names no subject, after an answered liking question, still flags", () => {
+    assert.match(lesson("Tumhe usmein sabse achha kya lagta hai?"), /after they said "fielding karna/);
+  });
+});

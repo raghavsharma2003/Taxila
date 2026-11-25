@@ -31,6 +31,18 @@ const LIKE_Q = /(?:sabse (?:achha|achhi|mazedaar|pasand)|kyun pasand|kya cheez|k
 /** A question asking them to tell (more) about it (answered by the aside said on the turn just before). */
 const TELL_Q = /(?:aur kya bataoge|kuch aur bataoge|thoda aur batao|kya bata rahe the|kya batana chahoge|baare mein batao)/i;
 const lastQ = (t) => (String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+/).filter((x) => /\?\s*$/.test(x)).at(-1) ?? "");
+/** Words of a liking question that are its frame, not its subject. */
+const LIKE_FRAME = new Set("chalo achha mazedaar laga lagi lage cheez hota hoti hote favourite favorite like most best enjoy what about tell".split(" "));
+/** The subject words of a question: the topic or name words it asks about (d37 RULING-G item 12). */
+const subjectOf = (q) => new Set(wordsOf(q).filter((w) => !ASIDE_STOP.has(w) && !LIKE_FRAME.has(w) && w.length > 2));
+/** d37 RULING-G item 12: an earlier answer to a liking question is this question's answer only where the two questions name the same
+ *  subject, or this question names none ("Tumhe usmein sabse achha kya lagta hai?"). */
+export const sameLikeSubject = (earlierQ, q) => {
+  const s = subjectOf(q);
+  if (!s.size) return true;
+  const e = subjectOf(earlierQ);
+  return [...s].some((w) => e.has(w));
+};
 
 export const D33_PREDICATES = {
   /** B6: "Dekho," at most three times a lesson, and never within four of her turns (director32: 8 to 10 in every steady lesson). Gated. */
@@ -76,14 +88,15 @@ export const D33_PREDICATES = {
     // (the topic: a word of the question the child said in an earlier line)
     const qw = new Set(wordsOf(q).filter((w) => !ASIDE_STOP.has(w) && w.length > 2));
     const about = kids.filter((x) => wordsOf(x.text).some((w) => qw.has(w)));
-    if (!about.length) return null;
+    // (d37 RULING-G item 12: a liking question that names no subject is read against every earlier answer to a liking question)
+    if (!about.length && !(LIKE_Q.test(q) && !subjectOf(q).size)) return null;
     const topic = new Set(wordsOf(q).filter((w) => about.some((x) => wordsOf(x.text).includes(w))));
     const prevKid = kids.at(-1);
     if (TELL_Q.test(q) && prevKid && about.includes(prevKid) && wordsOf(prevKid.text).some((w) => !ASIDE_STOP.has(w) && !topic.has(w)))
       return `asks them to tell about it straight after they told it: "${q.slice(0, 50)}"`;
     if (LIKE_Q.test(q)) {
       const named = about.find((x) => wordsOf(x.text).some((w) => !ASIDE_STOP.has(w) && !topic.has(w)))
-        ?? kids.find((x) => LIKE_Q.test(lastQ((L.rows ?? [])[x.n - 1]?.text)) && wordsOf(x.text).length);
+        ?? kids.find((x) => { const eq = lastQ((L.rows ?? [])[x.n - 1]?.text); return LIKE_Q.test(eq) && sameLikeSubject(eq, q) && wordsOf(x.text).length; });
       if (named) return `asks what they like in it after they said "${String(named.text).slice(0, 40)}"`;
     }
     return null;
