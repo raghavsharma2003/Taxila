@@ -240,3 +240,35 @@ describe("item 8: the reply's {word} is never an auxiliary or other function wor
     assert.ok(!/hoon!/i.test(line2) && !/\{word\}/.test(line2), line2);
   });
 });
+
+describe("item 9: a key's value said as a Hindi number word (C2 whyNamesKey and keyValueTwice read them)", async () => {
+  const { whyNamesKey, numbersSaid, keyLine } = await import("../server/director/help.js");
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const { readFileSync } = await import("node:fs");
+  const WHY98 = "2 metre = 200 centimetre; har ribbon 50, yaani aadha metre: ek metre mein do, toh chaar ribbon";
+  test("numbersSaid: a number word for one of the key's numbers; 'ek' never; 'do' not after a verb", () => {
+    assert.deepEqual(numbersSaid(WHY98, ["4"]), ["2", "200", "50", "4"]);
+    assert.deepEqual(numbersSaid("ek hissa aur ek aur", ["1"]), []);
+    assert.deepEqual(numbersSaid("isko kar do, phir do hisse", ["2"]), ["2"]);
+    assert.deepEqual(numbersSaid("aadha metre", ["1/2"]), ["1/2"]);
+    assert.deepEqual(numbersSaid("teen aur chaar", []), []);
+  });
+  test("whyNamesKey (C2): f/dry1 steady c4-ch06-t01 98's why says 'chaar' — the told answer is the why alone; a why with no such word is not", () => {
+    assert.equal(whyNamesKey("4", WHY98), true);
+    assert.equal(keyLine({ key: "4", why: { hi: WHY98 } }).text, `${WHY98.charAt(0).toUpperCase()}${WHY98.slice(1)}.`);
+    assert.equal(whyNamesKey("4", "2 metre = 200 centimetre; har ribbon 50"), false);
+    assert.match(keyLine({ key: "4", why: { hi: "har ribbon 50" } }).text, /^Iska jawab hai 4, kyunki/);
+    // (a key told in its Hindi words — keyInLang's "baarah mein se das" for "10 hisse", f/dry1 offtopic c6-ch07-t03 30)
+    assert.equal(whyNamesKey("baarah mein se das", "6 ke 12 hisse karne par har hissa 2 mein kata, toh 5 hisse 10 chhote hisson ke barabar"), true);
+    assert.equal(whyNamesKey("baarah mein se das", "har hissa 2 mein kata"), false);
+  });
+  test("keyValueTwice / teachbackKeyValueTwice: the value said as a digit and again as its word is said twice; the why alone once", () => {
+    const st = JSON.parse(readFileSync(new URL("../data/lesson-scripts-staged/c6-maths-ch07-t03.json", import.meta.url), "utf8"));
+    const c1 = st.skills[0].checks[0], part = `${st.skills[0].skillId}:check:c1`;
+    const why = c1.why.hi;
+    const row = (text) => ({ who: "teacher", text, cell: { part, column: "misconception" }, seams: [{ left: "start", right: "missVerdict" }, { left: "missVerdict", right: "key" }, { left: "key", right: "checkin" }] });
+    const fl = (r) => lessonFlags({ rows: [{ who: "child", text: "5" }, r], script: st }).filter((f) => f.predicate === "keyValueTwice").map((f) => f.row);
+    assert.deepEqual(fl(row(`Nahi, yeh theek nahi hai. Is sawaal ka sahi jawab: baarah mein se das, kyunki ${why}. Yahan tak saaf hai?`)), [1]);
+    assert.deepEqual(fl(row(`Nahi, yeh theek nahi hai. ${why.charAt(0).toUpperCase()}${why.slice(1)}. Yahan tak saaf hai?`)), []);
+  });
+});

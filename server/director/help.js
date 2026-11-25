@@ -306,9 +306,34 @@ export function goOnPlain(script, { lang = "hinglish", lessonKey = null, n = 0, 
  *  jawab 1/6 kilometre par hai, kyunki … toh 1/6 kilometre par"): whether a key's `why` names every number of its value — then the key is the
  *  why alone, its own sentence, as a yes-or-no key's is. A key with no number (a name, a word) is the why alone where the why says the key's
  *  words (correction 2 below), else said with its why as built. */
+/** d37 close item 9 (f/dry1 steady c4-ch06-t01 98: "Iska jawab hai 4, kyunki … toh chaar ribbon"): the Hindi number words read as the key's
+ *  numbers. Only a word for one of the key's own numbers is read, and only words that are counts wherever they stand in a reason: "ek" is
+ *  never read (it is the article "a" as often as one), and "do" is read only where it is no verb's "do" ("kar do", "bata do", "de do").
+ *  A fraction key reads its one word: aadha 1/2, tihaai 1/3, chauthai 1/4. */
+const HI_NUM_WORDS = { do: "2", teen: "3", chaar: "4", char: "4", paanch: "5", panch: "5", chhah: "6", chhe: "6", chah: "6", saat: "7", aath: "8", nau: "9",
+  das: "10", gyarah: "11", barah: "12", baarah: "12", terah: "13", chaudah: "14", pandrah: "15", solah: "16", satrah: "17", atharah: "18", unnees: "19", bees: "20",
+  aadha: "1/2", aadhi: "1/2", aadhe: "1/2", tihaai: "1/3", tihai: "1/3", chauthai: "1/4", chauthaai: "1/4" };
+const VERB_DO = /(?<![\p{L}])(?:kar|kardo|de|le|bata|dikha|samjha|likh|bol|chhod|rakh|hata|ruk|jaane|aane|hone)\s+$/iu;
+/** The numbers a text says: every digit number, and a Hindi number word where it says one of `want` (the key's numbers; "all": any). → [string] */
+export function numbersSaid(t, want = []) {
+  const T = String(t ?? "");
+  const out = T.match(/\d+(?:[./]\d+)?/g) ?? [];
+  const all = want === "all";
+  const W = new Set(all ? [] : want.map(String));
+  if (!all && !W.size) return out;
+  const re = /(?<![\p{L}])(\p{L}+)(?![\p{L}])/gu;
+  for (let m; (m = re.exec(T)); ) {
+    const n = HI_NUM_WORDS[m[1].toLowerCase()];
+    if (!n || (!all && !W.has(n))) continue;
+    if (m[1].toLowerCase() === "do" && VERB_DO.test(T.slice(0, m.index))) continue;
+    out.push(n);
+  }
+  return out;
+}
 export function whyNamesKey(key, why) {
   const nums = (t) => String(t ?? "").match(/\d+(?:[./]\d+)?/g) ?? [];
-  const k = nums(key), w = nums(why);
+  // (a key told in its Hindi words — keyInLang's form, "baarah mein se das" for "10 hisse" — reads its number words as its numbers too)
+  const k0 = nums(key), k = k0.length ? k0 : numbersSaid(key, "all"), w = numbersSaid(why, k);
   if (k.length) return k.every((x) => w.includes(x));
   // (main's fifth ruling on cause C, correction 2 — judge-c-t02 stuck c5-ch02-t02 46: "Is sawaal ka sahi jawab: Sana ka hissa, kyunki … isliye
   // Sana ka hissa … bada hai": a key with no number whose why says the key's own words — every word of it, in order — is the why alone too.

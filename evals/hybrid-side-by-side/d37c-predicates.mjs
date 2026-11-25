@@ -26,7 +26,7 @@
 //                       never said whole before it — where that why is not the step's own why again (the same sentence, or it cut short:
 //                       help.js sameReason). judge-c-t02: stuck c5-ch02-t02 48.
 // (spentWithShortUnsaid, C6's, is removed: main's third ruling on cause C, item 2 — C6 is taken out, its premise was wrong)
-import { helpPart, at, normSentence, sentencesOf, TEACHBACK_PART, sameReason } from "../../server/director/help.js";
+import { helpPart, at, normSentence, sentencesOf, TEACHBACK_PART, sameReason, numbersSaid } from "../../server/director/help.js";
 import { saidIn } from "../../server/director/script.js";
 import { wrongList } from "../../server/grading/script-answer.js";
 import { D35A_PREDICATES } from "./d35a-predicates.mjs";
@@ -85,10 +85,11 @@ function keyValueTwice0(L, r, i, ctx) {
   // once more after the script's own sentence)
   if (why) { const tail = String(why).replace(/[.!?।]+$/, "").slice(-12); const k = T.lastIndexOf(tail); if (k >= 0) { const m = /[.!?।](?=\s|$)/.exec(T.slice(k + tail.length)); seg = T.slice(0, m ? k + tail.length + m.index + 1 : T.length); } else seg = sentencesOf(T).filter((s) => KEY_WORDS.test(s)).join(" ") || T; }
   const WORDS = (t) => { const T = ` ${nk(t)} `; let c = 0, at0 = 0; for (;;) { const k = T.indexOf(` ${kw} `, at0); if (k < 0) return Array(c).fill(kw); c++; at0 = k + kw.length + 1; } };
-  const got = kw ? WORDS(seg) : NUMS(seg);
+  // (d37 close item 9: a key's number said as its Hindi number word counts as the number — help.js numbersSaid, the reading whyNamesKey takes)
+  const got = kw ? WORDS(seg) : numbersSaid(seg, keyN);
   // (RULING-C3 item 8: flagged where the turn says the value more times than the script's own sentence does — its why; once at least, the
   // key's own mention: a why-alone key whose why says the value twice says it as written, offtopic c4-ch06-t01 36)
-  const own = kw ? WORDS(why) : NUMS(why);
+  const own = kw ? WORDS(why) : numbersSaid(why, keyN);
   return keyN.every((x) => got.filter((y) => y === x).length > Math.max(1, own.filter((y) => y === x).length)) ? `the key's value (${n.key}) said more times in the key and its reason than the script's own sentence says it` : null;
 }
 const isTeachback = (p) => /(?:^|:)teachback$/.test(p);
