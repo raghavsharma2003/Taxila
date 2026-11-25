@@ -47,6 +47,19 @@ around a safety turn is the owner's; `server/safety/` and what calls it are froz
   is what the judges heard as a wait with no end. The cap's told step overrides gated `stepToldEarly` (d30) on the cap's turn
   only. `questionThreeRunning`, `yourTurnNotThird` and `stepToldEarly` are re-pinned by name for exactly these turns and read as
   before everywhere else. Reversal as the order's B.7.
+- **B as built and accepted (2026-11-25), amending B.3 and B.4 above.** Three builders, six rulings, three as-heard reads of
+  driven walks and two independent reviews of the checks. A wait is counted from HER turns at one question: wait one is a
+  turn ending on a short ask or an invitation with no question; wait two is the question's `reask` (or what wait three is when
+  the child has just heard that re-ask); wait three is help ending on the question, or the told step or key when nothing is
+  left unsaid; wait four tells (in a wait the question is heard three times at most). Never two turns running with no
+  question. A try-first is a request: always "Haan, pehle tum try karo.", never a wait turn. The child's words are recorded as
+  said (a waiting "haan" is never rewritten to a give-up outside the help picker). A "haan" at a yes-or-no card is an answer,
+  graded by the code's own read. `cardWholeAfterTryOrYes` (053 B2) is re-pinned: its first-turn rule and the card said whole
+  stay flagged; the re-ask alone and help ending on the wait's own question pass from wait two on. New gated checks:
+  `waitNoQuestion`, `waitSecondNotReask`, `waitFourNotTold`. **B had no paid measure**: since the harness child hears a question
+  in any authored form (1ca1546e6) no rule-based child waits, so a paid run would not exercise it; director36's eleven-turn wait
+  was largely that harness fault. One turn is left for cause C's builder as its first step: a side-topic raised straight after
+  a short ask gets a park that ends on the question, not on "Pehle is sawaal ka jawab do." alone.
 - **C5 is ruled (question 4): YES, drop.** At a follow-up card help is the card's own `simpler`, then the key. A remediation's
   wording is written about the remediation's board (ruling 1 of round d36); over the card's board it can be untrue, and on its
   own board at another card it was heard as the wrong picture (c4 sk 32). Cost accepted: one or two help turns fewer before a
