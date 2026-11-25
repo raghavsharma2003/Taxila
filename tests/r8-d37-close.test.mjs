@@ -326,3 +326,34 @@ describe("item 11: D3's named is the child's own line naming a favourite, read t
     assert.equal(a.lastMove?.tasteAsked?.named, false); assert.equal(b.lastMove?.tasteAsked?.named, true);
   });
 });
+
+describe("item 12: shareParkUnreturned — only a return of THAT park clears it; a lesson with no end row is read; an untold park the AI exchange serves is not flagged (pr5 section 2)", async () => {
+  const { PREDICATES: P } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const T = (o) => ({ who: "teacher", ...o, seams: (o.seams ?? []).map((right) => ({ right })) });
+  const C = (text, intent = null) => ({ who: "child", text, ...(intent ? { intent } : {}) });
+  const SIXER = "kal maine cricket khela, sixer maara";
+  const park = T({ text: "Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Pehle is sawaal ka jawab do.", seams: ["park", "answerFirst"] });
+  const bye = T({ text: "Aaj ke liye itna hi, phir milte hain.", move: "wrap", seams: ["goodbye"] });
+  const retCricket = T({ text: "Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", returnSaid: true, seams: ["return"] });
+  const retDog = T({ text: "Tumhara kutta: uska naam kya hai?", returnSaid: true, seams: ["return"] });
+  const flag = (rows) => rows.map((r, i) => (r.who === "teacher" && P.shareParkUnreturned({ rows }, r, i) ? i : null)).filter((x) => x != null);
+  test("a return of another park's topic does not clear it; a return of its own topic does (by text, and by the record's topics)", () => {
+    const two = [C(SIXER, "aside"), park, C("mera kutta bhi hai", "aside"), T({ text: "Kutte ki baat bhi hogi.", seams: ["park"] }), C("4"), retDog, C("Moti"), bye];
+    assert.deepEqual(flag(two), [7]);
+    assert.match(P.shareParkUnreturned({ rows: two }, bye, 7), /park at 1:/, "the cricket park, not the dog's");
+    assert.deepEqual(flag([C(SIXER, "aside"), park, C("haan"), retCricket, C("Rohit"), bye]), []);
+    // (the record's topics win over the words: a return recorded of football does not return a cricket park)
+    assert.deepEqual(flag([C(SIXER, "aside"), { ...park, parkTopic: "cricket" }, C("haan"), { ...retCricket, returnTopic: "football" }, C("Rohit"), bye]), [5]);
+    assert.deepEqual(flag([C(SIXER, "aside"), { ...park, parkTopic: "cricket" }, C("haan"), { ...retCricket, returnTopic: "Virat" }, C("Rohit"), bye]), []);
+  });
+  test("a lesson with no end row is read at her last row", () => {
+    assert.deepEqual(flag([C(SIXER, "aside"), park, C("4"), T({ text: "Bilkul sahi. Agla sawaal?", seams: ["verdict", "card"] })]), [3]);
+    assert.deepEqual(flag([C(SIXER, "aside"), park, C("4"), retCricket]), []);
+  });
+  test("an untold park served by her AI exchange by design (servedByAi, its topic) is not flagged; the same exchange not marked served is no return", () => {
+    const untold = T({ text: "Cricket ki baat bhi hogi. Pehle is sawaal ka jawab do.", seams: ["park", "answerFirst"], parkTopic: "cricket" });
+    const ai = T({ text: "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein sabse achha kya lagta hai?", returnSaid: true, seams: ["aiQuestion"] });
+    assert.deepEqual(flag([C("mujhe cricket pasand hai", "aside"), untold, C("aapko virat pasand hai?", "aside"), { ...ai, servedByAi: true, returnTopic: "Virat" }, C("chauka"), bye]), []);
+    assert.deepEqual(flag([C("mujhe cricket pasand hai", "aside"), untold, C("aapko virat pasand hai?", "aside"), ai, C("chauka"), bye]), [5]);
+  });
+});
