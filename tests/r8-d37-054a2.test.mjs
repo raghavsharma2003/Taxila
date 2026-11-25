@@ -190,3 +190,14 @@ describe("fix 5 (evals only): the rule-based child hears a question in any of it
     if (st) assert.ok(askedIn(script, st.simpler.hi ?? st.simpler, st.ask.prompt.hi));
   });
 });
+
+describe("main's third ruling: the checks restored", () => {
+  test("item 1: the skip after a go-on row — six predicates after noFit vpc or close; after her reply's go-on line only three", async () => {
+    const { goOnSkipOf } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    for (const nf of ["vpc", "close"]) assert.deepEqual([...goOnSkipOf({ noFit: nf, noFitGoOn: true })].sort(), ["clarifyCard", "giveUpAnswered", "orderStays", "pictureCaption", "requestAnswered", "requestHelped"]);
+    assert.deepEqual([...goOnSkipOf({ noFit: "aside", noFitGoOn: true })].sort(), ["clarifyCard", "giveUpAnswered", "orderStays"]);
+    assert.equal(goOnSkipOf({ noFit: "card", noFitGoOn: true }), null);
+    assert.equal(goOnSkipOf({ noFit: "point" }), null);
+    assert.equal(goOnSkipOf(null), null);
+  });
+});

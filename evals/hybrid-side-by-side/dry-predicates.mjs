@@ -1128,6 +1128,11 @@ export const PENDING = new Set(["vpcWhole", "reasonTwiceAuthored", "twinsData", 
  *  child says next — a request or a give-up there is answered by the new point, over its own board, never by help on the card just closed
  *  right. The laws that read a request as about her turn before's part do not read the turn after such a split. */
 const VPC_GOES_ON = new Set(["giveUpAnswered", "requestAnswered", "requestHelped", "clarifyCard", "pictureCaption", "orderStays"]);
+/** Main's third ruling on to-brain 054 A, item 1: the skip above is for a right verdict's or a worked close's go-on (noFit "vpc", "close"). After
+ *  her reply's go-on line (noFit "aside") only these are not read — a request there IS read: it is honoured (second ruling, fix 1). */
+const ASIDE_GOES_ON = new Set(["giveUpAnswered", "clarifyCard", "orderStays"]);
+/** The predicates not read on the turn after `p` (her teacher row before), or null. */
+export const goOnSkipOf = (p) => (["vpc", "close"].includes(String(p?.noFit ?? "")) ? VPC_GOES_ON : p?.noFit === "aside" && p?.noFitGoOn ? ASIDE_GOES_ON : null);
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
   const heads = {};
@@ -1145,7 +1150,7 @@ export function lessonFlags({ rows, script }) {
     if (r.who !== "teacher") { ctx.prevChild = r.text ?? ""; ctx.prevRead = String(r.read ?? ""); ctx.prevCls = ctx.prevRead.split(" ")[0]; ctx.prevIntent = r.intent ?? null; ctx.prevFlags = r.readFlags ?? []; return; }
     ctx.returnDue = !!r.returnSaid;
     ctx.keyOpenBefore = ctx.keyOpen;
-    for (const [name, f] of Object.entries(PREDICATES)) { if ((ctx.prevT?.noFit === "vpc" || ctx.prevT?.noFitGoOn) && VPC_GOES_ON.has(name)) continue; const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
+    for (const [name, f] of Object.entries(PREDICATES)) { if (goOnSkipOf(ctx.prevT)?.has(name)) continue; const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
     ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!r.keyFact || !!ctx.keyOpen;
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;
