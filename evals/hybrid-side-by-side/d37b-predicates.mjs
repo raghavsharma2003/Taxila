@@ -231,7 +231,12 @@ export const D37B_PREDICATES = {
   /** B.4 (main's ruling on question 3): d30's stepToldEarly, with the cap's turn at a wait allowed — the step told on its fifth hearing (the
    *  record's heardCap) after a try-first or a bare yes. Gated, as d30's. */
   stepToldEarly(L, r, i, ctx) {
-    if (r.who === "teacher" && r.heardCap && waitCue(r) && r.stepAnswer?.told) return null;
+    // (main's sixth ruling, item 9: the cap's allowance checks the place as well as the walk's flag — the cap is wait four, or the question's
+    // fifth hearing (four turns before this one said it, any form but the short ask); a try-first's turn is no wait turn: item 1)
+    if (r.who === "teacher" && r.heardCap && waitCue(r) && !tryCue(r) && r.stepAnswer?.told) {
+      const heardN = L.rows.slice(0, i).filter((x) => x.who === "teacher" && atQuestionOf(ctx?.script, x.text) === r.heardCap).length;
+      if (waitPlace(L, i, ctx?.script) === 4 || heardN >= 4) return null;
+    }
     // (main's second ruling, item 2: wait three and after IS a give-up — where its path had nothing left unsaid, the step told)
     if (r.who === "teacher" && waitCue(r) && r.stepAnswer?.told && waitPlace(L, i, ctx?.script) >= 3 && stepHelpSpent(L, r, i, ctx?.script)) return null;
     // (RULING-B3: and on wait two where the turn that last said the question ended on its reask — wait two is then what wait three is)

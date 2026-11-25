@@ -608,4 +608,18 @@ describe("sixth ruling, items 4 to 9: the checks", async () => {
     // (a park inside a wait is still passed over: the count is neither restarted nor advanced)
     assert.deepEqual(waitAt({ rows: [sAsked, C("haan"), TS(SHORT_ASK_FORMS[0], "yes", ["reaskShort"]), C("sixer maara"), park, C("haan"), TS(sReask, "yes", ["stepAsk"])] }, 6, script)?.turns, [2, 6]);
   });
+  test("item 9: stepToldEarly's cap allowance checks the place — the cap at wait four or on the fifth hearing passes; the flag elsewhere does not", () => {
+    const told = (extra = {}) => TS("Neeche wala number saare tukde ginta hai, yaani 5. Tumhari baari: plate par bache tukde poori barfi ka kaunsa fraction hain?", "yes", ["workedStep", "card"],
+      { stepAnswer: { beat: "c4-maths-ch05-t01-s1:worked:step1", right: false, told: true }, heardCap: SP, ...extra });
+    const shortS = TS(SHORT_ASK_FORMS[0], "yes", ["reaskShort"]);
+    const helpQ = TS(`Barfi ke saare tukde yaad karo, khaane se pehle wale. ${sPrompt}`, "yes", ["help", "stepAsk"]);
+    // (wait four, the cap: passes; the cap's flag on wait two, the question heard twice: flagged)
+    assert.deepEqual(flags([sAsked, C("haan"), shortS, C("haan"), TS(sReask, "yes", ["stepAsk"]), C("haan"), helpQ, C("haan"), told()], "stepToldEarly"), []);
+    assert.deepEqual(flags([sAsked, C("haan"), shortS, C("haan"), told()], "stepToldEarly"), [4]);
+    // (the fifth hearing after two misses, at wait three: passes; with one miss — the fourth hearing — flagged)
+    const miss = (t) => TS(`Nahi, yeh sahi nahi hai. ${t}`, "wrong", ["verdict", "stepAsk"]);
+    const tail = [C("haan"), shortS, C("haan"), TS(sReask, "yes", ["stepAsk"]), C("haan"), told()];
+    assert.deepEqual(flags([sAsked, C("7"), miss(sPrompt), C("8"), miss(sReask), ...tail], "stepToldEarly"), []);
+    assert.deepEqual(flags([sAsked, C("7"), miss(sPrompt), ...tail], "stepToldEarly"), [8]);
+  });
 });
