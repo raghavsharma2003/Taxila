@@ -319,11 +319,11 @@ describe("RULING-C2 item 2: C2, the key said as its why alone where the why name
     // (ynNahi reads keyFact only: unchanged by a why-alone key)
     assert.deepEqual(flags(keyed, "ynNahi"), []);
   });
-  // (keyValueTwice is held pending at a clash: c2/dry2 offtopic c4-ch06-t01 36 is C2's why-alone key, and that script's own yourStep.why says
-  // its value twice — reported to main; not exempted here)
-  test("keyValueTwice reads every key but a teach-back's; teachbackKeyValueTwice is pending and reads the teach-back's", async () => {
+  // (RULING-C3 item 8: keyValueTwice is GATED, reading the value against the script's own why — c2/dry2 offtopic c4-ch06-t01 36 is C2's
+  // why-alone key, and that script's own yourStep.why says its value twice: said as written, not flagged; the row is Learning's)
+  test("keyValueTwice (gated) reads every key but a teach-back's; teachbackKeyValueTwice is pending and reads the teach-back's", async () => {
     const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
-    assert.ok(PREDICATES.keyValueTwice && PENDING.has("keyValueTwice"));
+    assert.ok(PREDICATES.keyValueTwice && !PENDING.has("keyValueTwice"));
     assert.ok(PREDICATES.teachbackKeyValueTwice && PENDING.has("teachbackKeyValueTwice"));
     const twice = R(`Yeh jawab sahi nahi hai. Iska jawab hai 11, kyunki ${c2.why.hi}. Yahan tak theek hai?`, "wrong", ["missVerdict", "key", "checkin"]);
     assert.deepEqual(flags([ask, C("9"), twice], "keyValueTwice"), [2]);
@@ -332,6 +332,16 @@ describe("RULING-C2 item 2: C2, the key said as its why alone where the why name
     const tbRow = { who: "teacher", text: `${tb.key} hi sahi hai. Iska jawab hai ${tb.key}, kyunki ${tb.why.hi}. Ab tak samajh aaya?`, cell: { part: "end:teachback", column: "wrong" }, seams: [{ left: "start", right: "key", joint: null }] };
     assert.deepEqual(flags([C("5/9"), tbRow], "keyValueTwice"), []);
     assert.deepEqual(flags([C("5/9"), tbRow], "teachbackKeyValueTwice"), [1]);
+  });
+  test("keyValueTwice (RULING-C3 item 8): a why that says its value twice, said alone, is not flagged; that why after \"Iska jawab hai\" is", () => {
+    const st = JSON.parse(readFileSync(new URL("../data/lesson-scripts-staged/c4-maths-ch06-t01.json", import.meta.url), "utf8"));
+    const ys = st.skills[0].workedExample.yourStep, sp = `${st.skills[0].skillId}:worked:yourStep`;
+    const why = ys.why.hi, Why = `${why.charAt(0).toUpperCase()}${why.slice(1)}`;
+    assert.equal((why.match(/(?<![\d/])7(?![\d/])/g) ?? []).length, 2, "the script's own why says 7 twice");
+    const row = (text) => ({ who: "teacher", text, cell: { part: sp, column: "wrong" }, seams: [{ left: "start", right: "missVerdict" }, { left: "missVerdict", right: "key" }, { left: "key", right: "checkin" }] });
+    const fl = (r) => lessonFlags({ rows: [C("5"), r], script: st }).filter((f) => f.predicate === "keyValueTwice").map((f) => f.row);
+    assert.deepEqual(fl(row(`Nahi, yeh jawab nahi hai. ${Why}. Yahan tak theek hai?`)), []);
+    assert.deepEqual(fl(row(`Nahi, yeh jawab nahi hai. Iska jawab hai ${ys.key}, kyunki ${why}. Yahan tak theek hai?`)), [1]);
   });
 });
 

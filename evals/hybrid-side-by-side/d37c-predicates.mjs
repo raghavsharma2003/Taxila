@@ -3,9 +3,9 @@
 // (tests/r8-d37-054c.test.mjs pins each on made rows).
 //   ownKeyNoReason      C1: an own step's key after a miss or a request (the worked example's your-step, her turn's cell at it, not a right
 //                       answer) that does not say the step's own `why`, or says "Toh poora jawab" after it.
-//   keyValueTwice       C2: a key whose value (every number of the card's `key`) is said twice in the key and its reason.
-//                       (RULING-C2 item 2: for every key but a teach-back's; teachbackKeyValueTwice reads the teach-back's. Both pending:
-//                       held at a clash with a script's why that says its value twice, c2/PROGRESS.md)
+//   keyValueTwice       C2: a key whose value (every number of the card's `key`) is said in the key and its reason more times than the
+//                       script's own sentence (its `why`) says it, and at least twice (RULING-C3 item 8). For every key but a teach-back's
+//                       (RULING-C2 item 2), GATED; teachbackKeyValueTwice reads the teach-back's, pending.
 //   capBeforeOwnReason  C3: a key at a card where the child's answer was the card's named wrong answer (`wrongIfMis` with `whyAltAsHelp`, or a
 //                       `wrongAnswers` entry with its `why`) and that answer's reason was never said at the card.
 //   ownStepWorkedHelp   C4: help at an own step (her turn's cell at the your-step) that says the worked problem's `simpler`.
@@ -71,7 +71,10 @@ function keyValueTwice0(L, r, i, ctx) {
   let seg = T;
   if (why) { const tail = String(why).replace(/[.!?।]+$/, "").slice(-12); const k = T.lastIndexOf(tail); if (k >= 0) seg = T.slice(0, k + tail.length); else seg = sentencesOf(T).filter((s) => KEY_WORDS.test(s)).join(" ") || T; }
   const got = NUMS(seg);
-  return keyN.every((x) => got.filter((y) => y === x).length >= 2) ? `the key's value (${n.key}) said twice in the key and its reason` : null;
+  // (RULING-C3 item 8: flagged where the turn says the value more times than the script's own sentence does — its why; once at least, the
+  // key's own mention: a why-alone key whose why says the value twice says it as written, offtopic c4-ch06-t01 36)
+  const own = NUMS(why);
+  return keyN.every((x) => got.filter((y) => y === x).length > Math.max(1, own.filter((y) => y === x).length)) ? `the key's value (${n.key}) said more times in the key and its reason than the script's own sentence says it` : null;
 }
 const isTeachback = (p) => /(?:^|:)teachback$/.test(p);
 export const D37C_PREDICATES = {
@@ -90,7 +93,8 @@ export const D37C_PREDICATES = {
     return saysWhole(r.text, why) ? null : `an own step's key without the step's own reason ("${why.slice(0, 50)}…")`;
   },
   // (main's second ruling on cause C, item 2: every key but a teach-back's — the teach-back's keys are read by teachbackKeyValueTwice
-  // below; pending at a clash: a why-alone key whose script why says the value twice, offtopic c4-ch06-t01 36 of c2/dry2)
+  // below. Main's third ruling, item 8: gated; a why-alone key whose script why says the value twice, offtopic c4-ch06-t01 36 of c2/dry2,
+  // says it as the script does and is not flagged — that row is on Learning's list as the script's)
   keyValueTwice(L, r, i, ctx) {
     if (isTeachback(partOf(r))) return null;
     return keyValueTwice0(L, r, i, ctx);
