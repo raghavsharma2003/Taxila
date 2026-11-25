@@ -224,13 +224,14 @@ export const D37B_PREDICATES = {
     if (reads.includes("correct")) return null;
     // (a miss read at the first question and its remediation's own question after the verdict: the first card's miss path, not a drop —
     // item 10: the FIRST card's remediation (the same skill's) and a miss verdict said in this turn)
-    // (d37 item 18b, pr8: tied to the script's own link — the remediation's `targets` names the misconception the first card's `targets` names
-    // — not to the same skill)
+    // (d37 item 18b, pr8: tied to the script's own link as well — the remediation's `targets` names the misconception the first card's
+    // `targets` names; BRIEF-G5 item 2, pr9: AND the same skill's, as item 10 ruled — the walk only picks the first card's skill's remediation)
+    const skillOf = (x) => /^\.skills\[\d+\]/.exec(String(x ?? ""))?.[0] ?? null;
     const remOf = (x) => /^(\.skills\[\d+\]\.remediation\[\d+\])/.exec(String(x ?? ""))?.[1] ?? null;
     const atPath = (o, path) => String(path ?? "").match(/\.(\w+)|\[(\d+)\]/g)?.reduce((v, k) => (v == null ? v : v[k.startsWith("[") ? Number(k.slice(1, -1)) : k.slice(1)]), o);
     const remT = remOf(P) ? atPath(script, remOf(P))?.targets : null, cardT = questionObjectAt(script, P0)?.targets ?? null;
     const linked = !!remT && !!cardT && [].concat(remT).some((t) => [].concat(cardT).includes(t));
-    if (reads.some((c) => ["misconception", "incorrect", "partial"].includes(c)) && linked && seamsOf(r).includes("missVerdict")) return null;
+    if (reads.some((c) => ["misconception", "incorrect", "partial"].includes(c)) && linked && skillOf(P) === skillOf(P0) && seamsOf(r).includes("missVerdict")) return null;
     if (r.stepAnswer?.told || seamsOf(r).some((k) => ENDS.has(k)) || r.heardCap) return null;
     return `after a short ask or an invitation at ${P0}, ${P}'s question with no told step, key or cap for the first`;
   },

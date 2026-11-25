@@ -482,13 +482,13 @@ describe("item 10: cardDroppedAfterShortAsk — past a park; the remediation exe
     assert.deepEqual(flags([...lead, C("mujhe cricket pasand hai"), { ...park, seams: sx("park", "key") }, C("haan"), T(q(E2), ["card"])]), []);
   });
   test("the remediation exemption: the first card's remediation after a miss verdict passes; with no miss verdict, or another skill's, it is flagged", () => {
-    // (re-pinned by d37 item 18b, pr8: the exemption is the script's own link — the remediation whose `targets` is the first card's (E1 targets
-    // m-part-part: .skills[0].remediation[1], and .skills[1].remediation[0] of another skill) — not the same skill: .skills[0].remediation[0],
-    // for m-unequal-parts, is flagged now)
+    // (d37 item 18b, pr8, with BRIEF-G5 item 2, pr9: the exemption is the same skill's remediation AND the script's own link — the one whose
+    // `targets` is the first card's (E1 targets m-part-part: .skills[0].remediation[1]); .skills[0].remediation[0], for m-unequal-parts, and
+    // .skills[1].remediation[0], another skill's, are flagged)
     const R0 = ".skills[0].remediation[1].then", R1 = ".skills[1].remediation[0].then", U0 = ".skills[0].remediation[0].then";
     assert.deepEqual(flags([...lead, C("2/1", "incorrect"), T(`Nahi, 2/1 theek nahi. ${q(R0)}`, ["missVerdict", "remediation"])]), []);
     assert.deepEqual(flags([...lead, C("2/1", "incorrect"), T(q(R0), ["remediation"])]), [4]);
-    assert.deepEqual(flags([...lead, C("2/1", "incorrect"), T(`Nahi, 2/1 theek nahi. ${q(R1)}`, ["missVerdict", "remediation"])]), []);
+    assert.deepEqual(flags([...lead, C("2/1", "incorrect"), T(`Nahi, 2/1 theek nahi. ${q(R1)}`, ["missVerdict", "remediation"])]), [4]);
     assert.deepEqual(flags([...lead, C("2/1", "incorrect"), T(`Nahi, 2/1 theek nahi. ${q(U0)}`, ["missVerdict", "remediation"])]), [4]);
   });
 });
