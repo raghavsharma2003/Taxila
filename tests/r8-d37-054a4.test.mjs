@@ -80,17 +80,30 @@ describe("item 4: replyPointCardNext, gated — after her reply's point turn the
   const card = (o = {}) => T({ beat: "s2:explain:e1", seams: seams("card"), pageParts: [{ part: "card", from: 0, beat: "e1" }], check: { itemId: "script:c5-maths-ch02-t01-s2:ask:e1" }, ...o });
   const run = (...after) => { const rows = [rp, ...after.flatMap((x) => [C(), x])]; return PREDICATES.replyPointCardNext({ rows }, rp, 0, {}); };
   test("registered and gated", () => { assert.ok(PREDICATES.replyPointCardNext); assert.ok(!PENDING.has("replyPointCardNext")); });
-  test("its card next, or after a turn that teaches nothing, or after help on the point alone: not flagged", () => {
+  test("its card next, with only help on the point, a park or said-again line before it; or after her AI line, its own turn: not flagged", () => {
     assert.equal(run(card()), null);
     assert.equal(run(T({ seams: seams("aiQuestion") }), card({ seams: seams("aiReply", "card") })), null);
-    assert.equal(run(T({ seams: seams("help", "help", "checkin") }), card({ seams: seams("help", "card") })), null);
+    assert.equal(run(card({ seams: seams("help", "help", "card") })), null);
     assert.equal(run(card({ seams: seams("aside", "card") })), null);
+    assert.equal(run(card({ seams: seams("easierWords", "help", "card") })), null);
   });
-  test("a new point, or another card, as the next teaching turn: flagged; a stop or a safety turn first: not", () => {
+  test("sixth ruling item 4, tight: help alone (another check-in), a bridge, a worked problem or another point before the card, or another card: flagged", () => {
+    assert.ok(run(T({ seams: seams("help", "help", "checkin") }), card({ seams: seams("help", "card") })), "help and a check-in");
+    assert.ok(run(card({ seams: seams("bridge", "card") })));
+    assert.ok(run(card({ seams: seams("workedProblem", "card") })));
     assert.ok(run(T({ beat: "s2:explain:e2", seams: seams("aside", "point", "card"), pageParts: [{ part: "body", from: 0, beat: "e2" }, { part: "card", from: 9, beat: "e2" }], check: { itemId: "script:c5-maths-ch02-t01-s2:ask:e2" } })));
     assert.ok(run(card({ beat: "s2:explain:e2", pageParts: [{ part: "card", from: 0, beat: "e2" }], check: { itemId: "script:c5-maths-ch02-t01-s2:ask:e2" } })));
     assert.equal(run(T({ move: "safeguard", seams: seams("safeguard") }), T({ seams: seams("point", "card") })), null);
     assert.equal(run(T({ move: "wrap", seams: seams("covered") })), null);
+  });
+  test("the same reading after A(ii)'s check-in (the start line, the hook, the point): its card next, or flagged", () => {
+    const st = T({ text: `Theek hai, main shuru karti hoon. ${POINT} Yahan tak theek hai?`, beat: "s1:explain:e1", noFit: "point",
+      seams: [{ left: "start", right: "startAnyway", joint: "startAnyway" }, { left: "startAnyway", right: "hook" }, { left: "hook", right: "point" }, { left: "point", right: "checkin" }],
+      pageParts: [{ part: "body", from: 0, beat: "e1" }] });
+    const c1 = T({ beat: "s1:explain:e1", seams: seams("card"), pageParts: [{ part: "card", from: 0, beat: "e1" }], check: { itemId: "script:c5-maths-ch02-t02-s1:ask:e1" } });
+    assert.equal(PREDICATES.replyPointCardNext({ rows: [st, C(), c1] }, st, 0, {}), null);
+    const h = T({ seams: seams("help", "checkin") });
+    assert.ok(PREDICATES.replyPointCardNext({ rows: [st, C(), h, C(), c1] }, st, 0, {}));
   });
   test("not read after a turn that is no reply's point turn: a bare point and its check-in, or a point said before", () => {
     const plain = T({ text: `${POINT} Yahan tak theek hai?`, beat: "s2:explain:e1", seams: seams("point", "checkin"), pageParts: [{ part: "body", from: 0, beat: "e1" }] });

@@ -16,9 +16,10 @@
 // Main's fifth ruling on cause A (A(i) is design D2; tests/r8-d37-054a4.test.mjs): replyIntoPoint reads strictly again (no exemptions);
 // goOnNoTeach reads ANY three of her turns running with no teaching part; asideGoOnNext and goOnJointTwice stay gated, guarding against the
 // go-on turn coming back; and one more, gated:
-//   replyPointCardNext  after her reply's point turn — a reply, a park or her line to a side-topic, a new point, its check-in — the next turn
-//                   that teaches says that point's card and no new point (a stop, a wrap, a break or a safety turn excepted; help on the point
-//                   alone, a clarify's, waits for the card as A(ii) routes it).
+//   replyPointCardNext  after her reply's point turn — a reply, a park or her line to a side-topic, a new point, its check-in — and (sixth
+//                   ruling item 4) after A(ii)'s split first turn, the very next teacher turn carries that point's card, with before it only
+//                   help on that point, a park or said-again line, or the switch or easier-words line (a stop, a wrap, a break or a safety
+//                   turn excepted; her AI line, its own turn, is passed over to the turn after it).
 import { VPC_MAX } from "../../server/director/state.js";
 
 const REPLY = new Set(["asideReply", "aiReply", "park"]);
@@ -83,6 +84,12 @@ export const lastReplyAt = (r) => { let at = -1; rightsOf(r).forEach((x, n) => {
 /** D2's turn: her reply (seams asideReply, aiReply, park, or her line at a check-in, seam aside, first), then a new point, ending on its
  *  check-in. */
 const replyPointTurn = (L, r, i) => { const at = replyAt(rightsOf(r)); return at >= 0 && newPointBeforeCheckin(L, r, i, [rightsOf(r)[at]]); };
+/** A(ii)'s split first turn: the start line (joints.startAnyway), the hook, the point, ending on its check-in. */
+const startPointTurn = (L, r) => (r.seams ?? []).some((x) => x.joint === "startAnyway" || x.right === "startAnyway") && rightsOf(r).at(-1) === "checkin" && rightsOf(r).includes("point") && !rightsOf(r).includes("card");
+/** Main's sixth ruling item 4: what may come before the held card in the turn after its check-in — help on that point (its wordings, the
+ *  nothing-easier line and the line into the card), her park or said-again line (or her reply to the AI line's answer), the switch or the
+ *  easier-words line. */
+const BEFORE_HELD_CARD = new Set(["help", "simpler", "helpSpent", "helpToCard", "park", "aside", "asideReply", "aiReply", "hindiSwitch", "easierWords"]);
 export const D37A_PREDICATES = {
   goOnNoTeach(L, r, i) {
     // (main's fourth ruling item 2: the rule that stops a lesson stalling is never three turns running without a teaching part. Main's fifth
@@ -128,20 +135,24 @@ export const D37A_PREDICATES = {
     return (k.includes("point") || k.includes("held")) && (cardIn(k) || r.noFit === "point") ? null : `the turn after her reply's go-on line is not its held point and card (${k.join(" > ") || "no seams"})`;
   },
   replyPointCardNext(L, r, i) {
-    if (r.who !== "teacher" || !replyPointTurn(L, r, i)) return null;
+    // (main's sixth ruling item 4: tight. After her reply's point turn (D2) — and, the same reading, after the split first turn's check-in
+    // (A(ii): the start line, the hook, the point, its check-in) — the very next teacher turn carries that point's card. Before the card it
+    // may say only help on that point, a park or said-again line, or the switch or easier-words line. A stop or a safety turn is excepted, as
+    // built; and her AI line, which is its own turn with its question back (the fourth ruling's item 2): the turn after it is read instead)
+    if (r.who !== "teacher" || !(replyPointTurn(L, r, i) || startPointTurn(L, r, i))) return null;
     const pb = (r.pageParts ?? []).find((p) => p.part === "body")?.beat ?? null;
     const sk = String(r.beat ?? "").split(":")[0];
     if (!pb || !sk) return null;
     for (const y of (L.rows ?? []).slice(i + 1)) {
       if (y?.who !== "teacher") continue;
       if (STOPS.test(String(y.move?.kind ?? y.move ?? ""))) return null;
-      if (!teaches(y)) continue;
       const k = rightsOf(y);
-      // (help on the point alone — a clarify's, the card waiting — is not the card's turn yet: A(ii)'s routing)
-      if (!cardIn(k) && !k.includes("point") && k.every((x) => !TEACH.has(x) || ["help", "simpler"].includes(x))) continue;
-      const own = String(y.check?.itemId ?? "").endsWith(`-${sk}:ask:${pb}`) || ((y.pageParts ?? []).some((p) => p.part === "card" && p.beat === pb) && String(y.beat ?? "").startsWith(`${sk}:`));
-      if (k.includes("point")) return `the turn after her reply's point turn (row ${i}) says a new point (${k.join(" > ")})`;
-      return cardIn(k) && own ? null : `the turn after her reply's point turn (row ${i}) is not its card ${sk}:${pb} (${k.join(" > ") || "no seams"})`;
+      if (k.length && k.every((x) => x === "aiQuestion" || x === "aiLine")) continue;
+      const c = k.findIndex((x) => x === "card");
+      const own = c >= 0 && (String(y.check?.itemId ?? "").endsWith(`-${sk}:ask:${pb}`) || ((y.pageParts ?? []).some((p) => p.part === "card" && p.beat === pb) && String(y.beat ?? "").startsWith(`${sk}:`)));
+      if (!own) return `the turn after her point's check-in (row ${i}) does not carry its card ${sk}:${pb} (${k.join(" > ") || "no seams"})`;
+      const before = k.slice(0, c).filter((x) => !BEFORE_HELD_CARD.has(x));
+      return before.length ? `the turn after her point's check-in (row ${i}) says ${before.join(", ")} before its card (${k.join(" > ")})` : null;
     }
     return null;
   },
