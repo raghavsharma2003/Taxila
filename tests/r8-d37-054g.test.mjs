@@ -38,7 +38,7 @@ async function walker(TOPIC, seed = 7) {
     r = step({ ...s, recent: [...(s.recent ?? []), { who: "child", text }] }, { event: "turn", kit, text, cls: read, now: (s.turn + 1) * 20_000 });
     const t = await say(text);
     r.state.recent = [...(r.state.recent ?? []), { who: "teacher", text: t.reply }];
-    return { text: norm(t.reply), lm: r.state.lastMove ?? {}, state: r.state, ui: r.ui, seams: (t.guard?.seams ?? []).map((x) => x.right) };
+    return { text: norm(t.reply), lm: r.state.lastMove ?? {}, state: r.state, ui: r.ui, seams: (t.guard?.seams ?? []).map((x) => x.right), parts: t.guard?.lineParts ?? t.guard?.parts?.list ?? [] };
   };
   const until = async (f, n = 300) => { for (let i = 0; i < n && !f(r.state); i++) { const it = r.state.activeItemId ? findItem(r.state, kit, r.state.activeItemId) : null; await go(it ? String(it.answer) : "haan"); } return f(r.state); };
   return { go, until, kit, now: () => r.state, done: () => { replyDeps.chat = chat0; replyDeps.chatStream = stream0; } };
@@ -186,5 +186,48 @@ describe("item 12 (main's ruling on G1's clash): returnAsksAgain's fallback coun
   });
   test("the other side: a liking question that names no subject, after an answered liking question, still flags", () => {
     assert.match(lesson("Tumhe usmein sabse achha kya lagta hai?"), /after they said "fielding karna/);
+  });
+});
+
+describe("item 4: a Hindi request at a held-card check-in is answered in Hindi — the switch line, then the held card's Hindi form", async () => {
+  const { helpPart, hindiFormOf } = await import("../server/director/help.js");
+  const { scriptFor } = await import("../server/director/script.js");
+  const HINDI = ["Hindi mein bolo", { outcome: "no_evidence", confidence: 1, flags: {}, request: { type: "language", lang: "hindi" } }];
+  const SWITCH = /Hindi mein (?:kehti|bolti|samjhati) hoon/i;
+  for (const TOPIC of ["c5-maths-ch02-t01", "c6-maths-ch06-t01", "c5-maths-ch02-t03"]) {
+    test(`${TOPIC}, A(ii)'s split first turn (two requests at the greeting): "Hindi mein bolo" — the switch line, the held card's Hindi form, ending on it; the card no longer held`, async () => {
+      const w = await walker(TOPIC);
+      try {
+        const g = ["samajh nahi aaya", { outcome: "no_evidence", confidence: 1, flags: {}, request: { type: "another", whole: true, src: "p5", confused: true } }];
+        await w.go(...g); const a = await w.go(...g);
+        assert.ok(a.lm.startApart && a.state.splitHold?.teach, "the split first turn, its card held");
+        const id = a.state.splitHold.ui.ask.itemId;
+        const sc = scriptFor(w.kit).script;
+        const hf = hindiFormOf(sc, helpPart(sc, `${id.replace(/^script:/, "").replace(/:ask:/, ":")}:card`)) ?? null;
+        const t = await w.go(...HINDI);
+        if (!hf) { assert.ok(!SWITCH.test(t.text), "no form: the easier-words line as built"); return; }
+        assert.match(t.text, SWITCH);
+        assert.ok(t.text.endsWith(norm(hf).replace(/\{friend\}/g, "Riya")) || t.text.includes(norm(hf).split(/(?<=[.!?])\s+/).at(-1)), t.text);
+        assert.equal(t.ui.ask?.itemId, id, "the card is asked"); assert.ok(!t.state.splitHold, "no longer held");
+        assert.ok(!/seedhe shabdon|aasaan shabdon|aur aasaan/i.test(t.text), "not the easier-words line");
+        // (the switch line is the turn's lead part, said once: the board up stays under it and the card's board comes in at the card)
+        assert.equal(t.text.match(SWITCH)?.length, 1);
+        assert.equal(t.parts[0]?.part, "aside", JSON.stringify(t.parts)); assert.match(t.parts[0].text, SWITCH);
+        assert.ok(t.parts.slice(1).some((p) => p.part === "card"), JSON.stringify(t.parts)); assert.ok(t.lm.heldHindi);
+      } finally { w.done(); }
+    });
+  }
+});
+
+
+describe("item 4, the other side: a Hindi request at a card she has said keeps the switch line out of the parts, as built", () => {
+  test("c5-maths-ch02-t01: a said card, \"Hindi mein bolo\" — the card's Hindi form after the switch line, no lead part, no heldHindi", async () => {
+    const w = await walker("c5-maths-ch02-t01");
+    try {
+      await w.until((s) => s.activeItemId && !s.splitHold && /:ask:/.test(String(s.activeItemId)));
+      const t = await w.go("Hindi mein bolo", { outcome: "no_evidence", confidence: 1, flags: {}, request: { type: "language", lang: "hindi" } });
+      assert.ok(!t.lm.heldHindi);
+      assert.ok(!t.parts.some((p) => p.part === "aside" && /Hindi mein (?:kehti|bolti|samjhati) hoon/i.test(p.text)), JSON.stringify(t.parts));
+    } finally { w.done(); }
   });
 });

@@ -40,7 +40,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, whyNamesKey, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
+import { hindiFormOf, pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, whyNamesKey, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -4272,6 +4272,22 @@ export function step(prev, input) {
   // after it for a hint, a card asked or a turn that goes on)
   // (to-brain 049 B6: help split from its card over 75 words — a request or a give-up at the help's check-in is help on that card, live again:
   // dry steering c4 18, a give-up there was answered by the card alone)
+  // (RULING-G item 4, d37 steady c6-ch06-t01 36, c6-ch07-t03 38, c5-ch02-t01 38, c5-ch02-t03 36; offtopic c5-ch02-t03 34, c4-ch06-t01 32: a
+  // Hindi request at the check-in of her reply's point turn (D2) or of the split first turn (A(ii)) got the easier-words line and the point's
+  // other wording. It is answered in Hindi: the held card is live again, and the request is what a Hindi request at a said card gets
+  // (hindiCard: the switch line, then the card's Hindi form, ending on it); the card is no longer held. Only where the card has no Hindi
+  // form: the easier-words line and the point's help, as built)
+  let heldHindi = false;
+  if (prev?.splitHold?.teach && heldCardAt(prev) && input?.event === "turn" && columnName(input, prev) === "hindi") {
+    const id = prev.splitHold.activeItemId ?? prev.splitHold.ui.ask.itemId;
+    const sc = scriptFor(input.kit)?.script ?? null;
+    const cp = (() => { try { return cardPartOf(input.kit, { itemId: id }); } catch { return null; } })();
+    const hp = cp && sc ? (() => { try { return helpPart(sc, cp); } catch { return null; } })() : null;
+    if (hp && hindiFormOf(sc, hp)) {
+      const p1 = { ...prev, activeItemId: id, lastUi: prev.splitHold.ui, splitHold: undefined };
+      if (helpRequestOf(p1, input) === "hindi") { prev = p1; heldHindi = true; }
+    }
+  }
   if (prev?.splitHold?.helpSplit && input?.event === "turn") {
     const p1 = { ...prev, activeItemId: prev.splitHold.activeItemId ?? undefined, lastUi: prev.splitHold.ui, splitHold: undefined };
     if (helpRequestOf(p1, input)) prev = p1;
@@ -4550,6 +4566,9 @@ export function step(prev, input) {
   }
   if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "");
   if (out?.state && prev?.answerAt && !out.state.answerAt) out.state.answerAt = prev.answerAt;
+  // (RULING-G item 4: the held card asked in its Hindi form — brain/say.js keeps the switch line as the turn's lead part, so the card's
+  // board comes in at the card's first word, never under the switch line)
+  if (heldHindi && out?.state?.lastMove?.help?.hindiForm) out.state.lastMove = { ...out.state.lastMove, heldHindi: true };
   return out;
 }
 function stepCells(prev, input) {

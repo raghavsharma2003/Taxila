@@ -84,15 +84,18 @@ describe("A(i), design D2 (main's fifth ruling item 1): her reply, its joint, th
     assert.equal(m.replyPoint, "afterPark"); assert.equal(m.noFit, "point"); assert.ok(m.point);
     assert.equal(t.ui.ask, undefined); assert.equal(t.state.splitHold?.ui?.ask?.itemId, CARD2);
   });
-  test("each answer to that check-in, routed as A(ii): a yes or silence the card alone; a give-up, a Hindi request or (sixth ruling item 1) a clarify, help on the point and the card", () => {
+  test("each answer to that check-in, routed as A(ii): a yes or silence the card alone; a give-up or (sixth ruling item 1) a clarify, help on the point and the card; (RULING-G item 4) a Hindi request, the card's Hindi form", () => {
     for (const yes of ["haan", ""]) {
       const t = walkLines("c5-maths-ch02-t01", [...LINES, yes]).at(-1);
       assert.equal(t.ui.ask?.itemId, CARD2, yes); assert.ok(!t.state.lastMove.point && !t.state.lastMove.help, yes);
     }
-    for (const req of ["pata nahi", "hindi mein batao"]) {
+    for (const req of ["pata nahi"]) {
       const t = walkLines("c5-maths-ch02-t01", [...LINES, req]).at(-1);
       assert.equal(t.state.lastMove.help?.rung, "pointAlt", req); assert.equal(t.ui.ask?.itemId, CARD2, req);
     }
+    // (re-pinned by RULING-G item 4: a Hindi request there is answered in Hindi — the held card asked in its Hindi form, as at a said card)
+    const h = walkLines("c5-maths-ch02-t01", [...LINES, "hindi mein batao"]).at(-1);
+    assert.ok(h.state.lastMove.help?.hindiForm, JSON.stringify(h.state.lastMove.help)); assert.equal(h.ui.ask?.itemId, CARD2); assert.ok(!h.state.splitHold);
     const c1 = walkLines("c5-maths-ch02-t01", [...LINES, "samajh nahi aaya"]).at(-1);
     assert.equal(c1.state.lastMove.help?.rung, "pointAlt"); assert.equal(c1.ui.ask?.itemId, CARD2);
   });

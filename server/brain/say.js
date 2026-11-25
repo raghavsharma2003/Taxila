@@ -4032,6 +4032,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const same = !!state.lastMove?.hindiSame && lang !== "english";
       if (same && named0) ss0.shift();
       const named = !same && named0;
+      // (RULING-G item 4, d37: the held card asked in its Hindi form after her reply's point turn — the card's board is not the board up — keeps
+      // the switch line as the turn's lead part (an "aside", the 045 P2 lead), so the board up stays under it and the card's board comes in at
+      // the card's first word; elsewhere the line is no part, as built)
+      const hindiLeadOf = (q) => (state.lastMove?.heldHindi ? [{ part: "aside", text: q.text }] : []);
       const ack = named ? [] : [same ? HINDI_SAME : freshOf(jointsAt(kit, "hindiSwitch", lang, state) ?? LANG_ACK[lang === "english" ? "english" : "hindi"], state)];
       const r2 = [...ack, ...ss0].join(" ").replace(/\s+/g, " ").trim();
       if (r2 !== reply) {
@@ -4045,14 +4049,14 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (Brain 046 Q2: the card's Hindi form asked after the easier-words line, with no wording between — the line is the turn's lead, said
         // once by the seam pass as its hindiSwitch joint; never a part of the card's point)
         else if (ack.length && guard.lineParts?.length && state.lastMove?.hindiForm && guard.lineParts.some((q) => q.part === "body" && norm(q.text) === norm(ack[0]))) {
-          guard.lineParts = guard.lineParts.filter((q) => !(q.part === "body" && norm(q.text) === norm(ack[0])));
+          guard.lineParts = guard.lineParts.flatMap((q) => (q.part === "body" && norm(q.text) === norm(ack[0]) ? hindiLeadOf(q) : [q]));
           if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts };
         }
       }
       // (d32 step 0, dry stuck c4-ch05-t01 8: Learning 020's switch line names Hindi — "Haan, ise Hindi mein bolti hoon." — so it is read as
       // already said and no ack is added; the line the turn opens on is still the turn's lead, never a part of the card's point)
       if (named && state.lastMove?.hindiForm && guard.lineParts?.some((q) => q.part === "body" && norm(q.text) === norm(ss0[0] ?? ""))) {
-        guard.lineParts = guard.lineParts.filter((q) => !(q.part === "body" && norm(q.text) === norm(ss0[0] ?? "")));
+        guard.lineParts = guard.lineParts.flatMap((q) => (q.part === "body" && norm(q.text) === norm(ss0[0] ?? "") ? hindiLeadOf(q) : [q]));
         if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts };
       }
     }
