@@ -1550,6 +1550,8 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     noReplyJoint: !!state?.lastMove?.noReplyJoint,
     // (main's second ruling fix 4: the card held apart from a worked close opens on the close's own-turn joint)
     afterWorkedLead: !!state?.lastMove?.afterWorkedLead,
+    // (main's fourth ruling item 1: who wrote the line said before the card's Hindi form)
+    lineBeforeCardBy: out.guard?.lineBeforeCard?.by ?? null,
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out.guard?.leadJoints?.length ? { ...out, guard: { ...out.guard, jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } } : out;
@@ -3841,7 +3843,15 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (state.lastMove?.answerFirst && !state.lastMove?.yourTurn && tail && (/[?？]\s*$/.test(norm(tail)) || tail === card || guard.cardQuestionOnly || (guard.stepAsk && tail === guard.stepAsk) || (guard.reaskShort && tail === guard.reaskShort.text)) && !asideQ) {
       tail = dot(norm(state.lastMove.answerFirst)); guard.answerFirst = tail; guard.cardQuestionOnly = false; guard.reaskShort = undefined; body = body.filter((x) => !REPOSE_FRAME.test(x));
     }
-    const assembled = (asideQ ? [...replyP, ...prevPart, ...closedP, ...first, ...(quickS ? [quickS] : []), ...body, ...asideP] : [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...(quickS ? [quickS] : []), ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
+    // (to-brain 054 A, main's fourth ruling item 1: a language request after her reply's go-on line — state.js heldHindi — the held point first,
+    // then the switch line straight before the card's Hindi form; at a card with no form, the script's easier-words line before the card.
+    // Neither is said before a point not yet told)
+    const lineBefore = state.lastMove?.lineBeforeCard && tail && tail === card && !asideQ ? (() => {
+      const lb = state.lastMove.lineBeforeCard, own = lb.kind === "hindiSwitch" ? jointsAt(kit, "hindiSwitch", lang, state) : null;
+      const t = norm(lb.kind === "hindiSwitch" ? freshOf(own ?? LANG_ACK[lang === "english" ? "english" : "hindi"], state) : lb.text ?? "");
+      return t ? { kind: lb.kind, text: dot(t), by: lb.kind === "hindiSwitch" ? (own ? "authored" : "code") : lb.by ?? "authored" } : null; })() : null;
+    if (lineBefore) guard.lineBeforeCard = lineBefore;
+    const assembled = (asideQ ? [...replyP, ...prevPart, ...closedP, ...first, ...(quickS ? [quickS] : []), ...body, ...asideP] : [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...(quickS ? [quickS] : []), ...body, lineBefore?.text, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
     // (else her sentences that ask nothing and carry no number)
@@ -3880,6 +3890,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         ...(quickS ? [{ part: "quickReply", text: quickS, kind: quickR.right ? "quickYes" : "quickSay" }] : []),
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
         ...body.map((x) => guard.hindiFormSaid && x === guard.hindiFormSaid ? { part: "card", text: x } : ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : stepOkK && keyS(x) === stepOkK ? { kind: "stepConfirm" } : stepToldK?.has(keyS(x)) ? { kind: "workedStep", ...(stepBoardK?.get(keyS(x)) ? { board: stepBoardK.get(keyS(x)) } : {}) } : {}), part: bridgeTextK.has(keyS(x)) ? "bridge" : heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
+        ...(lineBefore ? [{ part: "aside", text: lineBefore.text, kind: lineBefore.kind }] : []),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
         { part: tail && guard.reaskShort && tail === guard.reaskShort.text ? guard.reaskShort.part : tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin || (guard.checkinTail && tail === guard.checkinTail) || (guard.yourTurn && tail === guard.yourTurn) || (guard.answerFirst && tail === guard.answerFirst) || (guard.vpcGoOn && tail === guard.vpcGoOn) ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.reaskShort && tail === guard.reaskShort.text ? { kind: "reaskShort" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : tail && guard.yourTurn && tail === guard.yourTurn ? { kind: "yourTurn" } : tail && guard.answerFirst && tail === guard.answerFirst ? { kind: "answerFirst" } : {}) },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
@@ -3912,7 +3923,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (dc-r8-director20 L4: no promise of a change she cannot make — when what follows is the simpler she just said, no switch line)
     if (state.lastMove?.request === "language" && kindNow !== "safeguard" && state.lastMove?.noLangAck) {
       const ss0 = sentences(reply).map(norm).filter(Boolean);
-      const kept = ss0.filter((x) => !/(?<![\p{L}])(?:hindi|english|angrezi)\s+mein\s+(?:bol|samjha|keh)/iu.test(x) && !/^(?:zaroor|bilkul|theek\s+hai|achha|haan)[\s,!.]*$/i.test(x));
+      // (main's fourth ruling item 1: the switch line placed before the card's Hindi form is kept)
+      const lbK = guard.lineBeforeCard ? norm(guard.lineBeforeCard.text) : null;
+      const kept = ss0.filter((x) => (!!lbK && x === lbK) || (!/(?<![\p{L}])(?:hindi|english|angrezi)\s+mein\s+(?:bol|samjha|keh)/iu.test(x) && !/^(?:zaroor|bilkul|theek\s+hai|achha|haan)[\s,!.]*$/i.test(x)));
       if (kept.length && kept.length < ss0.length) { reply = kept.join(" "); guard.langAckDropped = true; }
     } else if (state.lastMove?.request === "language" && kindNow !== "safeguard") {
       const ss0 = sentences(reply).map(norm).filter(Boolean);

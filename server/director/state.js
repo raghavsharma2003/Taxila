@@ -3403,7 +3403,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard", "heardCap", "noReplyJoint", "afterWorkedLead", "tasteNoAsk"];
+const ONE_TURN = ["lineBeforeCard", "quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard", "heardCap", "noReplyJoint", "afterWorkedLead", "tasteNoAsk"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -3800,7 +3800,7 @@ const pictureLineFields = (d) => {
   return { ...(t ? { sayFirst: [t], helpJoint: { kind: "noPicture", form: t, by: d.pictureLine.by ?? "authored" } } : {}), ...(d.keepUp ? { keepBoard: true } : {}) };
 };
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
-const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
+const HELP_STRIP = ["lineBeforeCard", "quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
   "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom", "stepBoards", "problemLines", "hookSaid",
   // (main's R4 on the merged H4 + L2 tree, steering c4, c5-t02, c6 16: a give-up after a picture turn said the picture's caption again —
   // the help move was built from the picture move and kept its picture marks, so brain/say.js read a picture asked and said the caption
@@ -6018,9 +6018,8 @@ export const _afterGoOnForTest = (prev, input, out) => afterGoOn(prev, input, ou
 const goesOnSplit = (lm) => lm?.noFit === "vpc" || (!!lm?.noFit && !!lm?.vpcGoOn);
 /** to-brain 054 A, main's second ruling fix 1: a language request on the turn after her reply's go-on line (replyApart) — the held point and
  *  its card, the card asked in its own `hindi` form, as a Hindi request at that card is answered (help.js pickHelp, Brain 046 Q2), or as
- *  written where it has none. The turn opens on the script's joints.easierWords line (051 C5), never the switch line: the point is a first
- *  telling, and dc-r8-director28 T1 (switchFirst) forbids the switch line before one; a Hindi request's turn says one of the two (C5,
- *  hindiNoFormNoLine).
+ *  written where it has none. Main's fourth ruling item 1: the point first, then the switch line and the Hindi form (switchFirst allows the
+ *  switch line there and only there), or at a card with no form the script's joints.easierWords line (051 C5) and the card.
  *  `s` is the state of the turn, its language already set. → the turn, or null (no script card held). */
 function heldHindi(prev, input, s, h) {
   const live = String(h.ui?.ask?.itemId ?? "");
@@ -6035,8 +6034,12 @@ function heldHindi(prev, input, s, h) {
   const ew = Array.isArray(script.joints?.easierWords) && script.joints.easierWords.length ? helpJoint(script, "easierWords", { lang: "hinglish", lessonKey, n: prev.helpJointN?.easierWords ?? 0 }) : null;
   const d = { part: partId, kind: part.kind, request: "hindi", rung: hf ? { field: "hindi", path: hindiPathOf(script, part), text: "", board: part.board ?? null } : null, board: part.board ?? null,
     card: hf ? "hindiForm" : "keep", key: null, joint: null, ...(hf ? { hindiForm: hf } : { hindiAsked: true }), ...(ew ? { easierLine: ew } : {}), friend: friendOf };
-  const f = { ...(hf ? { hindiForm: hf } : {}), ...pictureLineFields(d) };
-  const move = { ...h.move, ...f, ...(f.sayFirst ? { sayFirst: [...f.sayFirst, ...(h.move.sayFirst ?? [])] } : {}), help: helpMark(d), request: "language", noLangAck: true };
+  // (main's fourth ruling item 1, dry steady c5-ch02-t01 38: the point first, as written — it is told here for the first time — then the switch
+  // line straight before the card's Hindi form; at a card with no form, the easier-words line before the card. Neither line is said before a
+  // point not yet told: "ise aur seedhe shabdon mein" pointed back at nothing. brain/say.js places it, brain/seams.js records its seam)
+  const lineBeforeCard = hf ? { kind: "hindiSwitch" } : ew?.text ? { kind: "easierWords", text: fillFriend(ew.text, friendOf).trim(), by: ew.by ?? "authored" } : null;
+  const f = { ...(hf ? { hindiForm: hf } : {}), ...(lineBeforeCard ? { lineBeforeCard } : {}) };
+  const move = { ...h.move, ...f, help: helpMark(d), request: "language", noLangAck: true };
   noteHelp(s, d);
   const ui = hf ? { ...h.ui, ask: { ...h.ui.ask, text: hf } } : h.ui;
   // (the walk keeps the card's own text, as helpStay keeps it for a Hindi form: the form is this turn's words for it)

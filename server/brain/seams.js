@@ -98,6 +98,9 @@ export const SEAM_TABLE = [
   ["closeApart", "card", "afterWorked"], ["closeApart", "point", "afterWorked"],
   // (to-brain 054 A: the no-other-drawing line at a key's check-in, then the go-on line the check-in would have taken)
   ["noPicture", "afterKeyGoOn", "afterKeyGoOn"],
+  // (to-brain 054 A, main's fourth ruling item 1: a language request after her reply's go-on line — the held point, then the switch line straight
+  // before the card's Hindi form, or at a card with no form the easier-words line before the card: state.js heldHindi)
+  ["point", "hindiSwitch", "hindiSwitch"], ["point", "easierWords", "easierWords"],
 ];
 const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
 /** dc-r8-director29 Brain 045 P6: help about another figure — it names a number (a whole number past 1, or a part of a fraction) the card does
@@ -365,6 +368,13 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // (main's second ruling fix 4: the card held apart from a right worked close, said first in its turn — the turn starts after that close,
     // closeApart — takes the close's own joint into it, as it did before the split)
     if (info.afterWorkedLead && i === 0 && prevKind === "start" && ["card", "point"].includes(k)) prevKind = recLeft = "closeApart";
+    // (main's fourth ruling item 1: the switch line, or the easier-words line, said after the point and straight before the card — state.js
+    // heldHindi, brain/say.js lineBefore — is the joint at that seam (the table's point > hindiSwitch, point > easierWords), said as its own part)
+    if ((k === "hindiSwitch" || k === "easierWords") && p.kind === k && seamJoint(prevKind, k) === k) {
+      seams.push({ left: recLeft, right: k, joint: k, form: p.text, by: info.lineBeforeCardBy ?? "authored" });
+      out.push({ ...p, joint: k }); recLeft = k; prevKind = k;
+      return;
+    }
     // (no joint between a point and its own card, a verdict and its own why: those are not in the table)
     // (help's joint is said by help, not by this table: its seam is recorded, with its form, below)
     let j = HELP_JOINT_KINDS.has(k) ? null : seamJoint(prevKind, k);

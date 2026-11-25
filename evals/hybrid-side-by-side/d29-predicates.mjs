@@ -30,7 +30,7 @@
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
-import { partStartOf, helpOtherFigure, reaskNoFormAt } from "./d30-predicates.mjs";
+import { partStartOf, helpOtherFigure, reaskNoFormAt, hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(",")}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(",")}}` : JSON.stringify(v ?? null));
@@ -149,7 +149,20 @@ export const D29_PREDICATES = {
     if (!pt) return null;
     const pp = r.pageParts; const at = pp.indexOf(pt);
     const ss = t.slice(pt.from, pp[at + 1]?.from ?? t.length).split(/(?<=[.!?\u0964])\s+/).map((x) => norm(x).toLowerCase()).filter(Boolean);
-    return ss.length && ss.every((x) => !said.has(x)) ? `the switch line before the ${pt.beat} point's first telling` : null;
+    if (!(ss.length && ss.every((x) => !said.has(x)))) return null;
+    // (to-brain 054 A, main's fourth ruling item 1: the one place a switch line may share a turn with a first telling — after the point, and
+    // straight before the card's Hindi form, so that "Hindi mein bolti hoon" is followed by Hindi words, never the same Hinglish. A switch line
+    // before the point, or with no Hindi form after it, is still read)
+    const sm = r.seams ?? []; const j = sm.findIndex((x) => x.joint === "hindiSwitch");
+    const form = j >= 0 ? norm(sm[j].form ?? "") : "";
+    const hf = form && hindiFormSaid(ctx.script, r) ? norm(hindiFormAt(ctx.script, r) ?? "").toLowerCase().replace(/[.!?\u0964]+$/, "") : "";
+    const at0 = form ? t.toLowerCase().indexOf(form.toLowerCase()) : -1;
+    const afterSwitch = at0 >= 0 ? norm(t.slice(at0 + form.length)).toLowerCase() : "";
+    // (a form that opens on a {slot} — "{friend} ka kehna hai …" — is said filled: what follows the switch line is the form, a name longer at most)
+    const head = hf.split(/\{\w+\}/)[0].trim();
+    const formNext = !!hf && (head.length >= 3 ? afterSwitch.startsWith(head.slice(0, 40)) : afterSwitch.split(" ").length <= hf.split(" ").length + 3);
+    const ok = j > 0 && sm[j + 1]?.right === "card" && sm.slice(0, j + 1).some((x) => x.right === "point") && at0 > pt.from && formNext;
+    return ok ? null : `the switch line before the ${pt.beat} point's first telling`;
   },
   /** T2: a remediation, or help on one, and its follow-up card share a turn only within 60 words (c6 steady 52, stuck 22, 66, steering 8; c4
    *  steering 12). */

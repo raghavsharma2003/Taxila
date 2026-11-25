@@ -33,7 +33,8 @@ describe("fix 1: a request made in reply to a go-on turn is honoured", () => {
   // (the steady child of the dry matrix, c5-maths-ch02-t01, up to row 37: a park at the bridge's check-in, its go-on line, "Hindi mein bolo")
   const LINES = ["haan, samajh aaya", "3", "6 kilometre", "pata nahi", "one sixth", "1 upon 3", "eight", "1/8", "picture dikhao", "between 0 and 1/5 hai na",
     "1/10 wala", "chaar gap", "dhai sau metre", "pehle main try karun?", "1 upon 11", "1/12", "pehle mark par", "kal maine cricket khela, sixer maara", "Hindi mein bolo"];
-  test("Hindi after her reply's go-on line: the held point, and the card asked in its own Hindi form, after the easier-words line", () => {
+  // (main's fourth ruling item 1 supersedes the easier-words lead: the point first, then the switch line before the Hindi form — r8-d37-054a3)
+  test("Hindi after her reply's go-on line: the held point, and the card asked in its own Hindi form, the switch line before it", () => {
     const rs = walkLines("c5-maths-ch02-t01", LINES);
     const go = rs.at(-2).state.lastMove, t = rs.at(-1);
     assert.equal(go.noFit, "aside"); assert.ok(go.replyApart);
@@ -43,7 +44,8 @@ describe("fix 1: a request made in reply to a go-on turn is honoured", () => {
     const form = String(m.hindiForm ?? "");
     assert.ok(form && t.ui.ask.text === form, "the card's Hindi form is the turn's question");
     assert.equal(m.request, "language"); assert.ok(m.noLangAck, "no switch line before a first telling (T1)");
-    assert.ok(script.joints.easierWords.some((f) => f.hi === m.sayFirst?.[0]), "the easier-words line leads");
+    assert.equal(m.lineBeforeCard?.kind, "hindiSwitch", "the switch line comes after the point, before the Hindi form");
+    assert.ok(!script.joints.easierWords.some((f) => f.hi === m.sayFirst?.[0]), "no easier-words line leads");
     assert.equal(m.help?.request, "hindi"); assert.ok(m.help.hindiForm);
     assert.equal(t.state.ctx.lang, "hindi");
     // (the walk keeps the card's own text: the form is this turn's words for it)
