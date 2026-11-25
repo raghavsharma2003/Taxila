@@ -350,3 +350,27 @@ describe("RULING-C2 item 5 / RULING-C3 item 1: LADDER_FIELDS names the then-card
     }
   });
 });
+
+// RULING-C3 item 6 (pr4's made rows): questionThreeRunning reads the park's re-ask as the wait's own re-ask only inside a wait — her turn
+// before the park has a wait cue (a try-first or a bare yes); outside a wait it reads as at 8144b10cb (the park is a turn of the run).
+describe("RULING-C3 item 6: questionThreeRunning exempts the park's re-ask only inside a wait", async () => {
+  const { SHORT_ASK_FORMS, questionObjectAt } = await import("../server/director/question-run.js");
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const sc = scriptOf("c4-maths-ch05-t01"), q = questionObjectAt(sc, ".skills[0].explain[0].ask");
+  const prompt = norm(q.prompt.hi), reask = norm(q.reask.hi), part = "c4-maths-ch05-t01-s1:explain:1:ask";
+  const R = (text, column, seams) => ({ who: "teacher", text, cell: { part, column }, seams: seams.map((right, k) => ({ left: k ? seams[k - 1] : "start", right, joint: null })) });
+  const card = R(`Kitchen mein Maa ne garam roti banayi. ${prompt}`, "right", ["verdict", "card"]);
+  const parkQ = R(`Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Chalo, pehle yahan se aage badhte hain. ${reask}`, "aside", ["park", "card"]);
+  const yt = norm(sc.joints.yourTurn[0].hi ?? sc.joints.yourTurn[0]);
+  const missInv = R(`2/3 sahi nahi hai. Roti ke saare tukde gino. ${yt}`, "wrong", ["missVerdict", "help", "yourTurn"]);
+  const missQ = R(`2/3 sahi nahi hai. Roti ke saare tukde gino. ${reask}`, "wrong", ["missVerdict", "help", "card"]);
+  const helpY = R(`Roti ke saare tukde ungli se gino, phir sirf rang wale. ${prompt}`, "yes", ["help", "card"]);
+  const shortY = R(SHORT_ASK_FORMS[0], "yes", ["reaskShort"]);
+  const fl = (rows) => lessonFlags({ rows, script: sc }).filter((f) => f.predicate === "questionThreeRunning").map((f) => f.row);
+  test("inside a wait (card, a bare haan's short ask, the park's re-ask, help, help): the park counts as the wait's re-ask — not flagged", () => {
+    assert.deepEqual(fl([card, C("haan"), shortY, C("sixer"), parkQ, C("haan"), helpY, C("haan"), helpY]), []);
+  });
+  test("outside a wait (card, a miss ending on the invitation, the park's re-ask, the question twice more): flagged as at 8144b10cb", () => {
+    assert.deepEqual(fl([card, C("2/3"), missInv, C("sixer"), parkQ, C("2/3"), missQ, C("2/3"), missQ]), [8]);
+  });
+});

@@ -248,8 +248,10 @@ export const D37B_PREDICATES = {
     const n = m ? Number(m[1]) : 3;
     const her = [];
     for (let j = i; j >= 0 && her.length < n; j--) if (L.rows[j].who === "teacher") her.push(j);
-    // (RULING-C2 item 1: the park's re-ask inside a wait is treated as the wait's own re-ask)
-    const k = her.findIndex((j) => waitReaskAt(L, j, ctx) || parkReaskAt(L, j, ctx?.script));
+    // (RULING-C2 item 1: the park's re-ask inside a wait is treated as the wait's own re-ask. RULING-C3 item 6: only inside a wait — her
+    // turn before the park has a wait cue; outside a wait the park's re-ask is a turn of the run, as at 8144b10cb)
+    const inWaitPark = (j) => { const b = prevTeacher(L, j); return b >= 0 && waitCue(L.rows[b]) && parkReaskAt(L, j, ctx?.script); };
+    const k = her.findIndex((j) => waitReaskAt(L, j, ctx) || inWaitPark(j));
     return k < 0 || k >= 3 ? was : null;
   },
   /** RULING-C2 item 1 (049 B4, d34c's gated reading, re-pinned by name): the run counts hearings — a short ask or an invitation is none — so
