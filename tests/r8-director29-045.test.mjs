@@ -65,14 +65,25 @@ describe("P3: two rungs and two cues", () => {
     for (const [p, t, i] of [["stuck", "c4", 36], ["stuck", "c5t01", 20], ["stuck", "c5t02", 20], ["offtopic", "c5t02", 16], ["steering", "c5t02", 28],
       ["stuck", "c6", 20], ["offtopic", "c6", 16], ["steering", "c6", 28]]) assert.ok(flagged(p, t, "stepToldEarly").has(i), `${p} ${t} row ${i}`);
   });
-  test("keyEarly reads a follow-up card keyed with its remediation's wordings unsaid", () => {
+  // (re-pinned by name, to-brain 054 C5 — main's ruling on question 4 and RULING-C2 item 4: at a follow-up card help is the card's own
+  // simpler, then the key; a remediation's sayAlt and simpler are no rungs of the then-card's ladder. The old pin guarded P3's "a follow-up
+  // card's ladder runs on into its remediation": these nine rows were keyed with the remediation's wordings unsaid and nothing of the
+  // card's own ladder unsaid, which C5 makes the right moment for the key. keyEarly still guards a key given with the card's own simpler unsaid, and
+  // d37c's thenHelpOtherBoard now guards the remediation's wordings said at the card)
+  test("keyEarly (C5): a follow-up card keyed with its own simpler said is not early; keyed with its own simpler unsaid it is", () => {
     for (const [p, t, i] of [["steady", "c5t01", 88], ["stuck", "c5t01", 42], ["offtopic", "c5t01", 22], ["steering", "c5t01", 10],
-      ["steady", "c6", 8], ["steady", "c6", 90], ["stuck", "c6", 42], ["stuck", "c6", 76], ["steering", "c6", 10]]) assert.ok(flagged(p, t, "keyEarly").has(i), `${p} ${t} row ${i}`);
+      ["steady", "c6", 8], ["steady", "c6", 90], ["stuck", "c6", 42], ["stuck", "c6", 76], ["steering", "c6", 10]]) assert.ok(!flagged(p, t, "keyEarly").has(i), `${p} ${t} row ${i}`);
+    // (stuck c5-t01: row 40 said the follow-up card's own simpler as help; with it unsaid, the key at 42 is early)
+    const L = lesson("stuck", "c5t01");
+    const rows = L.rows.map((r, n) => (n !== 40 ? r : { ...r, text: "Yeh jawab sahi nahi hai. Ab phir se socho, jawab kya hoga?", seams: r.seams.filter((x) => x.right !== "help"), pageParts: (r.pageParts ?? []).filter((x) => x.part !== "simpler") }));
+    assert.ok(lessonFlags({ rows, script: L.script }).some((f) => f.predicate === "keyEarly" && f.row === 42));
   });
   test("requestHelped reads the \"nothing easier\" line said for a follow-up card while its remediation's wordings are unsaid", () => {
     for (const [p, t, i] of [["stuck", "c6", 46], ["steering", "c6", 16], ["steering", "c5t02", 16]]) assert.ok(flagged(p, t, "requestHelped").has(i), `${p} ${t} row ${i}`);
   });
-  test("pickHelp: an asked step's simpler first, the step asked again; none at the second request; a follow-up card's ladder runs on into its remediation", async () => {
+  // (the last assertion re-pinned by name, to-brain 054 C5 / RULING-C2 item 4: the old pin guarded P3's ladder running on into the
+  // remediation's wordings; C5 drops them — the then-card's ladder is its own simpler only; thenHelpOtherBoard guards it in the walk)
+  test("pickHelp: an asked step's simpler first, the step asked again; none at the second request; a follow-up card's ladder is its own simpler (C5)", async () => {
     const { pickHelp, ladderOf, helpPart, addSaid } = await import("../server/director/help.js");
     const script = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${TOPIC.c4}.json`), "utf8"));
     const S = script.skills[0].skillId;
@@ -82,7 +93,8 @@ describe("P3: two rungs and two cues", () => {
     assert.equal(pickHelp({ script, part: `${S}:worked:step1`, request: "clarify", said: addSaid([], d.rung.text, 1) }), null, "the second request: the walk tells the step");
     const then = `${S}:rem:0:then`;
     const fields = ladderOf(script, helpPart(script, then)).map((r) => r.path);
-    assert.ok(fields.some((f) => /remediation\[0\]\.(?:sayAlt|simpler)$/.test(f)), `the remediation's wordings are on the then-card's ladder: ${fields}`);
+    assert.ok(!fields.some((f) => /remediation\[0\]\.(?:sayAlt|simpler)$/.test(f)), `the remediation's wordings are off the then-card's ladder: ${fields}`);
+    assert.ok(fields.length >= 1 && fields.every((f) => /remediation\[0\]\.then\.simpler$/.test(f)), `the then-card's own simpler: ${fields}`);
   });
 });
 
