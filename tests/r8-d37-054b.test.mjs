@@ -565,4 +565,10 @@ describe("sixth ruling, items 4 to 9: the checks", async () => {
     // (the key, then the next card: not flagged)
     assert.deepEqual(flags([...lead, T2(`${KEY1} ${e2}`, "yes", ["key", "card"])], "cardWholeAfterTryOrYes"), []);
   });
+  const HELP1 = "Roti ke saare tukde ungli se gino, phir sirf rang wale.", HELP2 = "Roti ke dono tukde ek jitne hain, isliye dono ka naam ek hi hai.";
+  test("item 5 (pr3 B): at wait two, after the reask was heard in help, help passes waitSecondNotReask only where it ends on the wait's own question", () => {
+    const lead = [asked1, C("pata nahi"), T1(`${HELP1} ${e1Reask}`, "give_up", ["help", "card"]), C("haan"), short1, C("haan")];
+    assert.deepEqual(flags([...lead, T1(`${HELP2} ${invite}`, "yes", ["help", "yourTurn"])], "waitSecondNotReask"), [6]);
+    assert.deepEqual(flags([...lead, T1(`${HELP2} ${lastQ(e1)}`, "yes", ["help", "card"])], "waitSecondNotReask"), []);
+  });
 });

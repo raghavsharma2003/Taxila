@@ -198,7 +198,8 @@ export const D37B_PREDICATES = {
     if (!reaskOf(ctx.script, w.P, lang)) return null;
     // (RULING-B3: wait two never says a reask the child has just heard — where the turn that last said the question ended on it, wait two
     // is what wait three is: help ending on the question (a told step or a key ends on another question, so waitAt never reads it))
-    if (helpTurn(r) && reaskHeardBefore(L, w.turns[0], ctx.script, w.P)) return null;
+    // (main's sixth ruling, item 5 — pr3's B: help that ends on the wait's own question; help ending on "Ab tum batao." is no question)
+    if (helpTurn(r) && atQuestionOf(ctx.script, r.text) === w.P && reaskHeardBefore(L, w.turns[0], ctx.script, w.P)) return null;
     return endsOnReask(ctx.script, w.P, r.text, lang) ? null : `the wait's second turn at ${w.P} does not end on its reask: "${sentencesOf(r.text).at(-1) ?? ""}"`;
   },
   /** B.4 (main's ruling on question 3): 049 B4's count with the wait's re-ask exempt — the re-ask overrides the third-turn invitation, so it
