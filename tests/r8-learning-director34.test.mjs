@@ -13,8 +13,9 @@ import { d35Errors, D35_READY, isD35, undrawnValueHits, undrawnValueNotes, drawn
 
 const FIX = (f) => JSON.parse(readFileSync(new URL(`./fixtures/scripts-023/${f}.json`, import.meta.url), "utf8"));
 // (director35 clause 53, release 61: c4-maths-ch01-t02 staged again)
-const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
-const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
+// (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71)
+const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01", "c6-maths-ch07-t03"];
+const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01"];
 const load = (d, t) => JSON.parse(readFileSync(new URL(`../data/${d}/${t}.json`, import.meta.url), "utf8"));
 const S = Object.fromEntries([...LIVE.map((t) => [t, load("lesson-scripts", t)]), ...STAGED.map((t) => [t, load("lesson-scripts-staged", t)])]);
 const FROZEN = "./fixtures/eval-results/hybrid-side-by-side/results/2026-11-24-director34/scripts";

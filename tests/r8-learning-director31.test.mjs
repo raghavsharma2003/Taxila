@@ -38,6 +38,8 @@ test("020 the gate: on for the six live scripts and the rewritten staged one, th
   // (to-brain 052 D: c4-maths-ch01-t02 is live, b3c7e81fd: the lists keep their order, the script is read from data/lesson-scripts)
   // (director35 clause 53, release 61: c4-maths-ch01-t02 staged again): it stays in `staged`, read from data/lesson-scripts-staged
   staged.push(...d33);
+  // (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71): the lists keep their order, the script is read from data/lesson-scripts
+  live.push(...staged.splice(staged.indexOf("c6-maths-ch07-t03"), 1));
   const stagedOf = (t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts-staged/${t}.json`, import.meta.url), "utf8"));
   const scripts = [...live.map((t) => scriptOf(t)), ...staged.map(stagedOf)];
   for (const s of scripts) {

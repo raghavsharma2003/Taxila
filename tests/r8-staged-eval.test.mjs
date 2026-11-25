@@ -13,8 +13,9 @@ import { stagedTopicsOf, useStaged, snapshotStaged } from "../evals/hybrid-side-
 // (dc-r8-director31 item 10: c5-maths-ch02-t03 went live as judged; director32: c6-maths-ch07-t01 too; one stays staged)
 // (to-brain 052 D: c4-maths-ch01-t02 went live, b3c7e81fd; the two staged rewrites of d33 stay staged)
 // (director35 clause 53, release 61: c4-maths-ch01-t02 staged again)
-const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
-const PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01"];
+// (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71)
+const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01"];
+const PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01", "c6-maths-ch07-t03"];
 
 test("by default a staged topic has no script: the server refuses it (kit fallback, never the staged file)", () => {
   setScriptForTest(undefined);

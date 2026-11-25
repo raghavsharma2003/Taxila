@@ -14,13 +14,14 @@ import { scriptedTopicIds } from "../server/content/next-topic.js";
 
 // (to-brain 052 D: c4-maths-ch01-t02 went live, b3c7e81fd (dc-r8-director33, clause 16), the seventh; the two staged scripts stay staged)
 // (director35 clause 53, release 61: c4-maths-ch01-t02 staged again)
-const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
-const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
+// (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71)
+const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01", "c6-maths-ch07-t03"];
+const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01"];
 const ls = (d) => readdirSync(new URL(`../data/${d}/`, import.meta.url)).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort();
 
-test("data/lesson-scripts holds exactly the six live scripts; c5-maths-ch02-t03 and c6-maths-ch07-t01 are no longer staged; c4-maths-ch01-t02 is staged again", () => {
+test("data/lesson-scripts holds exactly the seven live scripts; c5-maths-ch02-t03, c6-maths-ch07-t01 and c6-maths-ch07-t03 are no longer staged; c4-maths-ch01-t02 is staged again", () => {
   assert.deepEqual(ls("lesson-scripts"), LIVE);
-  for (const t of ["c5-maths-ch02-t03", "c6-maths-ch07-t01"]) assert.ok(!ls("lesson-scripts-staged").includes(t), `${t} is not staged`);
+  for (const t of ["c5-maths-ch02-t03", "c6-maths-ch07-t01", "c6-maths-ch07-t03"]) assert.ok(!ls("lesson-scripts-staged").includes(t), `${t} is not staged`);
   for (const t of STAGED) assert.ok(ls("lesson-scripts-staged").includes(t), `${t} is staged`);
 });
 

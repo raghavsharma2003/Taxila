@@ -15,7 +15,8 @@ const files = readdirSync(DIR).filter((f) => f.endsWith(".json")).sort();
 test("the live scripts: the four v2 pilots, c5-maths-ch02-t03 (live as judged, dc-r8-director31) and c6-maths-ch07-t01 (director32)", () => {
   // (to-brain 052 D: c4-maths-ch01-t02 live, b3c7e81fd, the seventh)
   // (director35 clause 53, release 61: c4-maths-ch01-t02 staged again)
-  assert.deepEqual(files, ["c4-maths-ch05-t01.json", "c5-maths-ch02-t01.json", "c5-maths-ch02-t02.json", "c5-maths-ch02-t03.json", "c6-maths-ch06-t01.json", "c6-maths-ch07-t01.json"]);
+  // (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71)
+  assert.deepEqual(files, ["c4-maths-ch05-t01.json", "c5-maths-ch02-t01.json", "c5-maths-ch02-t02.json", "c5-maths-ch02-t03.json", "c6-maths-ch06-t01.json", "c6-maths-ch07-t01.json", "c6-maths-ch07-t03.json"]);
 });
 
 for (const f of files) {
