@@ -101,9 +101,10 @@ const PIN = {
   //                   rule 1, rule 2, rule 3 (total), P
   // (re-pinned at d36's close, from the scripts as the round left them: every rule-1 and rule-2 hit fixed, every first turn at 60 or
   // under, the P lines the answer boards cleared; the commit that moved each is in the close's repins note)
-  // (director36, 2026-11-25: c4-maths-ch05-t01 failed one gate line on a rewritten sentence and keeps its release-61 script: clauses
-  // 65 and 70; its pin back to the value before the round)
-  "c4-maths-ch05-t01": [0, 0, 64, 9],
+  // (director36, 2026-11-25: c4-maths-ch05-t01 failed one gate line on a rewritten sentence and kept its release-61 script for
+  // release 62: clauses 65 and 70. Round d37, decision item 2 of director36: the rewritten script is back with that one sentence,
+  // s1 remediation 2's easier wording, returned to its director35 text; the pin is the rewritten script's again)
+  "c4-maths-ch05-t01": [0, 0, 59, 7],
   "c5-maths-ch02-t01": [0, 0, 60, 4],
   "c5-maths-ch02-t02": [0, 0, 60, 2],
   "c5-maths-ch02-t03": [0, 0, 60, 2],
