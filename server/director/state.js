@@ -1117,7 +1117,9 @@ function tasteServesPark(s, topic) {
   const k = String(topic ?? "").toLowerCase();
   // (the topic as the child's interests name it: "Virat" is cricket's)
   const of = (t) => { const x = String(t ?? "").toLowerCase(); return Object.entries(PERSONA_INTERESTS ?? {}).find(([n, ws]) => n === x || (Array.isArray(ws) && ws.includes(x)))?.[0] ?? x; };
-  const e = k ? (s.later ?? []).find((x) => !x.servedAt && x.share && x.parkSaid && of(x.topic) === of(k)) : null;
+  // (to-brain 054 D2, director36 c5-t02 and c6 offtopic 18: a park of something the child TOLD — its words on the entry, `said` — is not
+  // served by her AI exchange, which asks about her taste, not about what they told; it is returned at the next boundary)
+  const e = k ? (s.later ?? []).find((x) => !x.servedAt && x.share && x.parkSaid && !String(x.said ?? "").trim() && of(x.topic) === of(k)) : null;
   if (!e) return false;
   s.later = serveLater(s.later, e.id, s.turn);
   return true;

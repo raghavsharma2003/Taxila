@@ -99,3 +99,18 @@ describe("D1: a return led by a verdict opens on a back-to word; with none left 
   });
 });
 
+describe("D2: her AI exchange does not serve a park of something the child told; it is returned at the next boundary", async () => {
+  const { out } = await walkSay("c6-maths-ch06-t01", ["haan, samajh aaya", "9 cm", "unatees", "9 cm", "pandrah cm", "30", "20 centimetres", "pata nahi, aap batao", SIXER, "aapko virat pasand hai?", "chauka", "mujhe nahi pata", "drawing karke samjhao", "chaar metre", "haan"]);
+  test("offtopic c6 (director36 row 18 → 20): the AI line after the park is no return; the park stays open", () => {
+    const ai = out[9];
+    assert.deepEqual(ai.seams, ["aiQuestion"]); assert.ok(!ai.lm.tasteAsked?.served && !ai.guard.returnSaid, ai.text);
+    assert.match(ai.text, /^Main AI teacher hoon, isliye meri apni koi pasand nahi hoti\. /);
+    assert.ok((ai.state.later ?? []).some((e) => e.topic === "cricket" && e.servedAt == null && e.said === SIXER));
+  });
+  test("and the park is returned at a later boundary, before the wrap", () => {
+    const k = out.findIndex((t, n) => n > 9 && t.seams.includes("return"));
+    assert.ok(k > 9);
+    assert.equal(out[k].lm.returned?.topic, "cricket");
+  });
+});
+
