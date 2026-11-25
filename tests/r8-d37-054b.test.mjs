@@ -431,11 +431,17 @@ describe("sixth ruling, item 1: a try-first is answered as a request, wherever i
     const turns = await w.play(["give", "give", "try", "haan"]);
     w.done();
     // (re-pinned by d37 RULING-G item 7: the second give-up's help, the point's wording at the card, ends on the card's question — not the
-    // invitation — so the try-first after it is her third turn at the question: the go-ahead and the invitation (no longer the short ask))
+    // invitation — so the try-first after it is her third turn at the question)
+    // (re-pinned by d37 G3 item 14, main's ruling: a child who has just said "let me try myself" is told to go ahead and nothing more —
+    // "Haan, pehle tum try karo." alone, as in g/dry1s; never the go-ahead and the invitation)
     assert.equal(turns[1].seams.at(-1), "card", turns[1].text); assert.ok(turns[1].lm.pointHelpReask);
     assert.ok(goAhead(turns[2]), turns[2].text);
-    assert.ok(endsOnYourTurn(w.script, turns[2].text), turns[2].text);
-    assert.equal(turns[3].lm.waitN, 2);
+    assert.equal(turns[2].text, "Haan, pehle tum try karo.");
+    assert.ok(!endsOnYourTurn(w.script, turns[2].text), turns[2].text);
+    // (the bare haan after that go-ahead alone hears the card again, as the walk does after a go-ahead alone with no wait begun — not the
+    // key, not help; G2's waitN 2 here came from the invitation item 14 takes back; reported to main)
+    assert.equal(turns[3].lm.waitN, undefined); assert.ok(!turns[3].lm.gave, turns[3].text); assert.ok(!turns[3].seams.includes("help"), turns[3].text);
+    assert.equal(atQuestionOf(w.script, turns[3].text), w.P, turns[3].text);
   });
   test("in a wait at a step (after the reask): the go-ahead and the invitation; the count is kept, and the next bare haan is wait three", async () => {
     const w = await walkTo("c4-maths-ch05-t01", "step");

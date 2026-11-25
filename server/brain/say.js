@@ -3958,10 +3958,6 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       if (state.lastMove?.hindiForm && tail === card) { body = [...body, tail]; guard.hindiFormSaid = tail; }
       tail = dot(norm(state.lastMove.yourTurn)); guard.yourTurn = tail; guard.cardQuestionOnly = false; guard.reaskShort = undefined; body = body.filter((x) => !REPOSE_FRAME.test(x));
     }
-    // (d37 RULING-G item 7, with main's sixth ruling on cause B item 1: a try-first after two of her turns at the card — the second the help in
-    // the point's wording ending on the card's question — is the go-ahead and the invitation; with no question left in the turn to put it in
-    // place of, the invitation follows the go-ahead, never the go-ahead alone)
-    else if (state.lastMove?.yourTurn && !tail && state.lastMove?.request === "selftry" && !asideQ) { tail = dot(norm(state.lastMove.yourTurn)); guard.yourTurn = tail; }
     // (to-brain 052 B4: the third turn running at one question or later that parks an aside or replies to one ends on the walk's pointed
     // invitation — answerFirst — in place of the question; what the turn says before it stays)
     if (state.lastMove?.answerFirst && !state.lastMove?.yourTurn && tail && (/[?？]\s*$/.test(norm(tail)) || tail === card || guard.cardQuestionOnly || (guard.stepAsk && tail === guard.stepAsk) || (guard.reaskShort && tail === guard.reaskShort.text)) && !asideQ) {
