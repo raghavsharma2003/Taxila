@@ -138,3 +138,26 @@ describe("C4: help at an own step is the step's simpler, then the key — never 
     assert.deepEqual(flagsOf([C("1/3 km"), T(`Nahi. ${sk.workedExample.yourStep.simpler.hi} Ab tum batao.`, part, "wrong", ["missVerdict", "help", "yourTurn"])], "ownStepWorkedHelp", script), []);
   });
 });
+
+describe("C5 (main's ruling on question 4): at a follow-up card help is its own simpler, then the key — no remediation wording", () => {
+  for (const TOPIC of ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c6-maths-ch06-t01"]) {
+    const script = scriptOf(TOPIC), sk = script.skills[0];
+    sk.remediation.forEach((rem, k) => {
+      if (!rem.then) return;
+      const part = `${sk.skillId}:rem:${k}:then`;
+      test(`${TOPIC} rem ${k}: the then's simpler, then the key`, () => {
+        const d1 = pickHelp({ script, part, request: "give_up", said: [] });
+        assert.equal(nk(d1.rung.text), nk(rem.then.simpler.hi));
+        const d2 = pickHelp({ script, part, request: "give_up", said: addSaid([], rem.then.simpler.hi, 1) });
+        assert.equal(d2.card, "close", JSON.stringify(d2.rung));
+      });
+    });
+  }
+  test("thenHelpOtherBoard (gated) trips on a remediation's sayAlt said at its follow-up card, not on the card's own simpler or the remediation's own turn", () => {
+    const script = scriptOf("c4-maths-ch05-t01"), sk = script.skills[0], rem = sk.remediation[1], part = `${sk.skillId}:rem:1:then`;
+    assert.ok(!PENDING.has("thenHelpOtherBoard"));
+    assert.deepEqual(flagsOf([C("Golu"), T(`Nahi. ${rem.sayAlt.hi}`, part, "wrong", ["missVerdict", "help", "card"])], "thenHelpOtherBoard", script), [1]);
+    assert.deepEqual(flagsOf([C("Golu"), T(`Nahi. ${rem.then.simpler.hi}`, part, "wrong", ["missVerdict", "help", "card"])], "thenHelpOtherBoard", script), []);
+    assert.deepEqual(flagsOf([C("Golu"), T(`Nahi. ${rem.sayAlt.hi}`, part, "misconception", ["missVerdict", "remediation", "card"])], "thenHelpOtherBoard", script), []);
+  });
+});

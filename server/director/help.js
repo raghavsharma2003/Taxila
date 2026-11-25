@@ -208,8 +208,10 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
     case "check": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
     // (dc-r8-director29 Brain 045 P3: a remediation's unsaid wordings are help for its follow-up card — the card's own hint, then the
     // remediation's sayAlt, then its simpler, each over its own board: c5-t01 steady 88, stuck 42; c6 steady 8, 90, stuck 42, 76)
-    case "then_card": { const rp = String(part.path).replace(/\.then$/, ""); const rb = boardAt(script, `${rp}.board`) ?? part.board;
-      rungs = [rung("simpler", `${part.path}.simpler`, part.board), ...(rp !== part.path ? [rung("sayAlt", `${rp}.sayAlt`, rb), rung("simpler", `${rp}.simpler`, rb)] : [])]; break; }
+    // (to-brain 054 C5, main's ruling on question 4 — director36 c4 stuck 32: at a follow-up card help is the card's own simpler, then the key.
+    // A remediation's wordings are written about the remediation's board (ruling 1 of round d36): over the card's board they can be untrue,
+    // and on their own board at the card they were heard as the wrong picture)
+    case "then_card": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
     // (dc-r8-director27 P3: the worked example's own step is the worked example's — its wordings follow the step's own)
     case "your_step": { const wb = boardAt(script, `${part.worked}.board`) ?? part.board;
       // (Brain 049 B3: a problem restated is not help at the child's own step — problemAlt is said at an asked step only; c4 stuck 46, c5-t02
