@@ -16,6 +16,7 @@ const { classifyFast, targetFor } = await import("../server/director/classify.js
 const { dryReading } = await import("../evals/hybrid-side-by-side/dry-reader.mjs");
 const { __test } = await import("../server/routes/lesson.js");
 const { newLearnerState } = await import("../server/comprehension/fuse.js");
+const { D37D_PREDICATES: P } = await import("../evals/hybrid-side-by-side/d37d-predicates.mjs");
 const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
 
 const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
@@ -179,3 +180,39 @@ describe("the said-again line (RULING-A7 item 5): the script's own park form tha
   });
 });
 
+describe("D.5 predicates, gated: each trips on a made row and passes its fixed twin", () => {
+  const T = (o) => ({ who: "teacher", ...o, seams: (o.seams ?? []).map((right) => ({ right })) });
+  const C = (text, intent = null) => ({ who: "child", text, ...(intent ? { intent } : {}) });
+  test("registered and gated", () => {
+    for (const k of ["returnColdAfterVerdict", "shareParkUnreturned", "aiAsksTold"]) { assert.equal(typeof PREDICATES[k], "function", k); assert.ok(!PENDING.has(k), k); }
+  });
+  test("returnColdAfterVerdict", () => {
+    const cold = T({ text: "Bilkul sahi. Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", returnSaid: true, seams: ["verdict", "return"] });
+    const warm = T({ text: "Sahi jawab. Ab cricket ki baat karte hain: usmein sabse mazedaar kya hai?", returnSaid: true, seams: ["verdict", "return"] });
+    const alone = T({ text: "Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", returnSaid: true, seams: ["return"] });
+    assert.ok(P.returnColdAfterVerdict({ rows: [] }, cold, 0));
+    assert.equal(P.returnColdAfterVerdict({ rows: [] }, warm, 0), null);
+    assert.equal(P.returnColdAfterVerdict({ rows: [] }, alone, 0), null, "a return alone, after the go-on turn, is D1's own shape");
+  });
+  test("shareParkUnreturned", () => {
+    const park = T({ text: "Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Pehle is sawaal ka jawab do.", seams: ["park", "answerFirst"] });
+    const ai = T({ text: "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein sabse achha kya lagta hai?", returnSaid: true, seams: ["aiQuestion"] });
+    const bye = T({ text: "Aaj ke liye itna hi, phir milte hain.", move: "wrap", seams: ["goodbye"] });
+    const ret = T({ text: "Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", returnSaid: true, seams: ["return"] });
+    const bad = [C(SIXER, "aside"), park, C("aapko virat pasand hai?", "aside"), ai, C("chauka"), bye];
+    assert.ok(P.shareParkUnreturned({ rows: bad }, bye, 5));
+    const good = [C(SIXER, "aside"), park, C("haan"), ret, C("Rohit"), bye];
+    assert.equal(P.shareParkUnreturned({ rows: good }, bye, 5), null);
+    assert.equal(P.shareParkUnreturned({ rows: bad }, ai, 3), null, "read at the end row only");
+  });
+  test("aiAsksTold", () => {
+    const fav = T({ text: "Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?", seams: ["aiQuestion"] });
+    const next = T({ text: "Main AI hoon, meri koi pasand nahi hoti. Virat ko tum kiske saath dekhte ho?", seams: ["aiQuestion"] });
+    assert.ok(P.aiAsksTold({ rows: [C("aapko virat pasand hai?"), fav] }, fav, 1));
+    assert.equal(P.aiAsksTold({ rows: [C("aapko virat pasand hai?"), next] }, next, 1), null);
+    assert.equal(P.aiAsksTold({ rows: [C("aapko pasand hai?"), fav] }, fav, 1), null, "a question that names nothing");
+    const said = T({ text: "Bilkul sahi. Tumne cricket ki baat chhedi thi; ab batao, uske baare mein kya kehna tha?", returnSaid: true, seams: ["verdict", "return"] });
+    assert.ok(P.aiAsksTold({ rows: [C(SIXER, "aside"), T({ text: "Cricket ki baat bhi hogi.", seams: ["park"] }), C("4"), said] }, said, 3));
+    assert.equal(P.aiAsksTold({ rows: [C("mujhe cricket pasand hai", "aside"), T({ text: "Cricket ki baat bhi hogi.", seams: ["park"] }), C("4"), said] }, said, 3), null, "an aside that told nothing");
+  });
+});
