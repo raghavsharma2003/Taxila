@@ -759,3 +759,12 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 - `fd-r8-wait-with-no-end` (2026-11-24): After a bare "haan" or the try-first line the walk waits with short asks and invitations for six to eleven turns while the question is neither said nor on the board (three steady lessons)
 - `fd-r8-bridge-help-is-the-bridge-again` (2026-11-24): A bridge's easier wording, said as help at a check-in between skills, is the bridge with words taken out (five lessons, five judges)
 - `fd-r8-turn-shape-is-the-largest-register-cause` (2026-11-24): Of the judges' 180 register rows in director35, 65 are the length or shape of a turn; help 34, script sentences and reasons 35, her closes and other 28, fixed forms 18
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-r8-sentence-named-a-figure-over-another-board` (2026-11-25): c4-maths-ch05-t01 stuck 32: a remediation's easier wording rewritten to name "Pinky-Golu wali chocolate" is said by the walk over the remediation's own 10-piece chocolate; one contradiction, one live lesson failed
+- `fd-r8-safety-turn-on-a-right-answer` (2026-11-25): The child-safety turn fired on the right answer "yes, they are" (c4-maths-ch01-t02 offtopic 9 to 12); the walk then graded the child's next two "haan" against the open card as wrong and a model drafted a teaching turn
+- `fd-r8-register-rows-are-the-turns-shape` (2026-11-25): After a scripts-only round register is 3.5 in nine of nine for the tenth run; the judges' 180 rows: shape 66 (65), other 36 (28), help 31 (34), fixed forms 20 (18), script sentences and reasons 27 (35)
+- `fd-r8-first-turn-still-among-worst-by-shape` (2026-11-25): The first teaching turn at 51 to 60 words is still among a lesson's five worst register rows in five topics, for its shape after two give-ups, not its length
+- `fd-r8-cold-read-and-second-read-yield` (2026-11-25): Nine six-pass cold reads found five faults that would have failed a lesson; a second independent read of the fixes found four more; the closing tests found three; one flagged fix was left by main and failed its lesson
+- `fd-r8-closeoffboard-flag-wrong` (2026-11-25): The run's closeOffBoard predicate flags a miss verdict that names the child's answer over the answered card's own posing board: five rows, 0 by the gate's text in four judges' hand counts
