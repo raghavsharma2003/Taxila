@@ -23,8 +23,9 @@ import { VPC_MAX } from "../../server/director/state.js";
 
 const REPLY = new Set(["asideReply", "aiReply", "park"]);
 /** Main's second ruling fix 2 and third ruling item 3: her reply's seam — a reply, a park, or her side-topic line said at a check-in, seam
- *  "aside", as the turn's first seam. → its index, or -1. */
-const replyAt = (k) => k.findIndex((x, n) => REPLY.has(x) || (n === 0 && x === "aside"));
+ *  "aside". Main's sixth ruling item 3: the aside after any leading seams that teach nothing (afterKeyGoOn > aside > point > card), not only as
+ *  the turn's first seam. → its index, or -1. */
+const replyAt = (k) => k.findIndex((x, n) => REPLY.has(x) || (x === "aside" && k.slice(0, n).every((y) => !TEACH.has(y))));
 const AFTER_JOINTS = new Set(["afterAside", "afterPark", "afterAiLine"]);
 /** Third ruling item 3: the said-again turn after a go-on line is excused only as the order shapes it — no after* joint, within VPC_MAX. */
 const againShaped = (r) => !(r.seams ?? []).some((x) => AFTER_JOINTS.has(String(x.joint ?? ""))) && wordsOf(r.text) <= VPC_MAX;

@@ -196,3 +196,13 @@ describe("sixth ruling item 2: replyCheckin and asideCheckin — the exemption i
     assert.deepEqual(both(turn("verdict", "aside", "checkin")), [null, null]);
   });
 });
+
+describe("sixth ruling item 3: replyIntoPoint reads a reply seam after leading seams that teach nothing", () => {
+  const sm = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
+  test("afterKeyGoOn > aside > point > card is flagged; afterKeyGoOn > aside > card is not; verdict > aside > point > card is not her reply's", () => {
+    assert.ok(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: sm("afterKeyGoOn", "aside", "point", "card") }), 0, {}));
+    assert.ok(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: sm("helpSpent", "park", "point", "card") }), 0, {}));
+    assert.equal(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: sm("afterKeyGoOn", "aside", "card") }), 0, {}), null);
+    assert.equal(PREDICATES.replyIntoPoint({ rows: [] }, T({ seams: sm("verdict", "aside", "point", "card") }), 0, {}), null);
+  });
+});
