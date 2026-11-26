@@ -33,7 +33,7 @@ import { pagesOf, isLeadText } from "./d27-predicates.mjs";
 import { goAheadAloneAt } from "./d37h-predicates.mjs";
 import { partStartOf, helpOtherFigure, reaskNoFormAt } from "./d30-predicates.mjs";
 import { newPointBeforeCheckin, REPLY_SEAMS } from "./d37a-predicates.mjs";
-import { c1InviteAt } from "./d38a-predicates.mjs";
+import { c1InviteAt, heardOfLast } from "./d38a-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(",")}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(",")}}` : JSON.stringify(v ?? null));
@@ -252,7 +252,9 @@ export const D29_PREDICATES = {
     if (!(n >= 5 && !KEY_WORDS.test(String(r.text ?? "")) && !r.keyFact)) return null;
     // (main's ruling A3 item 3 of d38, to-brain 055 C1: a fifth miss where a wording is unsaid is C1's one turn — help in an unsaid wording
     // ending on an invitation, the first at that question (d38a's own reading) — and the key comes at the miss after it)
-    if (c1InviteAt(L, i, ctx?.script)) return null;
+    // (d38 RULING-A7 P4: an earlier invitation-help at that card is C1's only where it came at the cap — the question heard four times, or
+    // the fifth miss — so an order-049 B4 invitation-help before does not make the correct C1 turn at the fifth miss flag)
+    if (c1InviteAt(L, i, ctx?.script, (j) => heardOfLast(L, j, ctx?.script) >= 4 || missesOnQuestion(rows, j) >= 5)) return null;
     return `wrong answer ${n} to one question and no key`;
   },
 };

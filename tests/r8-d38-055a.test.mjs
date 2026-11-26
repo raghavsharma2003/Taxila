@@ -71,7 +71,8 @@ describe("keyWithWordingUnsaid read to main's ruling (RULING-A2 A(i), B, C), mad
   const four = [at(Q), C("5"), at(`Nahi. ${R}`), C("5"), at(`Nahi. ${Q}`), C("phir se bolo"), at(Q), C("5")];
   const told = at("Nahi. Do jama do chaar. Yahan tak theek hai?"); Object.assign(told, KEY);
   test("A(i): a told answer after a C1 turn at that question (after the fourth hearing, a wording, ending on the invitation) passes", () => {
-    assert.deepEqual(flagsOf([...four, at("Nahi. Ungliyon par gino. Chalo, ab tumhari baari."), C("5"), told], SCRIPT, "keyWithWordingUnsaid"), []);
+    // (d38 RULING-A7 P4: C1's turn is read only where it ends on an invitation — one of the script's joints.yourTurn forms: the fixture carries it)
+    assert.deepEqual(flagsOf([...four, at("Nahi. Ungliyon par gino. Chalo, ab tumhari baari."), C("5"), told], { ...SCRIPT, joints: { yourTurn: [{ hi: "Chalo, ab tumhari baari." }] } }, "keyWithWordingUnsaid"), []);
   });
   test("A(i), the other side: the same told answer with no C1 turn, or with the wording said before the fourth hearing, flags", () => {
     assert.deepEqual(flagsOf([...four, told], SCRIPT, "keyWithWordingUnsaid"), [8]);

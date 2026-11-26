@@ -109,15 +109,19 @@ export function questionOfTurn(script, text) {
   return Q.exact.get(k) ?? Q.slotted.find((x) => x.re.test(k))?.path ?? null;
 }
 /** The child asking to hear the question again, as said (Roman Hindi, Hinglish or English). */
-const HEAR_AGAIN_SAID = /(?<![\p{L}])(?:phir\s+se\s+(?:bolo|bataiye|batao|boliye|puchho|poochho|suna(?:o|iye))|fir\s+se\s+(?:bolo|batao)|dobara\s+(?:bolo|batao|boliye|suna(?:o|iye))|ek\s+baar\s+(?:aur|phir)\s+(?:bolo|batao)|sawaal\s+(?:kya\s+(?:tha|hai)|phir\s+se)|kya\s+(?:bola|kaha|poocha)|kaunsa\s+sawaal|repeat|say\s+(?:it\s+)?again|what\s+was\s+the\s+question)(?![\p{L}])/iu;
+const HEAR_AGAIN_SAID = /(?<![\p{L}])(?:phir\s+se\s+(?:bolo|bataiye|batao|boliye|puchho|poochho|suna(?:o|iye))|fir\s+se\s+(?:bolo|batao)|dobara\s+(?:bolo|batao|boliye|suna(?:o|iye))|ek\s+baar\s+(?:aur|phir)\s+(?:bolo|batao)|sawaal\s+(?:kya\s+(?:tha|hai)|phir\s+se)|(?:aapne|aap\s+ne|tumne|tum\s+ne)\s+kya\s+(?:bola|kaha|poocha)|kaunsa\s+sawaal|repeat|say\s+(?:it\s+)?again|what\s+was\s+the\s+question)(?![\p{L}])/iu;
 /** The child asking for Hindi, as said. */
 const HINDI_SAID = /(?<![\p{L}])(?:hindi\s+(?:mein|me|main)|in\s+hindi)(?![\p{L}])/iu;
 const hasHindiForm = (script, path) => { const o = at(script, path); return !!(o && formsOf(o.hindi).length); };
 /** The child's line before row i asks for the question at `path` (to hear it again, or in Hindi where it has a Hindi form). */
+/** d38 RULING-A7 P4: "what did you say?" said alone — the whole line, no one else named in it (a side-topic question, "virat ne kya kaha
+ *  tha?", is no request for the question). */
+const WHAT_SAID_ALONE = /^(?:(?:aapne|tumne|ma'?am|didi|achha)\s+)?kya\s+(?:bola|kaha|poocha)(?:\s+(?:aapne|tumne))?(?:\s+(?:tha|hai))?[\s?.!]*$/iu;
 export const ownRequest = (L, i, script, path) => {
   const c = L.rows[i - 1];
   if (c?.who !== "child") return false;
-  return HEAR_AGAIN_SAID.test(String(c.text ?? "")) || (HINDI_SAID.test(String(c.text ?? "")) && hasHindiForm(script, path));
+  const t = String(c.text ?? "").replace(/\s+/g, " ").trim();
+  return HEAR_AGAIN_SAID.test(t) || WHAT_SAID_ALONE.test(t) || (HINDI_SAID.test(t) && hasHindiForm(script, path));
 };
 /** Her hearings of each question, rows 0..i: { [path]: n }. */
 function hearingsUpTo(L, i, script) {
@@ -130,6 +134,8 @@ const keySeam = (r) => (r.seams ?? []).some((x) => x.right === "key");
 const lastQuestion = (L, i, script) => { for (let k = i - 1; k >= 0; k--) { const x = L.rows[k]; if (x.who !== "teacher") continue; const p = questionOfTurn(script, x.text); if (p) return { P: p, j: k }; } return null; };
 /** Main's ruling A(i): a C1 turn at question P before row i — a turn of hers after P's fourth hearing that says a wording of the part (a
  *  sentence of it heard in that turn, near-same reading above) and does not end on P. */
+// (d38 RULING-A7 P4: only a turn that said a wording of the part not said before it in the lesson AND ended on an invitation, or the one
+// return turn — a turn that repeats a wording already said, or ends otherwise, is no C1 turn)
 const c1TurnBefore = (L, i, script, part, P) => {
   const list = (wordingsOf(script, part) ?? []).map((p) => hiOf(at(script, p))).filter((t) => t && t.trim());
   if (!P || !list.length) return false;
@@ -138,8 +144,7 @@ const c1TurnBefore = (L, i, script, part, P) => {
     // (main's ruling A4: C1's one turn at a return — ending on the question because it answers a side-topic — is that question's C1 turn)
     if (x.who === "teacher" && (hearingsUpTo(L, j - 1, script)[P] ?? 0) === 4 && c1ReturnAt(L, j, script, P)) return true;
     if (x.who !== "teacher" || questionOfTurn(script, x.text) === P || (hearingsUpTo(L, j - 1, script)[P] ?? 0) < 4) continue;
-    const own = new Set(sentences(x.text).map(keyOf));
-    if (list.some((t) => sentences(t).some((s) => heardNear(s, own)))) return true;
+    if (invitesOwn(script, x) && newWordingIn(L, j, script, part)) return true;
   }
   return false;
 };
@@ -185,18 +190,26 @@ const c1InviteShape = (L, i, script) => {
   const r = L.rows[i];
   return r?.who === "teacher" && invitesOwn(script, r) && (r.seams ?? []).some((x) => x.right === "help") && newWordingIn(L, i, script, String(r.cell?.part ?? ""));
 };
-export function c1InviteAt(L, i, script) {
+// (d38 RULING-A7 P4: an earlier turn of that shape is C1's only where it came at the cap — `atCap(j)`, the caller's reading (keyAfterFive:
+// the question heard four times, or the fifth miss); an order-049 B4 invitation-help before the cap is no C1 turn)
+export function c1InviteAt(L, i, script, atCap = () => true) {
   if (!script || !c1InviteShape(L, i, script)) return false;
   const part = String(L.rows[i].cell?.part ?? "");
-  for (let j = 0; j < i; j++) if (String(L.rows[j].cell?.part ?? "") === part && c1InviteShape(L, j, script)) return false;
+  for (let j = 0; j < i; j++) if (String(L.rows[j].cell?.part ?? "") === part && c1InviteShape(L, j, script) && atCap(j)) return false;
   return true;
 }
+/** d38 RULING-A7 P4: the hearings of the question her last turn ending on a question asked, rows before i (this file's count). */
+export const heardOfLast = (L, i, script) => { const q = lastQuestion(L, i, script); return q ? hearingsUpTo(L, i - 1, script)[q.P] ?? 0 : 0; };
 /** Main's ruling A4 (d38): the one fifth hearing on her own allowed — C1's one turn at a return: a turn that (a) opens on her reply to a
  *  side-topic (SIDE_OPEN, its first seam), (b) then says help in a wording of the part not said before in the lesson, (c) ends on the
  *  question P, (d) is the first such turn at P. Its count is the caller's: the fifth hearing only (a sixth is never allowed). */
 export function c1ReturnAt(L, i, script, P) {
   if (!script || !P || !c1ReturnShape(L, i, script, P)) return false;
   for (let j = 0; j < i; j++) if (c1ReturnShape(L, j, script, P)) return false;
+  // (d38 RULING-A7 P4: and only where no C1 turn was given at that question before it — help in a new wording ending on an invitation at
+  // that part, after the question's fourth hearing)
+  const part = String(L.rows[i].cell?.part ?? "");
+  for (let j = 0; j < i; j++) if (String(L.rows[j].cell?.part ?? "") === part && c1InviteShape(L, j, script) && (hearingsUpTo(L, j - 1, script)[P] ?? 0) >= 4) return false;
   return true;
 }
 
