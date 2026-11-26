@@ -360,6 +360,35 @@ describe("r7-brain-v68.test.mjs", () => {
   describe("held board: Brain's predicates over 16 lessons", () => {
     const RUN = "2026-11-09-director16";
     const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01", "c5-t01": "c5-maths-ch02-t01" };
+    // (RULING-A5 item 1, round d38: the one reading-through of "an unsaid card on screen". All three must hold: (a) the card was said in an
+    // earlier teacher turn of this walk (its first 30 characters, or its question as a turn's last sentence) and is still the open card;
+    // (b) this turn keeps the board up before it (same board, no switch), never draws one; (c) its last sentence is one of the
+    // script's own joints.yourTurn invitation forms)
+    const nrm = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+    const lastSentence = (t) => nrm(t).split(/(?<=[.!?।])\s+/).at(-1) ?? "";
+    const keptCardInvite = ({ text, card, H, prevUp, saidBefore, script }) => {
+      if (!card || !H || !prevUp) return false;
+      const c = nrm(card), cq = lastSentence(card);
+      if (!saidBefore.some((t) => nrm(t).includes(c.slice(0, 30)) || (cq && nrm(t).endsWith(cq)))) return false;
+      if (H.switchTo || JSON.stringify(H.board ?? null) !== JSON.stringify(prevUp.board ?? null)) return false;
+      const forms = (script?.joints?.yourTurn ?? []).flatMap((x) => (typeof x === "string" ? [x] : [x?.hi, x?.en])).filter(Boolean).map(nrm);
+      return forms.includes(lastSentence(text));
+    };
+    const keptInvites = [];
+    test("RULING-A5 item 1, the other side: a fresh board, an unsaid card or no invitation still leaves the card unsaid", () => {
+      const script = { joints: { yourTurn: [{ hi: "Ab tum batao.", en: "Now you tell me." }] } };
+      const card = "Ungli kone se chal ke wapas usi kone tak kul kitne cm chali?";
+      const board = { template: "measured@1", params: { shape: "triangle", sides: [4, 5, 6] } };
+      const text = "Abhi yeh sahi nahi hai. Kinaara matlab shape ki bahar wali line. Ab tum batao.";
+      const base = { text, card, H: { board, unit: "u:e1" }, prevUp: { board, unit: "u:e1" }, saidBefore: [`Socho. ${card}`], script };
+      assert.equal(keptCardInvite(base), true, "the kept board under an invitation to a card said earlier reads through");
+      assert.ok(heldFlags({ text, card }, null).some((x) => /unsaid card/.test(x.why)), "heldFlags itself still flags the turn");
+      assert.equal(keptCardInvite({ ...base, H: { board: { template: "shape@1", params: { shape: "hexagon" } }, unit: "u:e1" } }), false, "a board drawn fresh for an unsaid card fails");
+      assert.equal(keptCardInvite({ ...base, H: { board, unit: "u:e1", switchTo: { atChar: 10, unit: "u:e2" } } }), false, "a board switched in the turn fails");
+      assert.equal(keptCardInvite({ ...base, prevUp: null }), false, "no board up before: a drawn board fails");
+      assert.equal(keptCardInvite({ ...base, saidBefore: ["Pichla sawaal alag tha."] }), false, "a card never said before fails");
+      assert.equal(keptCardInvite({ ...base, text: "Abhi yeh sahi nahi hai. Kinaara matlab shape ki bahar wali line." }), false, "a turn not ending on an invitation fails");
+    });
     for (const data of ["director16", "D11"]) test(`${data} scripts: ≤1 change a turn, a change only at a spoken new unit's first part, every spoken part on the held unit; H5 reads 0 on the walk`, async () => {
       const KEEP = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
       const errs = [], h5 = [];
@@ -370,6 +399,7 @@ describe("r7-brain-v68.test.mjs", () => {
           delete sc.recordedRun; setScriptForTest(T, sc);
           const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
           let up = null;
+          const saidBefore = []; // (RULING-A5 item 1: her earlier teacher turns of this walk)
           for (const pl of plans) {
             const n = pl.row - 1; if (!rows[n]) continue;
             replyDeps.chat = async () => ({ text: rows[n].text });
@@ -380,9 +410,10 @@ describe("r7-brain-v68.test.mjs", () => {
               const a = whiteboardIntentOf({ lessonId: "L", turn: n, beat: { id: "visual", type: "explain" }, next, kit, item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null,
                 line: { text: out.reply, ...(out.guard?.parts ? { parts: out.guard.parts } : {}) } });
               const H = a.intent.held;
-              if (!H) continue;
+              if (!H) { saidBefore.push(out.reply); continue; }
               held++; if (H.switchTo) switched++;
               if (a.intent.segments) errs.push(`${persona} ${topic} ${n}: a held turn paged`);
+              const prevUp = up;
               up = heldUpOf(H);
               // (H5 on the walk: no card pinned unsaid; every spoken part on its held unit)
               // (the held predicates above already hold every spoken part to its unit; here: no card on screen that is not said)
@@ -390,8 +421,13 @@ describe("r7-brain-v68.test.mjs", () => {
               // (v6.10 T2: an ask-again turn keeps the card said on the turn before it, and says only its one line)
               // (dc-r8-director23 C: a picture turn asks the card's question alone — the harness's cardQ row mark, as on a W turn)
               // (Brain 044 Small: a second miss in a row asks for the answer in a short line — the card was said on the turn before, as an ask-again's)
-              const f = heldFlags({ text, card: out.guard?.cardHeld || out.guard?.askAgain || out.guard?.reaskShort ? null : pl.p.r.ui?.ask?.text ?? null, ...(out.guard?.cardQuestionOnly || out.guard?.cardHeldForTry ? { cardQ: true } : {}) }, null); // (as turn.js: A4 drops ui.ask)
+              const card = out.guard?.cardHeld || out.guard?.askAgain || out.guard?.reaskShort ? null : pl.p.r.ui?.ask?.text ?? null;
+              let f = heldFlags({ text, card, ...(out.guard?.cardQuestionOnly || out.guard?.cardHeldForTry ? { cardQ: true } : {}) }, null); // (as turn.js: A4 drops ui.ask)
+              // (RULING-A5 item 1: a card said in an earlier teacher turn of the walk and still open, its board KEPT in this turn, under a
+              // turn that ends on an invitation to answer it, is not an unsaid card — 049 B4's invitation-ending help, and C1's)
+              if (f.some((x) => /unsaid card/.test(x.why)) && keptCardInvite({ text, card, H, prevUp, saidBefore, script: sc })) { f = f.filter((x) => !/unsaid card/.test(x.why)); keptInvites.push(`${data} ${persona} ${topic} ${n}`); }
               if (f.length) h5.push(`${persona} ${topic} ${n}: ${f.map((x) => x.why).join("; ")}`);
+              saidBefore.push(out.reply);
             } catch (e) { errs.push(`${persona} ${topic} ${n}: ${e.message.slice(0, 160)}`); }
           }
         }
@@ -400,6 +436,8 @@ describe("r7-brain-v68.test.mjs", () => {
       assert.ok(held > turns * 0.8, `${held} of ${turns} turns held`);
       assert.ok(switched > 0);
       assert.deepEqual(h5, []);
+      // (RULING-A5 item 1: the turns read through, named — C1's help ending on an invitation, steering c6 24 on Learning's data)
+      assert.deepEqual(keptInvites.filter((k) => k.startsWith(`${data} `)), data === "D11" ? ["D11 steering c6 24"] : []);
     });
   });
 
