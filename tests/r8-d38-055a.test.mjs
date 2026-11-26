@@ -164,3 +164,49 @@ describe("the frozen director37 rows (to-brain 055: the rows the order names)", 
     assert.deepEqual(lessonFlags({ rows, script }).filter((x) => x.predicate === "questionFifthOnHerOwn").map((x) => x.row), [34, 42]);
   });
 });
+
+describe("main's ruling A4 (d38): C1's one turn at a return passes questionFifthOnHerOwn and questionFiveTimes, and nothing else new", () => {
+  const Q = "Do aur do kitne hote hain?", R = "Toh do jama do kya hua?", P = "t-s1:e1:card";
+  const at = (t, extra = {}) => T(t, { cell: { part: P }, ...extra });
+  const RET = [{ left: "start", right: "aiReply" }, { left: "aiReply", right: "help" }, { left: "help", right: "card" }];
+  const ret = (t) => at(t, { cell: { part: P, column: "aside_reply" }, seams: RET });
+  // (four hearings: the card, its reask after help, the card again, the reask after help — two of the card's three wordings said)
+  const four = [at(Q), C("5"), at(`Nahi. Ungliyon par gino. ${R}`), C("6"), at(`Nahi. ${Q}`), C("7"), at(`Nahi. Point ki doosri baat. ${R}`), C("aapko cricket pasand hai?"),
+    at("Main AI hoon, meri koi pasand nahi hoti. Tum kiske saath dekhte ho?"), C("papa ke saath")];
+  const both = (rows) => ({ fifth: flagsOf(rows, SCRIPT, "questionFifthOnHerOwn"),
+    five: rows.map((r, i) => PREDICATES.questionFiveTimes({ rows }, r, i, { script: SCRIPT, o: {} })).map((x, i) => (x ? i : -1)).filter((i) => i >= 0) });
+  test("her reply, help in a wording not said before, the question, at the fifth hearing, the first such turn: passes both", () => {
+    assert.deepEqual(both([...four, ret(`Achha, batane ke liye shukriya. Ab wapas aate hain. Point ki aasaan baat. ${R}`)]), { fifth: [], five: [] });
+  });
+  test("a fifth hearing after a side-topic with NO new help still flags (a wording said before; no help at all)", () => {
+    assert.deepEqual(both([...four, ret(`Achha, batane ke liye shukriya. Point ki doosri baat. ${R}`)]), { fifth: [10], five: [10] });
+    assert.deepEqual(both([...four, ret(`Achha, batane ke liye shukriya. Ab wapas aate hain. ${R}`)]), { fifth: [10], five: [10] });
+  });
+  test("a turn that does not open on her reply to a side-topic flags, help or not", () => {
+    assert.deepEqual(both([...four.slice(0, 7), C("pata nahi"), at(`Point ki aasaan baat. ${Q}`, { seams: [{ left: "start", right: "help" }, { left: "help", right: "card" }] })]), { fifth: [8], five: [8] });
+  });
+  test("a second such turn at the question flags", () => {
+    const rows = [at(Q), C("5"), at(`Nahi. ${R}`), C("aapko cricket pasand hai?"), at("Main AI hoon. Tum kiske saath dekhte ho?"), C("papa ke saath"),
+      ret(`Achha. Point ki doosri baat. ${Q}`), C("6"), at(`Nahi. ${R}`), C("virat"), ret(`Achha, shukriya. Point ki aasaan baat. ${Q}`)];
+    assert.deepEqual(both(rows), { fifth: [10], five: [10] });
+  });
+  test("a sixth hearing flags, its shape whatever it is (the fifth here the child's own \"phir se bolo\")", () => {
+    const rows = [...four.slice(0, 7), C("phir se bolo"), at(Q), C("aapko cricket pasand hai?"), at("Main AI hoon. Tum kiske saath dekhte ho?"), C("papa ke saath"),
+      ret(`Achha, batane ke liye shukriya. Point ki aasaan baat. ${R}`)];
+    assert.deepEqual(both(rows), { fifth: [12], five: [12] });
+  });
+});
+
+describe("keyWithWordingUnsaid after C1's turn at a return (main's ruling A4: it is that question's C1 turn, RULING-A2 A(i))", () => {
+  const Q = "Do aur do kitne hote hain?", R = "Toh do jama do kya hua?", P = "t-s1:e1:card";
+  const at = (t, extra = {}) => T(t, { cell: { part: P }, ...extra });
+  const RET = [{ left: "start", right: "aiReply" }, { left: "aiReply", right: "help" }, { left: "help", right: "card" }];
+  const four = [at(Q), C("5"), at(`Nahi. ${R}`), C("6"), at(`Nahi. ${Q}`), C("7"), at(`Nahi. ${R}`), C("aapko cricket pasand hai?"), at("Main AI hoon. Tum kiske saath dekhte ho?"), C("papa ke saath")];
+  const told = at("Nahi. Do jama do chaar. Yahan tak theek hai?", KEY);
+  test("the told answer after it passes, a wording still unsaid", () => {
+    assert.deepEqual(flagsOf([...four, at(`Achha. Point ki aasaan baat. ${R}`, { seams: RET }), C("8"), told], SCRIPT, "keyWithWordingUnsaid"), []);
+  });
+  test("after the same turn with no new wording (not C1's), the told answer still flags", () => {
+    assert.deepEqual(flagsOf([...four, at(`Achha. ${R}`, { seams: RET }), C("8"), told], SCRIPT, "keyWithWordingUnsaid"), [12]);
+  });
+});

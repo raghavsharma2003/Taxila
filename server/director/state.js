@@ -3790,7 +3790,7 @@ function capCueOf(input, col) {
  *  question's or the AI line's), a park, a said-again line — would be the fifth counted hearing of the open question on her own. The turn is
  *  walked as built (stepCells, help, the B4 pass) on a copy; where it acknowledges the side-topic and ends on the open question said (no
  *  short ask, no invitation in its place) and that question has been heard four times, the cap is read as for a give-up at that moment
- *  (heardCap: the key, or the told step; C1's help there is not built, below). The child's own request for the question (HEAR_Q, a language request) is honoured, as
+ *  (heardCap: C1's help ending on the question's re-ask — main's ruling A4 — the key, or the told step). The child's own request for the question (HEAR_Q, a language request) is honoured, as
  *  always. → { cap, input, built } | null. */
 function returnFifthOf(prev, input, heard, said) {
   if (input?.event !== "turn" || input.branch || prev?.safeguard || input.cls?.flags?.distress || input.cls?.flags?.wantsToStop || recordedWalk(input)) return null;
@@ -3820,28 +3820,36 @@ function returnFifthOf(prev, input, heard, said) {
     built.state.qHeard = heard;
     // (step()'s own pass: a reply that comes through heldTurn is acknowledged as the main path acknowledges one)
     if (input.cls?.asideReply && prev.splitHold && !built.state.lastMove.asideAck) built.state.lastMove = { ...built.state.lastMove, asideAck: true };
+    // (and its record: a side-topic read so is the turn's column, as step() writes the cell before the B4 pass)
+    if (col === "aside" && built.state.lastMove.cell?.column !== "aside") built.state.lastMove = { ...built.state.lastMove, cell: { ...(built.state.lastMove.cell ?? {}), column: "aside" } };
     yourTurnPass(prev, built, script, input.text ?? "");
   } catch { return null; }
   const lm = built.state.lastMove;
-  const aside = !!(lm.asideAck || lm.returnReply || lm.returned) || (built.state.later?.length ?? 0) > (prev.later?.length ?? 0);
-  if (!aside || lm.answerFirst || lm.yourTurn || lm.waitShort || lm.hindiForm) return null;
+  // (or the turn the walk reads as a side-topic said again — the honest AI line asked again goes on into the question it held: 054 D3)
+  const aside = !!(lm.asideAck || lm.returnReply || lm.returned || lm.tasteAsked) || (built.state.later?.length ?? 0) > (prev.later?.length ?? 0);
+  // (main's ruling A4 of d38: after C1's turn at a return — the question's one allowed fifth hearing — a further side-topic at that question gets
+  // her reply and the told answer, though the turn as built would end on 052 B4's pointed invitation: never a sixth hearing, never a park
+  // that only points at a question heard five times)
+  const pointed = !!lm.answerFirst && (heard[P] ?? 0) >= 5;
+  if (!aside || (lm.answerFirst && !pointed) || lm.yourTurn || lm.waitShort || lm.hindiForm) return null;
   const back = card ? built.ui?.ask?.itemId === liveId && atQuestionOf(script, built.ui.ask.text ?? "") === P
     : !!(lm.stepAsk?.prompt && !lm.splitClose && atQuestionOf(script, lm.stepAsk.prompt) === P);
   if (!back) return null;
   const { request: _rq, ...rest } = input.cls ?? {};
   const give = { ...input, text: "pata nahi", cls: { ...rest, outcome: "no_evidence", asideReply: false, cardUnsaid: false, flags: { ...(rest.flags ?? {}), dontKnow: true, confused: false } } };
   const cap = heardCap(base, give, heard, said);
-  // (NOT built — C1's help ending on an invitation at a return: the gated inviteAfterPark (d34b: no invitation in a turn that replies to an
-  // aside or parks one, help or not) and yourTurnNotThird flag that turn, dry offtopic c4-ch01-t02 34 — d38 builder A3's report, for main to
-  // rule. Where C1 is the cap's turn here, the return is as built)
-  if (cap?.capInvite) return null;
+  if (pointed && cap?.capInvite) return null;
+  // (main's ruling A4 of d38: where C1 is the cap's turn here — a wording unsaid, none given at this question — the turn is her reply, its
+  // joint, that wording as help and the QUESTION (its re-ask), never an invitation: a child who has just talked about cricket must hear the
+  // question to know what she is asked (the gated inviteAfterPark). C1's one turn at the question; yourTurnPass reads `capReask`)
   return cap ? { cap, input: give, built, prev: base } : null;
 }
 /** Main's ruling A3 item 2 of d38: the cap's turn at a return keeps what the return turn as built said of the side-topic — her reply (the
  *  move's asideAck and returnReply, the state's returnAnswer), a park (the state's `later`), a parked topic served (`returned`). */
 function graftReturn(prev, built, out) {
   const b = built.state, lmB = b.lastMove ?? {};
-  const f = Object.fromEntries(["asideAck", "returnReply", "returned"].filter((k) => lmB[k] != null).map((k) => [k, lmB[k]]));
+  const f = Object.fromEntries(["asideAck", "returnReply", "returned", "tasteAsked"].filter((k) => lmB[k] != null).map((k) => [k, lmB[k]]));
+  if (b.tasteAsked && b.tasteAsked !== prev.tasteAsked) out.state.tasteAsked = b.tasteAsked;
   if (out.state.lastMove) out.state.lastMove = { ...out.state.lastMove, ...f };
   if (out.move) out.move = { ...out.move, ...f };
   if ((b.later?.length ?? 0) > (prev.later?.length ?? 0) || b.later !== prev.later) out.state.later = b.later;
@@ -4443,7 +4451,9 @@ export function step(prev, input) {
   if (cap?.P && !cap.noCap && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, heardCap: cap.P }; if (out.move) out.move = { ...out.move, heardCap: cap.P }; }
   // (to-brain 055 C1: the cap's help in a wording still unsaid ends on an invitation — yourTurnPass, below)
   // (and the key after the misses that give it — help.js pickHelp's C1 at KEY_AFTER_MISSES, helpBefore — the same: its question the live card's)
-  const capInviteP = cap?.capInvite ? cap.P : pre?.decision?.c1 && prev?.lastUi?.ask?.text ? atQuestionOf(scriptFor(input.kit)?.script ?? null, prev.lastUi.ask.text) : null;
+  // (main's ruling A4 of d38: C1 at a return ends on the question's re-ask, not the invitation)
+  const capReaskP = ret5 && cap?.capInvite ? cap.P : null;
+  const capInviteP = capReaskP ? null : cap?.capInvite ? cap.P : pre?.decision?.c1 && prev?.lastUi?.ask?.text ? atQuestionOf(scriptFor(input.kit)?.script ?? null, prev.lastUi.ask.text) : null;
   // (main's ruling A(i) of d38: the parts at which a C1 turn has been given — one a question; kept on the state)
   { const c1P = cap?.capInvite ? cap.pre?.decision?.part ?? null : pre?.decision?.c1 ? pre.decision.part ?? null : null;
     if (out?.state && (c1P || prev?.c1At)) out.state.c1At = { ...(prev?.c1At ?? {}), ...(out.state.c1At ?? {}), ...(c1P ? { [c1P]: true } : {}) }; }
@@ -4707,7 +4717,7 @@ export function step(prev, input) {
     const wg = wait?.reaskHeard || wait?.fifth ? { waitGive: true } : {};
     if (wait && out.state.lastMove) { out.state.lastMove = { ...out.state.lastMove, waitN: wait.n, waitP: wait.P, ...wg }; if (out.move) out.move = { ...out.move, waitN: wait.n, waitP: wait.P, ...wg }; }
   }
-  if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "", { capInvite: capInviteP });
+  if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "", { capInvite: capInviteP, capReask: capReaskP });
   if (out?.state && prev?.answerAt && !out.state.answerAt) out.state.answerAt = prev.answerAt;
   // (RULING-G item 4: the held card asked in its Hindi form — brain/say.js keeps the switch line as the turn's lead part, so the card's
   // board comes in at the card's first word, never under the switch line)

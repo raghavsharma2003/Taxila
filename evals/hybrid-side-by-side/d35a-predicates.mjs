@@ -15,7 +15,7 @@ import { saidIn } from "../../server/director/script.js";
 import { sameBoardRef } from "../../server/director/state.js";
 import { drawnPagesOf } from "./drawn-pages.mjs";
 import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst } from "../../server/director/question-run.js";
-import { ownRequest } from "./d38a-predicates.mjs";
+import { ownRequest, c1ReturnAt } from "./d38a-predicates.mjs";
 
 const key = (t) => String(t ?? "").toLowerCase().replace(/\{\w+\}/g, " ").replace(/[^\p{L}\p{N}\s]+/gu, " ").replace(/\s+/g, " ").trim();
 /** Whether a row says one of the script's joints.noPicture forms (or records the noPicture joint). */
@@ -161,6 +161,9 @@ export const D35A_PREDICATES = {
     // the question ("phir se bolo", a Hindi request where the question has a Hindi form) is honoured whatever the count. Was: every column
     // but a miss, a give-up and "other" passed. The child's request is read from the child's words by d38a's own list, not by the column)
     if (ownRequest(L, i, ctx.script, P)) return null;
+    // (main's ruling A4 of d38: C1's one turn at a return — her reply to a side-topic, help in a wording not said before, the question — at
+    // the fifth hearing; d38a's own reading)
+    if (n === 5 && c1ReturnAt(L, i, ctx.script, P)) return null;
     return n >= 5 ? `the question ${P} heard a ${n}th time` : null;
   },
   /** B4: a right answer whose close cannot share its turn with the next card ends on the go-on line, never a check-in (director34 c4

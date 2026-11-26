@@ -13,7 +13,8 @@
 //                          (prompt, reask, hindi; Hinglish or English), whole, re-asked, in Hindi, or after help or a remediation — that is
 //                          not the answer to the child's own request for it ("phir se bolo", a request for Hindi where the question has a
 //                          Hindi form). The short ask and the invitation are no hearing (they say no form of it). director37: offtopic
-//                          c4-ch01-t02 34 (the fifth, after her reply to a side-topic) and 42 (the seventh, after the go-ahead).
+//                          c4-ch01-t02 34 (the fifth, after her reply to a side-topic) and 42 (the seventh, after the go-ahead). Main's
+//                          ruling A4 (d38): C1's one turn at a return passes at the fifth hearing (c1ReturnAt), and nothing else new.
 // The checks' OWN lists and readings, written out here and not imported from the walk (help.js ladderSpec, question-run.js atQuestionOf and
 // HEAR_Q), so that a gap in one does not pass both.
 
@@ -134,6 +135,8 @@ const c1TurnBefore = (L, i, script, part, P) => {
   if (!P || !list.length) return false;
   for (let j = i - 1; j >= 0; j--) {
     const x = L.rows[j];
+    // (main's ruling A4: C1's one turn at a return — ending on the question because it answers a side-topic — is that question's C1 turn)
+    if (x.who === "teacher" && (hearingsUpTo(L, j - 1, script)[P] ?? 0) === 4 && c1ReturnAt(L, j, script, P)) return true;
     if (x.who !== "teacher" || questionOfTurn(script, x.text) === P || (hearingsUpTo(L, j - 1, script)[P] ?? 0) < 4) continue;
     const own = new Set(sentences(x.text).map(keyOf));
     if (list.some((t) => sentences(t).some((s) => heardNear(s, own)))) return true;
@@ -154,6 +157,30 @@ const waitTold = (L, i, q) => {
   return k > 0 && bare(L.rows[k - 1]);
 };
 const ENDS = (r) => ["safeguard", "goodbye"].includes(String(r?.move ?? ""));
+/** Main's ruling A4 (d38): the seams her turn opens on when it replies to a side-topic — her reply to the child's reply (an aside's, her
+ *  return question's), the AI line's reply, a park, a said-again line. This check's own list. */
+const SIDE_OPEN = new Set(["asideReply", "aiReply", "park", "aside"]);
+/** Whether row i is a C1 turn at a return in a wording said for the first time: none of the wording's sentences heard before row i (this
+ *  file's near-same test), a sentence of it said in the row. */
+const newWordingIn = (L, i, script, part) => {
+  const before = saidUpTo(L, i - 1), own = new Set(sentences(L.rows[i].text).map(keyOf));
+  return (wordingsOf(script, part) ?? []).map((p) => hiOf(at(script, p))).filter((t) => t && t.trim())
+    .some((t) => !sentences(t).some((x) => heardNear(x, before)) && sentences(t).some((x) => heardNear(x, own)));
+};
+const c1ReturnShape = (L, i, script, P) => {
+  const r = L.rows[i];
+  if (r?.who !== "teacher" || questionOfTurn(script, r.text) !== P) return false;
+  const first = (r.seams ?? []).find((x) => x.left === "start")?.right ?? (r.seams ?? [])[0]?.right;
+  return SIDE_OPEN.has(String(first ?? "")) && newWordingIn(L, i, script, String(r.cell?.part ?? ""));
+};
+/** Main's ruling A4 (d38): the one fifth hearing on her own allowed — C1's one turn at a return: a turn that (a) opens on her reply to a
+ *  side-topic (SIDE_OPEN, its first seam), (b) then says help in a wording of the part not said before in the lesson, (c) ends on the
+ *  question P, (d) is the first such turn at P. Its count is the caller's: the fifth hearing only (a sixth is never allowed). */
+export function c1ReturnAt(L, i, script, P) {
+  if (!script || !P || !c1ReturnShape(L, i, script, P)) return false;
+  for (let j = 0; j < i; j++) if (c1ReturnShape(L, j, script, P)) return false;
+  return true;
+}
 
 export const D38A_PREDICATES = {
   keyWithWordingUnsaid(L, r, i, ctx) {
@@ -180,6 +207,8 @@ export const D38A_PREDICATES = {
     if (!P) return null;
     const n = hearingsUpTo(L, i, ctx?.script)[P] ?? 0;
     if (n < 5 || ownRequest(L, i, ctx?.script, P)) return null;
+    // (main's ruling A4: C1's one turn at a return — her reply, help in a wording not said before, the question — at its fifth hearing)
+    if (n === 5 && c1ReturnAt(L, i, ctx?.script, P)) return null;
     return `the question ${P} heard a ${n}th time, on her own`;
   },
 };

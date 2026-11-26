@@ -68,6 +68,8 @@ export const SEAM_TABLE = [
   // (main's ruling A3 item 2 of d38, to-brain 055 C3 at a return: her reply or park into the told answer at a card — the key with its reason,
   // recorded as a verdict — keeps its back-to-work joint, as into the card it would have asked)
   ["asideReply", "verdict", "afterAside"], ["aiReply", "verdict", "afterAiLine"], ["aside", "verdict", "afterAside"], ["park", "verdict", "afterPark"],
+  // (main's ruling A4 of d38: and into C1's help at a return — the AI line's reply too, as into the step it would have asked)
+  ["aiReply", "help", "afterAiLine"],
   // (a miss verdict into its remediation)
   ["missVerdict", "remediation", "beforeRemediation"],
   // (a return to an earlier card: after a then-card's verdict in the same turn, or opening a turn after another unit)

@@ -205,7 +205,7 @@ const dropB4 =(m) => { if (!m || typeof m !== "object") return m; const o = { ..
  *  The fields never carry from one move to the next (help builds its move from the last one). → out, changed in place. */
 /** d37 RULING-G item 7: the move's help is the point's wording (its pointAlt or simpler) said at a card — the question at `path` a card's. */
 const pointHelpAtCard = (lm, path) => ["pointAlt", "simpler"].includes(String(lm?.help?.rung ?? "")) && /\.ask$/.test(String(path ?? "")) && /:card$/.test(String(lm?.cell?.part ?? lm?.help?.part ?? ""));
-export function yourTurnPass(prev, out, script, childText = "", { capInvite = null } = {}) {
+export function yourTurnPass(prev, out, script, childText = "", { capInvite = null, capReask = null } = {}) {
   const s = out?.state;
   if (!s?.lastMove || !script) return out;
   s.lastMove = dropB4(s.lastMove);
@@ -232,6 +232,14 @@ export function yourTurnPass(prev, out, script, childText = "", { capInvite = nu
       set({ yourTurn: forms[(s.yourTurnN ?? 0) % forms.length], yourTurnAfter: closingQuestion(lastQ ?? "") ?? closingQuestion(out.ui?.ask?.text ?? lm.stepAsk?.prompt ?? "") });
       return out;
     }
+  }
+  // (main's ruling A4 of d38, C1 at a return — state.js returnFifthOf: her reply to a side-topic, its joint and C1's help end on the QUESTION,
+  // its re-ask (said as a wait's second hearing is, in the card's place). Never the invitation nor 052 B4's pointed one: the turn answers a
+  // side-topic, and a child who has just talked about cricket must hear the question)
+  if (capReask) {
+    const t = reaskOf(script, capReask, s.ctx?.lang === "english" ? "english" : "hinglish");
+    if (t) set({ waitReask: t, ...(lm.stepAsk?.prompt && !lm.splitClose ? { stepAsk: { ...lm.stepAsk, prompt: fillFriend(t, s.ctx?.firstName ?? "") } } : {}) });
+    return out;
   }
   // (to-brain 053 B2 — director34 c4 steady 26 to 30, c4-ch01-t02 steady 26 to 30, c5-t03 steering 16 to 20, c5-t02 stuck 22, offtopic 24:
   // after "Haan, pehle tum try karo." and after a bare "haan", "yes", "theek hai" at a card or an asked step whose question her turn before

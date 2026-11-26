@@ -1,8 +1,8 @@
 // d38 builder A3 (main's ruling A3 item 2 of d38, to-brain 055 C3 at a return): where her turn after a side-topic would be the fifth counted
 // hearing of the open question, it is her reply and its back-to-work joint as built, then what the cap gives on a miss at that moment.
-// Built here: the told answer (a card) and the told step (an asked step), where C1's turn was already given at that question. NOT built
-// (a clash, for main): C1's help ending on an invitation at a return — the gated inviteAfterPark and yourTurnNotThird flag that turn; the
-// return is as built there, and the last describe pins that (so the clash stays visible). Driven walks with step() and brain/say.js
+// Built here: the told answer (a card) and the told step (an asked step), where C1's turn was already given at that question; and, by main's
+// ruling A4, C1's own turn at a return where it was not: her reply, its joint, the first unsaid wording as help and the question's re-ask —
+// never an invitation (the gated inviteAfterPark). Driven walks with step() and brain/say.js
 // textReply, the reply stubbed and held for each walk's whole length, at c4-maths-ch05-t01's second card and its worked problem's first
 // step. The question is heard four times first by the child's own "phir se bolo" (honoured, counted); her reply follows the AI line.
 import { test, describe } from "node:test";
@@ -100,12 +100,35 @@ describe("C3 at a return, an asked step: C1 given, then her reply after the AI l
   test("(what she says, for the notes)", () => { for (const t of w.her) console.log(`[055c3r step] ${t.text}`); });
 });
 
-describe("NOT built (the clash): at a return where C1 is the cap's turn, the return is as built — the fifth hearing", async () => {
-  const w = await walk("c4-maths-ch05-t01", "step", 0, ["again", "again", "again", "ai", "reply"]);
-  const ret = w.her.at(-1);
-  test("her reply, its joint and the step's question: questionFifthOnHerOwn flags it (main to rule)", () => {
-    assert.deepEqual(seamOf(ret), ["start>aiReply", "aiReply>stepAsk:afterAiLine"], ret.text);
-    assert.equal(atQuestionOf(w.script, ret.text), w.P, ret.text);
-    assert.equal(flagsOf(w, "questionFifthOnHerOwn").length, 1);
+describe("main's ruling A4: C1 at a return — her reply, its joint, the first unsaid wording as help and the question's re-ask; once a question", async () => {
+  const reaskOf = (w) => { const o = w.P.split(/\.|\[|\]/).filter(Boolean).reduce((x, k) => x?.[/^\d+$/.test(k) ? Number(k) : k], w.script); return norm(o?.reask?.hi ?? o?.reask); };
+  const w = await walk("c4-maths-ch05-t01", "step", 0, ["again", "again", "again", "ai", "reply", "give"]);
+  const [, , , , ai, ret, told] = w.her;
+  test("the return: reply, afterAiLine, help, then the step's re-ask — never an invitation; no hearing check flags it", () => {
+    assert.equal(atQuestionOf(w.script, ai.text), null, ai.text);
+    assert.deepEqual(seamOf(ret), ["start>aiReply", "aiReply>help:afterAiLine", "help>help", "help>stepAsk"], ret.text);
+    assert.ok(!endsOnYourTurn(w.script, ret.text), ret.text); assert.equal(atQuestionOf(w.script, ret.text), w.P, ret.text);
+    assert.ok(ret.text.endsWith(reaskOf(w)), ret.text);
+    assert.deepEqual(flagsOf(w, "questionFifthOnHerOwn"), []);
   });
+  test("after it a give-up gets the told step with its reason (C1 was that turn) — no sixth hearing", () => {
+    assert.ok(told.stepAnswer?.told && told.heardCap === w.P, told.text); assert.notEqual(atQuestionOf(w.script, told.text), w.P, told.text);
+    assert.deepEqual(flagsOf(w, "keyWithWordingUnsaid"), []);
+  });
+  const w2 = await walk("c4-maths-ch05-t01", "step", 0, ["again", "again", "again", "ai", "reply", "ai"]);
+  test("a further side-topic at that question (the AI question asked again, whose honest line goes on into the step): her line and the told step — never a sixth hearing on her own", () => {
+    const last = w2.her.at(-1);
+    assert.deepEqual(seamOf(last).slice(0, 2), ["start>aiLine", "aiLine>workedStep:afterAiLine"], last.text);
+    assert.ok(last.stepAnswer?.told, last.text);
+    assert.deepEqual(flagsOf(w2, "questionFifthOnHerOwn"), []); assert.deepEqual(flagsOf(w2, "keyWithWordingUnsaid"), []);
+  });
+  const wc = await walk("c4-maths-ch05-t01", "card", 1, ["again", "again", "again", "ai", "reply", "give"]);
+  test("at a card: reply, joint, the card's first unsaid wording, the card's re-ask; then the key at the give-up", () => {
+    const [, , , , , r1, k1] = wc.her;
+    assert.deepEqual(seamOf(r1).slice(0, 2), ["start>aiReply", "aiReply>help:afterAiLine"], r1.text);
+    assert.ok(r1.text.endsWith(reaskOf(wc)), r1.text); assert.ok(!endsOnYourTurn(wc.script, r1.text), r1.text);
+    assert.equal(k1.lm.help?.card, "close", k1.text); assert.notEqual(atQuestionOf(wc.script, k1.text), wc.P, k1.text);
+    assert.deepEqual(flagsOf(wc, "questionFifthOnHerOwn"), []); assert.deepEqual(flagsOf(wc, "keyWithWordingUnsaid"), []);
+  });
+  test("(what she says, for the notes)", () => { for (const t of [...w.her, ...wc.her]) console.log(`[055c3r A4] ${t.text}`); });
 });
