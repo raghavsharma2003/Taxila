@@ -3855,6 +3855,10 @@ function returnFifthOf(prev, input, heard, said) {
   const give = { ...input, text: "pata nahi", cls: { ...rest, outcome: "no_evidence", asideReply: false, cardUnsaid: false, flags: { ...(rest.flags ?? {}), dontKnow: true, confused: false } } };
   const cap = heardCap(base, give, heard, said);
   if (pointed && cap?.capInvite) return null;
+  // (d38 RULING-A12 X4, circ-rem-ai 18: an AI question where the cap would TELL (its C1 turn given) — her AI line asks its own question back
+  // (the move's tasteAsked, not the line alone): that turn is her AI line and its question only, the card held, as after C1's invitation
+  // (card-a-aireply); the told answer comes in the turn after the child's reply, her reply first (RULING-A7 P3 as restated))
+  if (cap && !cap.capInvite && lm.request === "uptake" && lm.tasteAsked && !lm.tasteAsked.alone) return null;
   // (main's ruling A4 of d38: where C1 is the cap's turn here — a wording unsaid, none given at this question — the turn is her reply, its
   // joint, that wording as help and the QUESTION (its re-ask), never an invitation: a child who has just talked about cricket must hear the
   // question to know what she is asked (the gated inviteAfterPark). C1's one turn at the question; yourTurnPass reads `capReask`)

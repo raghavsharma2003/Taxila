@@ -93,6 +93,10 @@ WALKS.push({ name: "pz4-fw-kam", topicId: TOPIC, seek: "card", skip: 1, tail: 3,
 WALKS.push({ name: "pzlow-fw-kam", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["haan", "aadhe se kam", "aadhe se kam", "aadhe se kam"] });
 // (d38 RULING-A12 X2: the way back after a TOLD follow-up card — four hearings, "haan" (the remediation), four give-ups at the follow-up card
 // until she tells it, then "haan" at its check-in: the pizza card comes back as built)
+// (d38 RULING-A12 X4, the third review's circ-rem-ai: four hearings of the circle card, "2/1" (its named mistake: the remediation, C1 there),
+// the follow-up answered right, the way back, then the AI question and its reply — her AI line and its question only, then her reply and
+// the told answer)
+WALKS.push({ name: "circ-rem-ai", topicId: TOPIC, seek: "card", skip: 2, tail: 3, P: AT.card.P, then: [...FOUR.map((x) => L[x]), "2/1", "@key", L.ai, L.reply, "7"] });
 WALKS.push({ name: "pz4-fw-give4", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", "pata nahi", "pata nahi", "pata nahi", "pata nahi", "haan"] });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
@@ -529,4 +533,23 @@ test("X2 (RULING-A12): the way back after a TOLD follow-up card — a returnCard
   // (a second way back for one remediation — the same turn again after another "haan" — flags)
   const again = [...rows.slice(0, back + 1), child("haan"), { ...rows[back] }];
   assert.ok(q5(again, again.length - 1).every((x) => /heard a \d+th time/.test(String(x))), "a second way back flags");
+});
+
+test("X4 (RULING-A12): an AI question after the way back is answered first, alone — her AI line and its question, the card held; the told answer after the child's reply, her reply first", { timeout: 180_000 }, () => {
+  const R = run();
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  const rows = R["circ-rem-ai"], i0 = start(rows, WALKS.find((x) => x.name === "circ-rem-ai")), ai = i0 + 11;
+  assert.ok(seams(rows[i0 + 7]).includes("remediation"), norm(rows[i0 + 7].text));
+  assert.deepEqual(seams(rows[i0 + 9]), ["verdict", "returnCard"], `the way back: ${norm(rows[i0 + 9].text)}`);
+  assert.equal(rows[ai - 1].text, L.ai);
+  assert.deepEqual(seams(rows[ai]), ["aiQuestion"], `her AI line and its question only: ${norm(rows[ai].text)}`);
+  assert.equal(atQuestionOf(SCRIPT, rows[ai].text), null, "no question of the lesson in it");
+  assert.equal(PREDICATES.orderAnswerFirst({ rows }, rows[ai], ai, { script: SCRIPT, prevT: rows[ai - 2], prevRead: rows[ai - 1].read, prevChild: rows[ai - 1].text }), null);
+  assert.equal(rows[ai + 1].text, L.reply);
+  assert.deepEqual(seams(rows[ai + 2]), ["aiReply", "key", "checkin"], `her reply, then the told answer: ${norm(rows[ai + 2].text)}`);
+  // (the other side, the turn as the walk said it at 3f2e3e15a — the told answer before her AI line — flags orderAnswerFirst)
+  const old = { ...rows[ai], text: "Circle 3 barabar tukdon mein bata hai aur ab 2 mein rang hai, yaani 2/3. Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein sabse achha kya lagta hai?",
+    seams: [{ left: "start", right: "key", joint: null }, { left: "key", right: "aiQuestion", joint: null }] };
+  const L2 = [...rows.slice(0, ai), old];
+  assert.match(String(PREDICATES.orderAnswerFirst({ rows: L2 }, old, ai, { script: SCRIPT, prevT: rows[ai - 2], prevRead: rows[ai - 1].read, prevChild: rows[ai - 1].text })), /AI line/);
 });
