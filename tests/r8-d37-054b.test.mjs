@@ -12,6 +12,7 @@ const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { findItem } = await import("../server/director/items.js");
 const { textReply, replyDeps } = await import("../server/brain/say.js");
+const { holdReplyStub } = await import("./_reply-hold.mjs");
 const { atQuestionOf, reaskOf, SHORT_ASK_FORMS, endsOnShortAsk, endsOnYourTurn } = await import("../server/director/question-run.js");
 const { fillFriend } = await import("../server/director/friend.js");
 
@@ -23,8 +24,7 @@ const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 
 /** A lesson walked to its first card (`which` "card", the `skip`-th) or asked worked step ("step"), every question before answered right. */
 async function walkTo(TOPIC, which, skip = 0) {
-  const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
-  replyDeps.chat = async () => ({ text: STUB }); replyDeps.chatStream = replyDeps.chat;
+  const free = holdReplyStub(); // (the stub held through tests/_reply-hold.mjs, counted across files: a walk's end never puts the real model back under another file's walk)
   const kit = kitFromFile(getTopic(TOPIC));
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
     interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: TOPIC, classLevel: 4, sessionId: "d37-054b", lessonKey: "d37-054b", teacher: "director" };
@@ -51,7 +51,7 @@ async function walkTo(TOPIC, which, skip = 0) {
   const script = (await import("../server/director/script.js")).scriptFor(kit).script;
   const P = atQuestionOf(script, q);
   const play = async (seq) => { const out = []; for (const k of seq) out.push(await turn(...LINES[k])); return out; };
-  const done = () => { replyDeps.chat = chat0; replyDeps.chatStream = stream0; };
+  const done = free;
   return { P, script, play, done, kit, now: () => r.state };
 }
 const reaskFilled = (script, P) => norm(fillFriend(reaskOf(script, P), "Riya"));

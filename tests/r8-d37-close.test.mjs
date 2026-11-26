@@ -6,14 +6,14 @@ const { initLessonState, step } = await import("../server/director/state.js");
 const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { textReply, replyDeps, beatAsk, rotateOf, notAskingUnderstood, ASKS_UNDERSTOOD } = await import("../server/brain/say.js");
+const { holdReplyStub } = await import("./_reply-hold.mjs");
 
 const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 
 /** A lesson walked with step() and textReply (the reply stubbed: every line is the script's or code's): `lines` are [text, cls]. */
 async function walk(TOPIC, lines, seed = 7) {
-  const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
-  replyDeps.chat = async () => ({ text: STUB }); replyDeps.chatStream = replyDeps.chat;
+  const free = holdReplyStub(); // (the stub held through tests/_reply-hold.mjs, counted across files: a walk's end never puts the real model back under another file's walk)
   try {
     const kit = kitFromFile(getTopic(TOPIC));
     const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
@@ -30,7 +30,7 @@ async function walk(TOPIC, lines, seed = 7) {
       out.push({ text: norm(t.reply), lm: r.state.lastMove ?? {}, state: r.state, kit });
     }
     return out;
-  } finally { replyDeps.chat = chat0; replyDeps.chatStream = stream0; }
+  } finally { free(); }
 }
 
 describe("item 1: A(ii)'s first turn after two requests at the greeting never ends on a 'samajh aaya' check-in", () => {

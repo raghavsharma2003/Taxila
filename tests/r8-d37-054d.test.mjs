@@ -11,6 +11,7 @@ const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { findItem } = await import("../server/director/items.js");
 const { textReply, replyDeps, returnQuestion, honestTasteLine, asideAgainLine, BACK_TO_LEAD, likeToldBefore } = await import("../server/brain/say.js");
+const { holdReplyStub } = await import("./_reply-hold.mjs");
 const { jointsSaid } = await import("../server/brain/turn.js");
 const { classifyFast, targetFor } = await import("../server/director/classify.js");
 const { dryReading } = await import("../evals/hybrid-side-by-side/dry-reader.mjs");
@@ -19,17 +20,17 @@ const { newLearnerState } = await import("../server/comprehension/fuse.js");
 const { D37D_PREDICATES: P } = await import("../evals/hybrid-side-by-side/d37d-predicates.mjs");
 const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
 
-const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
-// (the reply model stubbed for the whole file, never restored: the suites' walks run side by side, and a walk that put the real model back
-// would end another walk's turn on the fixed carry-on line)
-replyDeps.chat = async () => ({ text: STUB }); replyDeps.chatStream = replyDeps.chat;
+// (the reply model stubbed for each walk's whole length through tests/_reply-hold.mjs, counted across walks and files: the suites' walks run
+// side by side, here and in other files sharing the process, and a walk that put the real model back would end another walk's turn on the
+// fixed carry-on line. Was: stubbed once at import and never restored, which another file's walk ending put the real model back under)
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 /** A lesson walked over `lines` as the dry matrix walks it ("@": the open card's key, read right). → one entry a child line. */
 let walkN = 0;
 async function walkSay(TOPIC, lines, persona = "offtopic") {
   // (each walk its own lesson id: a reply-path memo keyed by the lesson would carry one walk's lines into the next)
   const LID = `11111111-1111-1111-1111-${String(++walkN).padStart(12, "0")}`;
-  {
+  const free = holdReplyStub();
+  try {
     const kit = kitFromFile(getTopic(TOPIC));
     const classLevel = Number(/^c(\d)/.exec(TOPIC)[1]);
     const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend baby elephant" }, ageBand: "10-15", lang: "hinglish",
@@ -70,7 +71,7 @@ async function walkSay(TOPIC, lines, persona = "offtopic") {
       out.push({ child: text, text: norm(t.reply), seams: (g.seams ?? []).map((x) => x.right), lm: nx.lastMove ?? {}, state: nx, ui, guard: g });
     }
     return { out, kit };
-  }
+  } finally { free(); }
 }
 const kitOf = (t) => kitFromFile(getTopic(t));
 const SIXER = "kal maine cricket khela, sixer maara";

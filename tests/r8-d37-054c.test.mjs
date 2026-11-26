@@ -11,6 +11,7 @@ const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { findItem } = await import("../server/director/items.js");
 const { textReply, replyDeps } = await import("../server/brain/say.js");
+const { holdReplyStub } = await import("./_reply-hold.mjs");
 const { classifyFast, targetFor } = await import("../server/director/classify.js");
 const { normSentence } = await import("../server/director/help.js");
 
@@ -21,8 +22,7 @@ export const scriptOf = (topic) => JSON.parse(readFileSync(new URL(`../data/less
 
 /** A lesson walked until `at(state)` holds, every question before answered right; then `play(lines)` says each line, read for real. */
 export async function walkUntil(TOPIC, at) {
-  const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
-  replyDeps.chat = async () => ({ text: STUB }); replyDeps.chatStream = replyDeps.chat;
+  const free = holdReplyStub(); // (the stub held through tests/_reply-hold.mjs, counted across files: a walk's end never puts the real model back under another file's walk)
   const kit = kitFromFile(getTopic(TOPIC));
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
     interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: TOPIC, classLevel: 4, sessionId: "d37-054c", lessonKey: "d37-054c", teacher: "director" };
@@ -45,7 +45,7 @@ export async function walkUntil(TOPIC, at) {
   }
   const LINES = { give: ["pata nahi", { outcome: "no_evidence", flags: { dontKnow: true } }], clarify: ["samajh nahi aaya", { outcome: "no_evidence", request: { type: "clarify" } }] };
   const play = async (seq) => { const out = []; for (const k of seq) { if (LINES[k]) out.push(await turn(...LINES[k])); else { const c = realRead(r.state, k); out.push(await turn(k, c ?? { outcome: "incorrect" })); } } return out; };
-  const done = () => { replyDeps.chat = chat0; replyDeps.chatStream = stream0; };
+  const done = free;
   return { found, play, done, kit, now: () => r.state };
 }
 const atOwnStep = (s) => /:ask:worked$/.test(String(s.lastUi?.ask?.itemId ?? "")) && !s.lastMove?.stepAsk?.prompt;
@@ -191,8 +191,7 @@ describe("RULING-C2 item 1: the park after a short ask ends on the question's re
   /** The lesson walked to its first card (every question before answered right), then `seq` played: haan and the side-topic read by the real
    *  code read first, the walk driver's stub where code cannot read the line. */
   async function walkCard(TOPIC, seq) {
-    const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
-    replyDeps.chat = async () => ({ text: STUB }); replyDeps.chatStream = replyDeps.chat;
+    const free = holdReplyStub(); // (the stub held through tests/_reply-hold.mjs, counted across files: a walk's end never puts the real model back under another file's walk)
     const kit = kitFromFile(getTopic(TOPIC));
     const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
       interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: TOPIC, classLevel: 4, sessionId: "d37-c2", lessonKey: "d37-c2", teacher: "director" };
@@ -217,7 +216,7 @@ describe("RULING-C2 item 1: the park after a short ask ends on the question's re
     const LINES = { haan: ["haan", { outcome: "no_evidence" }], aside: ["kal maine cricket khela, sixer maara", { outcome: "no_evidence", request: { type: "uptake" } }] };
     const out = [];
     for (const k of seq) { const [text, stub] = LINES[k]; out.push(await turn(text, realRead(r.state, text) ?? stub)); }
-    replyDeps.chat = chat0; replyDeps.chatStream = stream0;
+    free();
     return out;
   }
   const P = ".skills[0].explain[0].ask";

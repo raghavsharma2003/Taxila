@@ -8,6 +8,7 @@ const { initLessonState, step } = await import("../server/director/state.js");
 const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { textReply, replyDeps } = await import("../server/brain/say.js");
+const { holdReplyStub } = await import("./_reply-hold.mjs");
 const { classifyFast, targetFor } = await import("../server/director/classify.js");
 const { findItem } = await import("../server/director/items.js");
 const { dryReading } = await import("../evals/hybrid-side-by-side/dry-reader.mjs");
@@ -25,8 +26,7 @@ async function walker(TOPIC, seed = 7) {
   const kit = kitFromFile(getTopic(TOPIC));
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
     interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: TOPIC, classLevel: Number(/^c(\d)/.exec(TOPIC)[1]), sessionId: `d37-054g-${seed}`, lessonKey: `d37-054g-${seed}`, teacher: "director" };
-  const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
-  replyDeps.chat = async () => ({ text: STUB }); replyDeps.chatStream = replyDeps.chat;
+  const free = holdReplyStub(); // (the stub held through tests/_reply-hold.mjs, counted across files: a walk's end never puts the real model back under another file's walk)
   let r = step(initLessonState({ topicId: TOPIC, kit, ctx, seed, now: 0 }), { event: "start", kit, now: 0 });
   const say = async (text) => textReply({ instructions: "x", state: r.state, kit, childText: text, history: r.state.recent ?? [], ui: r.ui, module: null });
   r.state.recent = [...(r.state.recent ?? []), { who: "teacher", text: (await say("")).reply }];
@@ -41,7 +41,7 @@ async function walker(TOPIC, seed = 7) {
     return { text: norm(t.reply), lm: r.state.lastMove ?? {}, state: r.state, ui: r.ui, seams: (t.guard?.seams ?? []).map((x) => x.right), parts: t.guard?.lineParts ?? t.guard?.parts?.list ?? [] };
   };
   const until = async (f, n = 300) => { for (let i = 0; i < n && !f(r.state); i++) { const it = r.state.activeItemId ? findItem(r.state, kit, r.state.activeItemId) : null; await go(it ? String(it.answer) : "haan"); } return f(r.state); };
-  return { go, until, kit, now: () => r.state, done: () => { replyDeps.chat = chat0; replyDeps.chatStream = stream0; } };
+  return { go, until, kit, now: () => r.state, done: free };
 }
 
 

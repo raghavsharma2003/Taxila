@@ -44,6 +44,7 @@ const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { findItem } = await import("../server/director/items.js");
 const { textReply, replyDeps, FALLBACK } = await import("../server/brain/say.js");
+const { holdReplyStub } = await import("./_reply-hold.mjs");
 const { atQuestionOf, reaskOf, endsOnShortAsk } = await import("../server/director/question-run.js");
 const { fillFriend } = await import("../server/director/friend.js");
 const { scriptFor } = await import("../server/director/script.js");
@@ -56,9 +57,9 @@ let stubGate = Promise.resolve();
 async function holdStub() {
   const before = stubGate; let release; stubGate = new Promise((res) => { release = res; });
   await before;
-  const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
-  replyDeps.chat = async () => ({ text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" }); replyDeps.chatStream = replyDeps.chat;
-  return () => { replyDeps.chat = chat0; replyDeps.chatStream = stream0; release(); };
+  // (the stub held through tests/_reply-hold.mjs, counted across files: a walk's end never puts the real model back under another file's walk)
+  const free = holdReplyStub();
+  return () => { free(); release(); };
 }
 async function walkTo(TOPIC, skip) {
   const free = await holdStub();
