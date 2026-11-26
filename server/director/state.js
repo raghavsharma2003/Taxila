@@ -4723,6 +4723,14 @@ export function step(prev, input) {
     if (wait && out.state.lastMove) { out.state.lastMove = { ...out.state.lastMove, waitN: wait.n, waitP: wait.P, ...wg }; if (out.move) out.move = { ...out.move, waitN: wait.n, waitP: wait.P, ...wg }; }
   }
   if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "", { capInvite: capInviteP, capReask: capReaskP });
+  // (d38 RULING-A7 P2: a help turn at a question heard four times that ends on an invitation IS that question's C1 turn, whichever path said
+  // it — C1 on a miss, C3 at help, a request's help under P1: it sets the same mark, and the next miss, give-up or non-answer is told)
+  { const lm2 = out?.state?.lastMove;
+    if (input?.event === "turn" && lm2?.yourTurn && lm2.help?.part && !lm2.waitN) {
+      const t2 = lm2.stepAsk?.prompt && !lm2.splitClose ? lm2.stepAsk.prompt : out.ui?.ask?.text ?? null;
+      const P2 = t2 ? atQuestionOf(scriptFor(input.kit)?.script ?? null, t2) : null;
+      if (P2 && P2 !== "?short" && (out.state.qHeard?.[P2] ?? 0) >= 4) out.state.c1At = { ...(out.state.c1At ?? {}), [lm2.help.part]: true };
+    } }
   if (out?.state && prev?.answerAt && !out.state.answerAt) out.state.answerAt = prev.answerAt;
   // (RULING-G item 4: the held card asked in its Hindi form — brain/say.js keeps the switch line as the turn's lead part, so the card's
   // board comes in at the card's first word, never under the switch line)

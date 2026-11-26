@@ -43,7 +43,6 @@ const WALKS = Object.entries(AT).flatMap(([w, a]) => Object.entries(CASES).map((
 const EXPECTED = new Set([
   "card-a-aireply 18 replyCheckin",
   "card-a-try 18 waitSecondNotReask",
-  "card-b-clar 16 yourTurnNotThird",
   "card-a-yes 16 waitSecondNotReask",
   "card-c-aireply 20 aiAskAnswered",
   "card-c-park 20 replyCheckin",
@@ -125,4 +124,16 @@ test("P1: yourTurnNotThird passes help answering the child's request at a questi
   // (and the request's help before the fourth hearing reads as before: the walk at three hearings is not this turn)
   const three = [...rows.slice(0, i - 9), ...rows.slice(i - 7, i + 1)];
   assert.match(String(PREDICATES.yourTurnNotThird({ rows: three }, three.at(-1), three.length - 1, { script: SCRIPT })), /invitation/);
+});
+
+test("P2: one C1 turn a question however it came — C3's help after a clarify at four hearings is that question's C1 turn, and the miss after it is told", { timeout: 180_000 }, () => {
+  for (const w of ["card-b-clar", "step-b-clar"]) {
+    const rows = run()[w], i = start(rows, WALKS.find((x) => x.name === w)) + 7;
+    assert.equal(rows[i - 1].text, "samajh nahi aaya");
+    assert.equal((rows[i].seams ?? []).at(-1)?.right, "yourTurn", `${w}: C3's help ends on the invitation`);
+    assert.equal(rows[i + 1].text, "7");
+    const told = rows[i + 2];
+    assert.ok((told.seams ?? []).some((x) => ["key", "workedStep"].includes(x.right)), `${w}: the miss after it is told: ${norm(told.text)}`);
+    assert.notEqual((told.seams ?? []).at(-1)?.right, "yourTurn", `${w}: never two help turns running ending on an invitation`);
+  }
 });
