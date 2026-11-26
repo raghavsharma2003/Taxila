@@ -4780,7 +4780,14 @@ export function step(prev, input) {
   // clarify's, a picture's, a miss's help, the wait's own help, C1's, C3's, a return's; heardCap's wait reading)
   if (out?.state) {
     const lm3 = out.state.lastMove ?? {};
-    const helped = input?.event === "turn" && openP0 && lm3.help && !["safeguard", "wrap", "break"].includes(String(lm3.kind ?? ""));
+    // (d38 RULING-A11 W4, one definition with the checks' helpSaidAt: help is said at the open question when her turn says a help wording of its
+    // part — a give-up's, a clarify's, a miss's, the wait's, C1's, C3's, a return's help, a picture request's turn (its caption, or the
+    // no-other-picture line with the board's words) — or starts a remediation of its named mistake. The question in its Hindi form alone is
+    // no help. Never cleared while the lesson lasts)
+    const hindiOnly = !!lm3.help && !!(lm3.hindiForm || lm3.help.hindiForm) && !lm3.simpler;
+    const pictureTurn = !!(lm3.picture || lm3.visual || lm3.keyedPicture || lm3.pictureCaption || lm3.pictureWords || (lm3.help?.request === "picture" && lm3.help?.picture && lm3.help.picture !== "none"));
+    const remStarted = lm3.scriptBeat?.kind === "remediation" && lm3.kind === "reteach" && String(prev?.lastUi?.ask?.itemId ?? "").startsWith("script:") && !String(prev?.lastUi?.ask?.itemId ?? "").includes(":then:");
+    const helped = input?.event === "turn" && openP0 && ((lm3.help && !hindiOnly) || pictureTurn || remStarted) && !["safeguard", "wrap", "break"].includes(String(lm3.kind ?? ""));
     if (helped || prev?.helpedAt) out.state.helpedAt = { ...(prev?.helpedAt ?? {}), ...(out.state.helpedAt ?? {}), ...(helped ? { [openP0]: true } : {}) };
   }
   if (out?.state && prev?.answerAt && !out.state.answerAt) out.state.answerAt = prev.answerAt;

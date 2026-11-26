@@ -76,6 +76,9 @@ WALKS.push({ name: "pizza-u1-park", topicId: TOPIC, seek: "card", skip: 1, tail:
 // C1 on "7", the AI question and its reply; four hearings, the AI question and its reply twice, then "No")
 WALKS.push({ name: "pizza-a-aireply", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR, "miss", "ai", "reply"].map((x) => L[x]) });
 WALKS.push({ name: "pizza-c-aireply", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...[...FOUR, "ai", "reply", "ai", "reply"].map((x) => L[x]), "No"] });
+// (d38 RULING-A11 W4, pr2 item 2: one definition of "help was said at this question" — a picture request's turn at the step, then "phir se
+// bolo" twice and a bare yes three times: help was said, so the wait tells as order 054 built it, no C1)
+WALKS.push({ name: "step-pic-wait", topicId: TOPIC, seek: "step", skip: 0, tail: 3, fresh: true, then: ["pic", "again", "again", "yes", "yes", "yes"].map((x) => L[x]) });
 WALKS.push({ name: "pizza-w1-low", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["yes", "right"].map((x) => L[x]) });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
@@ -411,4 +414,22 @@ test("W3 (RULING-A11): a yes-or-no card's told answer at a return is a key seam,
   const a = R["pizza-a-aireply"][start(R["pizza-a-aireply"], WALKS.find((x) => x.name === "pizza-a-aireply")) + 11];
   const c = R["card-a-aireply"][start(R["card-a-aireply"], WALKS.find((x) => x.name === "card-a-aireply")) + 11];
   assert.deepEqual(a.seams.map((x) => x.joint ?? null), c.seams.map((x) => x.joint ?? null), "the same joints as the circle card's turn");
+});
+
+test("W4 (RULING-A11): help said at a question — the walk's helpedAt and the checks' helpSaidAt agree: a picture request's turn is help, so the wait tells; helpSaidAt each side", { timeout: 180_000 }, async () => {
+  const { helpSaidAt } = await import("../evals/hybrid-side-by-side/d38a-predicates.mjs");
+  const R = run();
+  const rows = R["step-pic-wait"], i0 = start(rows, WALKS.find((x) => x.name === "step-pic-wait"));
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  assert.ok(seams(rows[i0 + 1]).includes("caption"), norm(rows[i0 + 1].text));
+  const told = rows.findIndex((x, k) => k > i0 && x.who === "teacher" && x.stepAnswer?.told);
+  assert.ok(told > 0 && rows.slice(i0 + 2, told).every((x) => x.who !== "teacher" || !seams(x).includes("help")), "no C1 turn in the wait: the step told after it");
+  const P = AT.step.P, part = String(rows[i0 + 1].cell?.part ?? "");
+  assert.equal(helpSaidAt({ rows }, told, SCRIPT, P, part), true, "the caption is help");
+  // (the other side: the same rows with the caption turn as the step's question again — no help seam — read as no help said)
+  const bare = rows.map((x, k) => (k === i0 + 1 ? { ...x, seams: [{ left: "start", right: "stepAsk" }] } : x));
+  assert.equal(helpSaidAt({ rows: bare }, told, SCRIPT, P, part), false);
+  // (and another question between does not clear it: a follow-up card's turn put after the caption)
+  const between = [...rows.slice(0, i0 + 2), { who: "teacher", text: "Roti ke 2 tukde hue, ek bada, ek chhota. Bada tukda aadhe se kam hai, aadha, ya zyada?", seams: [{ left: "start", right: "card" }], cell: { part: "c4-maths-ch05-t01-s1:rem:0:then" } }, ...rows.slice(i0 + 2)];
+  assert.equal(helpSaidAt({ rows: between }, told + 1, SCRIPT, P, part), true);
 });

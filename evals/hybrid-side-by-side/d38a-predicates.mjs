@@ -166,22 +166,25 @@ export const c1TurnBefore = (L, i, script, part, P) => {
   }
   return false;
 };
-/** d38 RULING-A8 Q4 (main's ruling on 054b): a help turn said at question P before row i — a turn of hers with a help, caption or
- *  remediation seam (the row's own record), or one that says a sentence of a wording of the part (this file's near-same test), read back
- *  from row i to P's first hearing while her turns end on P or on no question of the script (a turn that ends on another question leaves
- *  P). This check's own reading. */
-const HELP_SEAMS = new Set(["help", "caption", "remediation"]);
+/** d38 RULING-A8 Q4, as RULING-A11 W4 defines it (one definition with the walk's helpedAt, each from its own code): help was said at question
+ *  P before row i if, since P was first posed in the lesson, a turn of hers at P's part said help — a `help`, `caption`, `noPicture` or `remediation` seam
+ *  in the row's own record (or a sentence of a help wording of P's part said, near-same), the row's part that of P (its own, or an asked step's with or without `:ask`), or the row ending on P. The question's
+ *  Hindi form, a re-ask, the short ask, an invitation, a park, an answer-first line and a go-ahead have none of those seams. Another question
+ *  between (a remediation's follow-up card too) does not clear it. This check's own reading. */
+const HELP_SEAMS = new Set(["help", "caption", "noPicture", "remediation"]);
+const basePart = (p) => String(p ?? "").replace(/:ask$/, "");
 export function helpSaidAt(L, i, script, P, part = null) {
-  const words = part ? (wordingsOf(script, part) ?? []).map((p) => hiOf(at(script, p))).filter((t) => t && t.trim()).flatMap(sentences) : [];
   if (!script || !P) return false;
-  for (let j = i - 1; j >= 0; j--) {
+  const first = L.rows.findIndex((x) => x.who === "teacher" && questionOfTurn(script, x.text) === P);
+  if (first < 0 || first >= i) return false;
+  const words = part ? (wordingsOf(script, part) ?? []).map((p) => hiOf(at(script, p))).filter((t) => t && t.trim()).flatMap(sentences) : [];
+  for (let j = first; j < i; j++) {
     const x = L.rows[j];
     if (x.who !== "teacher") continue;
-    const q = questionOfTurn(script, x.text);
-    if (q && q !== P) return false;
-    if ((x.seams ?? []).some((y) => HELP_SEAMS.has(String(y.right ?? "")))) return true;
+    // (or a turn that says a sentence of a help wording of P's part — this file's near-same test: "said a help wording of P's part")
     if (words.length) { const own = new Set(sentences(x.text).map(keyOf)); if (words.some((t) => heardNear(t, own))) return true; }
-    if (q === P && !(hearingsUpTo(L, j - 1, script)[P] ?? 0)) return false;
+    if (!(x.seams ?? []).some((y) => HELP_SEAMS.has(String(y.right ?? "")))) continue;
+    if ((part && basePart(x.cell?.part) === basePart(part)) || questionOfTurn(script, x.text) === P) return true;
   }
   return false;
 }
