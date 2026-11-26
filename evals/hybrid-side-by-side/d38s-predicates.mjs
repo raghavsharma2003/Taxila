@@ -7,7 +7,10 @@
 //                          … = 54 m. Ab cricket ki baat karte hain: …" (verdict > return) after the ant's follow-up card, the 10 m by 6 m
 //                          card still open. The check's OWN reading: the question of a turn is d38a's questionOfTurn (a check's reading,
 //                          not the walk's).
-import { questionOfTurn, wayBackAt, remC1Before } from "./d38a-predicates.mjs";
+//   reaskSameAfterHelp     RULING-A12 X5 (wraps d32's): the question in its Hindi form is no help turn (RULING-A11 W4) — the child's own
+//                          request for the question (d38a's ownRequest, this check's reading of "phir se bolo" and its like) answered with
+//                          the form she last heard, her turn before no help turn, is not flagged. step-hindi-wait 14 and 16.
+import { questionOfTurn, wayBackAt, remC1Before, ownRequest } from "./d38a-predicates.mjs";
 import { D32_PREDICATES } from "./d32-predicates.mjs";
 import { D37C_PREDICATES } from "./d37c-predicates.mjs";
 
@@ -32,7 +35,23 @@ export function owedWayBack(L, i, script) {
   return null;
 }
 
+/** RULING-A12 X5: a help turn by its record — a `help`, `caption`, `noPicture` or `remediation` seam (W4's list, written out here). The
+ *  question in its Hindi form, a re-ask, the short ask and an invitation have none. */
+const HELP_SEAMS = new Set(["help", "caption", "noPicture", "remediation"]);
+const helpTurn = (r) => seamsOf(r).some((x) => HELP_SEAMS.has(x));
+const invitesAt = (r) => seamsOf(r).at(-1) === "yourTurn";
+
 export const D38S_PREDICATES = {
+  // (d38 RULING-A12 X5: reaskSameAfterHelp as d32 reads it, and the child's own request for the question answered with the form she last heard
+  // passes where her turn before (the question-turn before an invitation, as d32 reads it) was no help turn — the question's Hindi form is none.
+  // The same closing question after a help turn still flags, asked for or not)
+  reaskSameAfterHelp(L, r, i, ctx) {
+    const was = D32_PREDICATES.reaskSameAfterHelp(L, r, i, ctx);
+    if (!was) return was;
+    const pT = invitesAt(ctx?.prevT) ? ctx?.prevPrevT : ctx?.prevT;
+    const P = questionOfTurn(ctx?.script, r.text);
+    return P && pT && Array.isArray(L?.rows) && !helpTurn(pT) && ownRequest(L, i, ctx?.script, P) ? null : was;
+  },
   // (d38 RULING-A11 W1: questionFiveTimes as d37c reads it, and the way back from a remediation's follow-up card passes — d38a's wayBackAt, the
   // first such turn since that remediation started)
   questionFiveTimes(L, r, i, ctx) {

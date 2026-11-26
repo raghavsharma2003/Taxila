@@ -97,6 +97,9 @@ WALKS.push({ name: "pzlow-fw-kam", topicId: TOPIC, seek: "card", skip: 1, tail: 
 // the follow-up answered right, the way back, then the AI question and its reply — her AI line and its question only, then her reply and
 // the told answer)
 WALKS.push({ name: "circ-rem-ai", topicId: TOPIC, seek: "card", skip: 2, tail: 3, P: AT.card.P, then: [...FOUR.map((x) => L[x]), "2/1", "@key", L.ai, L.reply, "7"] });
+// (d38 RULING-A12 X5, builder S2's open clash: at the worked problem's first asked step, a Hindi request (the step's Hindi form), then "phir se
+// bolo" twice — each answered with the form she last heard — then a bare yes three times)
+WALKS.push({ name: "step-hindi-wait", topicId: TOPIC, seek: "step", skip: 0, tail: 3, fresh: true, then: ["hindi", "again", "again", "yes", "yes", "yes"].map((x) => L[x]) });
 WALKS.push({ name: "pz4-fw-give4", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", "pata nahi", "pata nahi", "pata nahi", "pata nahi", "haan"] });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
@@ -552,4 +555,22 @@ test("X4 (RULING-A12): an AI question after the way back is answered first, alon
     seams: [{ left: "start", right: "key", joint: null }, { left: "key", right: "aiQuestion", joint: null }] };
   const L2 = [...rows.slice(0, ai), old];
   assert.match(String(PREDICATES.orderAnswerFirst({ rows: L2 }, old, ai, { script: SCRIPT, prevT: rows[ai - 2], prevRead: rows[ai - 1].read, prevChild: rows[ai - 1].text })), /AI line/);
+});
+
+test("X5 (RULING-A12): reaskSameAfterHelp does not read the question's Hindi form as help — the child's own request for the question answered with the form she last heard passes; after a real help turn, or on her own, the same closing question still flags", { timeout: 180_000 }, () => {
+  const R = run();
+  const rows = R["step-hindi-wait"], i0 = start(rows, WALKS.find((x) => x.name === "step-hindi-wait"));
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  assert.ok(seams(rows[i0 + 1]).includes("hindiSwitch"), `the step's Hindi form: ${norm(rows[i0 + 1].text)}`);
+  for (const k of [3, 5]) {
+    assert.equal(rows[i0 + k - 1].text, L.again);
+    assert.equal(atQuestionOf(SCRIPT, rows[i0 + k].text), AT.step.P, norm(rows[i0 + k].text));
+    assert.equal(flagAt(rows, i0 + k, "reaskSameAfterHelp"), false, `row ${i0 + k}: ${norm(rows[i0 + k].text)}`);
+  }
+  // (the other sides: her turn before a real help turn ending on the same question — flags; the child's line no request for the question,
+  // the same closing question on her own — flags)
+  const helped = rows.map((x, k) => (k === i0 + 1 ? { ...x, text: `Khaane se pehle wali poori barfi yaad karo. ${rows[i0 + 3].text}`, seams: [{ left: "start", right: "help" }, { left: "help", right: "stepAsk" }] } : x));
+  assert.equal(flagAt(helped, i0 + 3, "reaskSameAfterHelp"), true, "after a help turn");
+  const own = rows.map((x, k) => (k === i0 + 2 ? { ...x, text: "7", read: "incorrect", intent: undefined } : x));
+  assert.equal(flagAt(own, i0 + 3, "reaskSameAfterHelp"), true, "on her own");
 });
