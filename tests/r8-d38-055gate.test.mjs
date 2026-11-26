@@ -86,6 +86,11 @@ WALKS.push({ name: "card-pic-wait", topicId: TOPIC, seek: "card", skip: 2, tail:
 WALKS.push({ name: "card-rem-wait", topicId: TOPIC, seek: "card", skip: 2, tail: 3, fresh: true, then: ["pata nahi", "2/1", "Pinky", "phir se bolo", "haan", "haan", "haan"] });
 WALKS.push({ name: "card-hindi-wait", topicId: TOPIC, seek: "card", skip: 2, tail: 3, fresh: true, then: ["hindi", "again", "again", "yes", "yes", "yes"].map((x) => L[x]) });
 WALKS.push({ name: "pizza-w1-low", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["yes", "right"].map((x) => L[x]) });
+// (d38 RULING-A12 X1, the third review's walks (pr2/drv w6): four hearings of the pizza card, "haan" (its named mistake: the remediation and its
+// follow-up card), then "aadhe se kam" three times at the follow-up card — which the offline reader reads as nothing; and the same at the
+// first hearing. The follow-up card is a question like any other: never told with a wording of its part unsaid and no C1 turn at IT)
+WALKS.push({ name: "pz4-fw-kam", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", "aadhe se kam", "aadhe se kam", "aadhe se kam"] });
+WALKS.push({ name: "pzlow-fw-kam", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["haan", "aadhe se kam", "aadhe se kam", "aadhe se kam"] });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
 // OLDER: none left. (RULING-A8 Q1 took off step-b-clar 20 stepToldEarly: the right answer at an asked step is no longer read as nothing
@@ -122,8 +127,10 @@ function run() {
 }
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 /** The row of the case's first line: the child's line after the fourth hearing's run began (the first "phir se bolo" after the question). */
+/** The question a walk's case is at: its own `P`, the pizza card's, or the card's or step's by the walk's name. */
+const pOf = (w) => w.P ?? (w.pizza ? PIZZA : AT[w.name.split("-")[0]].P);
 function start(rows, w) {
-  for (let i = 1; i < rows.length; i++) if (rows[i].who === "child" && rows[i].text === w.then[0] && atQuestionOf(SCRIPT, rows[i - 1].text) === (w.pizza ? PIZZA : AT[w.name.split("-")[0]].P)) return i;
+  for (let i = 1; i < rows.length; i++) if (rows[i].who === "child" && rows[i].text === w.then[0] && atQuestionOf(SCRIPT, rows[i - 1].text) === pOf(w)) return i;
   return -1;
 }
 
@@ -135,7 +142,7 @@ test("055 gate: the driven walks reach the cap as each case says", { timeout: 18
     // (the case's lines were said in order, each answered by a turn of hers)
     w.then.forEach((t, k) => { if (t !== "@key") assert.equal(rows[i0 + 2 * k]?.text, t, `${w.name}: line ${k}`); assert.equal(rows[i0 + 2 * k + 1]?.who, "teacher", `${w.name}: her turn after line ${k}`); });
     // (four hearings before the case's fourth line: the question, then three times at the child's request, each her turn at the question)
-    const P = w.pizza ? PIZZA : AT[w.name.split("-")[0]].P;
+    const P = pOf(w);
     if (!w.fresh && !w.name.endsWith("-b3")) for (let k = 0; k < 3; k++) assert.equal(atQuestionOf(SCRIPT, rows[i0 + 2 * k + 1].text), P, `${w.name}: hearing ${k + 2}`);
     // (a: the fourth line is a miss and her turn is C1's — help ending on an invitation, the question not said)
     if (w.name.split("-")[1] === "a" || /^pizza-(?:q6-c1|w1-(?:right|yes|give))/.test(w.name)) {
@@ -468,4 +475,36 @@ test("W6 (RULING-A11): aiAskAnswered's Q5 reading holds only for an aiLine seam 
     seams: [{ left: "start", right: "aiQuestion" }, { left: "aiQuestion", right: "key" }, { left: "key", right: "checkin" }] };
   const L2 = [...rows.slice(0, i), q, ...rows.slice(i + 1)];
   assert.match(String(PREDICATES.aiAskAnswered({ rows: L2 }, L2[i + 2], i + 2, ctxAt(L2, i + 2))), /not answered/);
+});
+
+test("X1 (RULING-A12): remC1Before holds for the ORIGINAL question only — a remediation at four hearings is never its follow-up card's C1 turn; the walk gives the follow-up card its own help before telling it", { timeout: 180_000 }, async () => {
+  const { remC1Before } = await import("../evals/hybrid-side-by-side/d38a-predicates.mjs");
+  const R = run();
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  const kw = (rows, i) => PREDICATES.keyWithWordingUnsaid({ rows }, rows[i], i, { script: SCRIPT });
+  const FOLLOW = ".skills[0].remediation[0].then";
+  // (the walk: at the follow-up card, after the remediation at four hearings and three lines it reads as nothing, her turn is help in a wording
+  // of the follow-up card's part — never its told answer with its wordings unsaid; at the first hearing the same)
+  for (const [name, off] of [["pz4-fw-kam", 13], ["pzlow-fw-kam", 7]]) {
+    const rows = R[name], i0 = start(rows, WALKS.find((x) => x.name === name)), i = i0 + off;
+    assert.ok(seams(rows[i0 + off - 6]).includes("remediation"), `${name}: the remediation: ${norm(rows[i0 + off - 6].text)}`);
+    assert.equal(rows[i - 1].text, "aadhe se kam", name);
+    assert.ok(seams(rows[i]).includes("help") && !seams(rows[i]).includes("key"), `${name}: help, not told: ${norm(rows[i].text)}`);
+    assert.equal(String(rows[i].cell?.part ?? "").endsWith(":rem:0:then"), true, `${name}: at the follow-up card's part`);
+    for (let k = i0; k < rows.length; k++) assert.equal(kw(rows, k), null, `${name} ${k}: ${norm(rows[k].text)}`);
+  }
+  // (the check, the follow-up side: the same rows with the turn as the walk said it at 3f2e3e15a — the follow-up card told with its three
+  // wordings unsaid — flag; the remediation at four hearings is no C1 turn of the follow-up card)
+  { const rows = R["pz4-fw-kam"], i = start(rows, WALKS.find((x) => x.name === "pz4-fw-kam")) + 13;
+    const told = { ...rows[i], text: "Do tukde barabar hon tabhi har ek aadha hota; yahan bada tukda chhote se bada hai, toh aadhe se zyada. Ab tak samajh aaya?",
+      seams: [{ left: "start", right: "key", joint: null }, { left: "key", right: "checkin", joint: null }] };
+    const L2 = [...rows.slice(0, i), told];
+    assert.equal(remC1Before({ rows: L2 }, i, SCRIPT, FOLLOW), false);
+    assert.match(String(kw(L2, i)), /never said/); }
+  // (the original question's side, unchanged: the told answer after the way back from a remediation started at four hearings passes, and
+  // remC1Before holds for the pizza question there)
+  { const rows = R["pizza-w1-first"], i = start(rows, WALKS.find((x) => x.name === "pizza-w1-first")) + 11;
+    assert.ok(seams(rows[i]).includes("key"), norm(rows[i].text));
+    assert.equal(remC1Before({ rows }, i, SCRIPT, PIZZA), true);
+    assert.equal(kw(rows, i), null); }
 });

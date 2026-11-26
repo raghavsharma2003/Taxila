@@ -3885,6 +3885,27 @@ function graftReturn(prev, built, out, kit = null) {
   if ((b.later?.length ?? 0) > (prev.later?.length ?? 0) || b.later !== prev.later) out.state.later = b.later;
   if (b.returnAnswer) out.state.returnAnswer = b.returnAnswer;
 }
+/** d38 RULING-A12 X1: at a remediation's follow-up card (the live card's id `…:then:…`, no step asked) heard fewer than four times, on a miss, a
+ *  give-up or no answer (capCueOf) with no C1 turn given at its part: the first unsaid wording of its part (the picker's order, a wording she
+ *  has said in near-same words skipped) as help — a give-up's or a miss's, ending on the card — or null (nothing unsaid: told as built). */
+function followUpHelp(prev, input, heard, said) {
+  if (input.branch || prev?.safeguard || input.cls?.flags?.distress || input.cls?.flags?.wantsToStop) return null;
+  const col = columnName(input, prev);
+  if (CAP_SPARED.has(String(col ?? "")) || ["stop", "end", "break", "goodbye"].includes(input.cls?.request?.type) || input.cls?.outcome === "correct" || !capCueOf(input, col)) return null;
+  const liveId = prev?.lastUi?.ask?.itemId ?? null;
+  if (!String(liveId ?? "").startsWith("script:") || !String(liveId).includes(":then:") || (prev?.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose)) return null;
+  const script = scriptFor(input.kit)?.script;
+  const P = script ? atQuestionOf(script, prev.lastUi.ask.text) : null;
+  if (!P || P === "?short" || (heard[P] ?? 0) >= 4) return null;
+  const part = cardPartOf(input.kit, { itemId: liveId });
+  if (!part || prev.c1At?.[part]) return null;
+  const wrong = col === "wrong" || col === "misconception";
+  const d0 = pickHelp({ script, part, request: wrong ? "hint" : "give_up", said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
+    lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: wrong ? prev.answerAt?.[part] ?? null : null, nearAll: true });
+  if (d0?.card !== "keep" || !d0.rung?.text || helpSentencesOf(d0.rung.text).some((x) => inSaid(x, said))) return null;
+  const d = { ...d0, friend: friendOf, liveId };
+  return wrong ? { decision: d, input: helpInput(input, d, liveId), hint: true } : { decision: d, stay: true };
+}
 /** to-brain 053 B3 — director34 c4-ch01-t02 offtopic 10 to 30 (one step seven times), c5-t02 steering 6 to 20 (one follow-up card eight turns,
  *  no key), c6 steering (one question six times in eight turns): where the live card's or asked step's question has been heard four times,
  *  the turn that would say it a fifth time gives the card's key with its reason (as after the misses that give it) or tells the step.
@@ -4490,9 +4511,16 @@ export function step(prev, input) {
   const prevB = prev;
   if (ret5) { cap = ret5.cap; prev = ret5.prev; }
   const inputC = ret5 ? cap?.input ?? ret5.input : input;
-  const pre = cap?.skipHelp ? null : cap?.pre ?? helpBefore(prev, inputC, said);
+  let pre = cap?.skipHelp ? null : cap?.pre ?? helpBefore(prev, inputC, said);
   let out = tryAgain ?? (pre?.stay ? helpStay(prev, inputC, pre.decision) : pre?.held ? helpHeld(prev, inputC, pre.decision) : stepCells(prev, pre?.input ?? inputC));
   if (!tryAgain && !pre?.stay && !pre?.held) out = helpAfter(prev, inputC, out, pre);
+  // (d38 RULING-A12 X1: a remediation's follow-up card is a question like any other, with its own hearings and its own help — where the turn
+  // as built would let it go with its key below four hearings of it while a wording of its part is unsaid, the turn is that wording as help
+  // and its question, as at any card; at four hearings the cap takes it as at any question (heardCap: C1's turn there, then told))
+  if (!cap && !ret5 && !tryAgain && heard && out?.state?.lastMove?.gave) {
+    const fw = followUpHelp(prev, input, heard, said);
+    if (fw) { pre = fw; out = pre.stay ? helpStay(prev, inputC, pre.decision) : helpAfter(prev, inputC, stepCells(prev, pre.input), pre); }
+  }
   if (ret5 && out?.state) graftReturn(prevB, ret5.built, out, input.kit);
   if (heard && out?.state) out.state.qHeard = heard;
   if (cap?.P && !cap.noCap && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, heardCap: cap.P }; if (out.move) out.move = { ...out.move, heardCap: cap.P }; }

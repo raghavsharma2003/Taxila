@@ -134,8 +134,8 @@ const keySeam = (r) => (r.seams ?? []).some((x) => x.right === "key");
 const lastQuestion = (L, i, script) => { for (let k = i - 1; k >= 0; k--) { const x = L.rows[k]; if (x.who !== "teacher") continue; const p = questionOfTurn(script, x.text); if (p) return { P: p, j: k }; } return null; };
 /** d38 RULING-A10 T1: a remediation of a question's named mistake started at four or more hearings of that question is that question's C1
  *  turn. Before row i: a turn of hers with a remediation seam answering a child's line read as a misconception, the question her last turn
- *  before it ended on (P0) heard four times or more before it, and P either P0 or the follow-up card that remediation posed (the question
- *  it ends on); every turn of hers between it and row i ends on P0, on P or on no question. This check's own reading. */
+ *  before it ended on (P0) heard four times or more before it, and P is P0 (RULING-A12 X1: the ORIGINAL question only — never the follow-up
+ *  card that remediation posed); every turn of hers between it and row i ends on P0 or on no question. This check's own reading. */
 export function remC1Before(L, i, script, P) {
   for (let j = i - 1; j > 0; j--) {
     const x = L.rows[j];
@@ -143,7 +143,8 @@ export function remC1Before(L, i, script, P) {
     const q = questionOfTurn(script, x.text);
     if ((x.seams ?? []).some((y) => y.right === "remediation") && /^misconception/.test(String(L.rows[j - 1]?.read ?? ""))) {
       const q0 = lastQuestion(L, j, script);
-      return !!q0 && (hearingsUpTo(L, j - 1, script)[q0.P] ?? 0) >= 4 && (P === q0.P || (!!q && q === P));
+      // (d38 RULING-A12 X1: that question's C1 turn only — never its follow-up card's, which is a question like any other)
+      return !!q0 && (hearingsUpTo(L, j - 1, script)[q0.P] ?? 0) >= 4 && P === q0.P;
     }
     if (q && q !== P) return false;
   }
