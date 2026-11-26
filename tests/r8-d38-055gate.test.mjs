@@ -79,6 +79,12 @@ WALKS.push({ name: "pizza-c-aireply", topicId: TOPIC, seek: "card", skip: 1, tai
 // (d38 RULING-A11 W4, pr2 item 2: one definition of "help was said at this question" — a picture request's turn at the step, then "phir se
 // bolo" twice and a bare yes three times: help was said, so the wait tells as order 054 built it, no C1)
 WALKS.push({ name: "step-pic-wait", topicId: TOPIC, seek: "step", skip: 0, tail: 3, fresh: true, then: ["pic", "again", "again", "yes", "yes", "yes"].map((x) => L[x]) });
+// (RULING-A11 W4 at the card: a picture request's turn, then the wait — help said, the wait tells; a give-up's help, a named wrong answer's
+// remediation and its follow-up card, then the wait — help said and never cleared by the follow-up, the wait tells. W5: a Hindi request answered
+// with help at a card with no Hindi form, then the wait — waitNoQuestion takes Q4's reading)
+WALKS.push({ name: "card-pic-wait", topicId: TOPIC, seek: "card", skip: 2, tail: 3, fresh: true, then: ["pic", "again", "again", "yes", "yes", "yes"].map((x) => L[x]) });
+WALKS.push({ name: "card-rem-wait", topicId: TOPIC, seek: "card", skip: 2, tail: 3, fresh: true, then: ["pata nahi", "2/1", "Pinky", "phir se bolo", "haan", "haan", "haan"] });
+WALKS.push({ name: "card-hindi-wait", topicId: TOPIC, seek: "card", skip: 2, tail: 3, fresh: true, then: ["hindi", "again", "again", "yes", "yes", "yes"].map((x) => L[x]) });
 WALKS.push({ name: "pizza-w1-low", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["yes", "right"].map((x) => L[x]) });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
@@ -432,4 +438,22 @@ test("W4 (RULING-A11): help said at a question — the walk's helpedAt and the c
   // (and another question between does not clear it: a follow-up card's turn put after the caption)
   const between = [...rows.slice(0, i0 + 2), { who: "teacher", text: "Roti ke 2 tukde hue, ek bada, ek chhota. Bada tukda aadhe se kam hai, aadha, ya zyada?", seams: [{ left: "start", right: "card" }], cell: { part: "c4-maths-ch05-t01-s1:rem:0:then" } }, ...rows.slice(i0 + 2)];
   assert.equal(helpSaidAt({ rows: between }, told + 1, SCRIPT, P, part), true);
+});
+
+test("W5 (RULING-A11): waitNoQuestion takes Q4's reading — at four hearings the told answer after a wait turn with no question passes where help was said; each side", { timeout: 180_000 }, () => {
+  const R = run();
+  const wn = (rows, i) => PREDICATES.waitNoQuestion({ rows }, rows[i], i, { script: SCRIPT });
+  for (const name of ["card-hindi-wait", "card-pic-wait", "card-rem-wait"]) {
+    const rows = R[name], i = rows.findIndex((x, k) => k > 4 && x.who === "teacher" && (x.seams ?? []).some((y) => y.right === "key") && rows[k - 1].text === "haan");
+    assert.ok(i > 0, `${name}: the wait tells`);
+    assert.equal(wn(rows, i), null, `${name}: ${norm(rows[i].text)}`);
+  }
+  const rows = R["card-hindi-wait"], i0 = start(rows, WALKS.find((x) => x.name === "card-hindi-wait"));
+  const i = rows.findIndex((x, k) => k > i0 && x.who === "teacher" && (x.seams ?? []).some((y) => y.right === "key"));
+  // (three hearings: one of the child's requests and its hearing left out — flags as before)
+  const three = [...rows.slice(0, i0 + 2), ...rows.slice(i0 + 4)];
+  assert.match(String(wn(three, i - 2)), /neither says the question or help/);
+  // (four hearings, no help said at the question — the help turn read as the card again — and a wording unsaid: flags)
+  const noHelp = rows.map((x, k) => (k === i0 + 1 ? { ...x, text: "Ek aur tukde mein rang bharo. Ab rangin tukdon ka fraction kya hoga?", seams: [{ left: "start", right: "card" }] } : x));
+  assert.match(String(wn(noHelp, i)), /neither says the question or help/);
 });

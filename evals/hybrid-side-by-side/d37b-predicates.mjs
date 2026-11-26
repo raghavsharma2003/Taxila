@@ -65,6 +65,14 @@ export function capLadderAt(L, i, script, P) {
   const told = (r.seams ?? []).some((x) => x.right === "key") || !!r.stepAnswer?.told;
   return told && (helpSaidAt(L, i, script, P, part) || !unsaidWordings(L, i, script, part).length);
 }
+/** d38 RULING-A11 W5: the cap ladder's turn (b) alone — the told answer or told step at four or more hearings, help said or nothing unsaid. */
+function capLadderTold(L, i, script, P) {
+  const r = L.rows[i];
+  if (!script || !P || r?.who !== "teacher" || heardAt(L, i, script, P) < 4) return false;
+  const part = String(r.cell?.part ?? "");
+  const told = (r.seams ?? []).some((x) => x.right === "key") || !!r.stepAnswer?.told;
+  return told && (helpSaidAt(L, i, script, P, part) || !unsaidWordings(L, i, script, part).length);
+}
 /** Whether a teacher text stands for a question without saying it (a short ask, an invitation, a pointed invitation). */
 const standsFor = (script, t) => atQuestionOf(script, t) === "?short" || endsOnYourTurn(script, t) || endsOnAnswerFirst(script, t);
 
@@ -267,6 +275,9 @@ export const D37B_PREDICATES = {
     // (RULING-B5 item 3: tightened from three turns to two — never two turns running with no question; the wait counted from her turns)
     if (!w || w.turns.length < 2) return null;
     const last2 = w.turns.slice(-2);
+    // (d38 RULING-A11 W5: Q4's reading — at four or more hearings the cap ladder's turn (b), the told answer or told step where help was said at
+    // that question (d38a's helpSaidAt) or nothing is unsaid, passes after a wait turn that said no question; below four hearings unchanged)
+    if (last2[1] === i && capLadderTold(L, i, ctx.script, w.P)) return null;
     return last2.some((n) => saysOrHelps(ctx.script, L.rows[n], w.P)) ? null
       : `two turns of a wait at ${w.P} running (rows ${last2.join(", ")}) and neither says the question or help`;
   },
