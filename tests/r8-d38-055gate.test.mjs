@@ -457,3 +457,15 @@ test("W5 (RULING-A11): waitNoQuestion takes Q4's reading — at four hearings th
   const noHelp = rows.map((x, k) => (k === i0 + 1 ? { ...x, text: "Ek aur tukde mein rang bharo. Ab rangin tukdon ka fraction kya hoga?", seams: [{ left: "start", right: "card" }] } : x));
   assert.match(String(wn(noHelp, i)), /neither says the question or help/);
 });
+
+test("W6 (RULING-A11): aiAskAnswered's Q5 reading holds only for an aiLine seam — an aiQuestion, then a key and a check-in in one turn, her next turn not answering the reply, flags", { timeout: 180_000 }, () => {
+  const R = run();
+  const rows = R["card-c-aireply"], i = start(rows, WALKS.find((x) => x.name === "card-c-aireply")) + 11;
+  const ctxAt = (L2, k) => ({ script: SCRIPT, prevT: L2[k - 2], prevRead: L2[k - 1].read, prevChild: L2[k - 1].text });
+  assert.deepEqual((rows[i].seams ?? []).map((x) => x.right), ["aiLine", "key", "checkin"]);
+  assert.equal(PREDICATES.aiAskAnswered({ rows }, rows[i + 2], i + 2, ctxAt(rows, i + 2)), null, "aiLine: passes as Q5 read it");
+  const q = { ...rows[i], text: "Main AI hoon, meri koi pasand nahi hoti. Tumhe Virat kyun pasand hai? Circle 3 barabar tukdon mein bata hai aur ab 2 mein rang hai, yaani 2/3. Ab tak samajh aaya?",
+    seams: [{ left: "start", right: "aiQuestion" }, { left: "aiQuestion", right: "key" }, { left: "key", right: "checkin" }] };
+  const L2 = [...rows.slice(0, i), q, ...rows.slice(i + 1)];
+  assert.match(String(PREDICATES.aiAskAnswered({ rows: L2 }, L2[i + 2], i + 2, ctxAt(L2, i + 2))), /not answered/);
+});

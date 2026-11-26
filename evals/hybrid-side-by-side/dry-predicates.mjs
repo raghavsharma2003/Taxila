@@ -415,7 +415,8 @@ export const PREDICATES = {
     // (a request in reply — "hindi mein batao na", a picture — is served as that request)
     // (d38 RULING-A8 Q5: a turn whose record carries a key or told-step seam after the AI line and ends on a check-in seam closes on the told
     // answer's check-in, not on the AI line's own question — card-c-aireply 18, "Main AI hoon, … yaani 2/3. Ab tak samajh aaya?")
-    const sm = (ctx.prevT?.seams ?? []).map((x) => String(x.right ?? "")), ai0 = sm.findIndex((x) => x === "aiLine" || x === "aiQuestion");
+    // (d38 RULING-A11 W6: only where the AI line in that turn asked no question of its own — an aiLine seam, never aiQuestion)
+    const sm = (ctx.prevT?.seams ?? []).map((x) => String(x.right ?? "")), ai0 = sm.includes("aiQuestion") ? -1 : sm.findIndex((x) => x === "aiLine");
     if (ai0 >= 0 && sm.at(-1) === "checkin" && sm.slice(ai0 + 1).some((x) => x === "key" || (x === "workedStep" && !!ctx.prevT.stepAnswer?.told))) return null;
     if (!q || r.j2 || /·/.test(ctx.prevRead ?? "") || /^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     const first = (r.pageParts ?? [])[0]?.part;
