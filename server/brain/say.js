@@ -1638,6 +1638,9 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     keyFact: !!out.guard?.ynFact,
     // (to-brain 054 C2: the key said as its why alone is recorded as a key)
     keyWhy: out.guard?.whyKey ?? null,
+    // (d38 RULING-A8 Q6: the yes-or-no key said as its why alone at a give-up — recorded as the key where no side-topic line leads it; at a
+    // return its seam stays as built, so its back-to-work joint is said as before: the words are unchanged)
+    ynHelpKey: out.guard?.ynHelpKey ?? null,
     // (to-brain 054 A(i) D2: the turn after her reply's point turn takes no second go-on joint)
     noReplyJoint: !!state?.lastMove?.noReplyJoint,
   };
@@ -1646,6 +1649,8 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
   // (Brain 043 R2: the invitation said at the turn's end rotates as a joint does — counted when its words are in what she said)
   const g = { ...out.guard, seams: r.seams, jointsUsed: [...r.jointsUsed, ...(out.guard?.workedInvite ? ["workedInvite"] : []), ...(out.guard?.leadJoints ?? [])], ...r.said, ...(Object.keys(r.picks ?? {}).length ? { jointPicks: r.picks } : {}), lineParts: r.list, parts: { ...(out.guard.parts ?? {}), list: r.list } };
   for (const k of ["backTo", "beforeRemediation", "afterTryFirst", "afterAside", "afterAiLine"]) if (!r.said[k]) delete g[k];
+  // (d38 RULING-A8 Q6: the yes-or-no key recorded as the key is the key said as its why alone, as the record reads it — keyWhy)
+  if (out.guard?.ynHelpKey && !g.whyKey && r.seams.some((x) => x.right === "key")) g.whyKey = out.guard.ynHelpKey;
   return { ...out, reply: r.reply, guard: g };
 }
 /** dc-r8-director24 M (main's 035): the model writes the joins in the turn's own reply call. Each joint the turn may need is asked for
@@ -3066,7 +3071,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (d38 RULING-A8 Q6, old-pizza-four-give 12 at ed292d10b too: a yes-or-no key said as its why alone at a give-up, a clarify or a Hindi
     // request — helpYn, the told answer — is recorded as the key, as at every other card (a key said as its why alone: seams.js keyWhy),
     // never as a verdict: no verdict was given)
-    else if (helpYn) guard.whyKey = helpYn;
+    else if (helpYn) guard.ynHelpKey = helpYn;
     const ynSentence = ynFact ?? helpYn ?? whyKey ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
     const gaveS = gaveA ? ynSentence ?? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|is sawaal ka|woh wala|the last|this question|that one)/i.test(x);

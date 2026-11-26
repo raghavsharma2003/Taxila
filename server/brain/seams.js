@@ -267,6 +267,8 @@ function kindOf(p, i, list, info) {
     case "close": if (info.keyFact && i === list.findIndex((q) => q.part === "close")) return "key";
       // (to-brain 054 C2: a key said as its why alone, with no verdict before it, is the key)
       if (info.keyWhy && i === list.findIndex((q) => q.part === "close") && norm(t).startsWith(norm(info.keyWhy).slice(0, 40))) return "key";
+      // (d38 RULING-A8 Q6: a yes-or-no key said as its why alone at a give-up is the key — where no side-topic line leads the turn)
+      if (info.ynHelpKey && i === list.findIndex((q) => q.part === "close") && !list.slice(0, i).some((q) => q.part === "aside") && norm(t).startsWith(norm(info.ynHelpKey).slice(0, 40))) return "key";
       return (info.miss || (info.authoredEnd && VERDICT_HEAD.test(t) && !/^(?:haan|bilkul|sahi|yes|exactly|that's right)\b/i.test(t) && MISS_WORD.test(sentencesOf(t)[0] ?? "")))
       && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
     case "closed": return "closed";
