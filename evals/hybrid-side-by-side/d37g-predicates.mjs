@@ -28,7 +28,7 @@ export const isPlainNo = (t) => PLAIN_NOS.has(noKey(t));
 const CLARIFY_SAID = /(?<![\p{L}])(?:(?:phir\s+bhi\s+|abhi\s+bhi\s+)?samajh\s+(?:nahi|nahin|nhi)\s+(?:aaya|aya|aa\s+raha|aa\s+rahi)|(?:nahi|nahin|nhi)\s+samajh\s+(?:aaya|aya)|samjha\s+(?:nahi|nahin|nhi)|(?:phir\s+se\s+)?samjhao|i\s+(?:don'?t|do\s+not|didn'?t|did\s+not)\s+(?:understand|get\s+it)|explain\s+(?:again|once\s+more))(?![\p{L}])/iu;
 const GIVE_UP_SAID = /(?<![\p{L}])(?:(?:mujhe\s+)?(?:nahi|nahin|nhi)\s+pata|pata\s+(?:nahi|nahin|nhi)|aap\s+(?:hi\s+)?batao|tum\s+(?:hi\s+)?batao|i\s+(?:don'?t|do\s+not)\s+know|no\s+idea)(?![\p{L}])/iu;
 /** A line that asks for help at a check-in: a plain no, a clarify or a give-up. */
-const asksHelp = (t) => isPlainNo(t) || CLARIFY_SAID.test(norm(t)) || GIVE_UP_SAID.test(norm(t));
+export const asksHelp = (t) => isPlainNo(t) || CLARIFY_SAID.test(norm(t)) || GIVE_UP_SAID.test(norm(t));
 /** Help at a FIRST no: a `help` seam or a told key, or a simpler / whyAlt part (never `alt`, the card's other wording, nor `helpSpent`). */
 const HELP_SEAMS = new Set(["help", "key"]);
 const HELP_PARTS = new Set(["simpler", "whyAlt"]);

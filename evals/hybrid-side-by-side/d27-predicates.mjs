@@ -20,6 +20,7 @@ import { bareBridgeGoOn, ownReasonDue } from "./help-predicates.mjs";
 import { stepToldAfterSimpler, hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
 import { FALLBACK_JOINTS, helpPart, ladderOf, sentencesOf, normSentence, sameSentence, at } from "../../server/director/help.js";
 import { CODE_SEAM_FORMS } from "../../server/brain/seams.js";
+import { asksHelp, endsOnCheckin } from "./d37g-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -209,6 +210,25 @@ export function pointOwnOf(p, r, script) {
   const b = sk?.explain?.find((x) => x.id === p.beat);
   return b?.board && b.ask?.board && sameB(p.own, b.ask.board) && !sameB(b.board, b.ask.board) ? b.board : p.own;
 }
+/** RULING-A6 E1 (round d38, r8-main-034's fixture): the meet-it-again line's forms, this check's OWN written-out list (director25 H4 item
+ *  6: after a told answer, with nothing left to say, she says they will meet it again and goes on). */
+const MEET_AGAIN = new Set(["Koi baat nahi, yeh hum aage phir dekhenge.", "That's okay, we'll see this again soon.",
+  "Theek hai, is par hum baad mein phir aayenge.", "That's fine, we'll come back to this later.",
+  "Koi baat nahi, bhinn ke aise sawaal aage phir aayenge; abhi aage badhte hain.", "That's okay, fraction questions like this will come again; let's go on for now."].map(normSentence));
+/** RULING-A6 E1: a THIRD request at one check-in after a told answer (the caller reads the key), where her two turns before were each help
+ *  (a `help` seam) answering a request at that check-in — a plain no, a clarify or a give-up, read from the requests' own lists
+ *  (d37g-predicates.mjs asksHelp) — each ending on a check-in again, the turn before the first request ending on that check-in too, and
+ *  this turn opening on the meet-it-again line: it may go on. A first or second request answered with no help still flags. */
+function thirdRequestMet(L, r, i) {
+  const R = L?.rows ?? [];
+  if (i < 6) return false;
+  const first = sentencesOf(String(r.text ?? ""))[0];
+  if (!first || !MEET_AGAIN.has(normSentence(first))) return false;
+  const kid = (k) => R[k]?.who === "child" && asksHelp(R[k].text);
+  const her = (k) => R[k]?.who === "teacher" && !!endsOnCheckin(R[k].text);
+  const helped = (k) => (R[k].seams ?? []).some((x) => x.right === "help");
+  return kid(i - 1) && her(i - 2) && helped(i - 2) && kid(i - 3) && her(i - 4) && helped(i - 4) && kid(i - 5) && her(i - 6);
+}
 export const D27_PREDICATES = {
   /** P1.1: every board on screen during a turn belongs to a part said in that turn or earlier in the lesson — never a card not yet said
    *  (a card's board belongs to the card from its first word). The board carried up from the turn before is not this turn's. */
@@ -312,6 +332,7 @@ export const D27_PREDICATES = {
     // said in the "nothing easier" line's place — server/director/state.js helpAfter, brain/seams.js — and is that turn's answer: fixture
     // c4-ch05-t01 stuck 46)
     if (isSpent && a.keyed) { const sm = r.seams ?? []; const g = sm.findIndex((x) => x.joint === "afterKeyGoOn"); if (g >= 0 && sm.slice(g + 1).some((x) => x.right === "return")) return null; }
+    if (a.keyed && thirdRequestMet(L, r, i)) return null;
     if (hasJoint(r.text, ctx.script, ["helpSpent"])) return isSpent ? null :`a ${req} on ${a.beat} answered with the "nothing easier" line while its help is unsaid`;
     const other = parts.find((p) => p.part === "simpler");
     return `a ${req} on ${a.beat}${a.keyed ? " (after a key)" : ""} answered with ${other ? `help for ${other.beat}` : parts.length ? parts.filter((p) => !p.joint && !p.checkin).map((p) => `${p.part}@${p.beat}`).join(", ") || "a joint" : "no part"}`;

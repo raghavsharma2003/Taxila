@@ -36,3 +36,43 @@ describe("E2: orderRemediation reads a remediation's sayAlt as its own", () => {
     assert.equal(of(rows, script, "orderRemediation").length, 1);
   });
 });
+
+describe("E1: requestHelped at the third request of a told answer's check-in", () => {
+  const SIMPLER = "Circle wahi hai, uske tukde bhi utne hi hain.";
+  const ALT = "Ek circle ko teen dost barabar baantein, har dost ko ek tukda mile.";
+  const script = { topicId: "t", joints: {}, skills: [{ skillId: "t-s1",
+    explain: [{ id: "e1", point: { hi: "Is circle ke teen barabar tukde hain, ek mein rang." }, pointAlt: { hi: ALT }, simpler: { hi: SIMPLER },
+      ask: { prompt: { hi: "Rangin bhaag kitna hai?" } } }] }] };
+  const KEY = T({ text: "Nahi. Iska sahi jawab hai 1/3. Yahan tak theek hai?", seams: [{ right: "key" }] });
+  const HELP1 = T({ text: `${SIMPLER} Ab tak samajh aaya?`, seams: [{ right: "help" }], pageParts: [{ part: "simpler", beat: "e1", from: 0 }] });
+  const HELP2 = T({ text: `${ALT} Yahan tak theek hai?`, seams: [{ right: "help" }], pageParts: [{ part: "simpler", beat: "e1", from: 0 }] });
+  const GO = T({ text: "Koi baat nahi, yeh hum aage phir dekhenge. Waise, cricket mein tumne kabhi kuch barabar baanta hai?", seams: [{ right: "afterKeyGoOn", joint: "afterKeyGoOn" }] });
+  const ASK = (t) => C(t, { intent: "clarify", read: "no_evidence · another" });
+  const flagsAt = (rows) => of(rows, script, "requestHelped").map((x) => x.row);
+  test("the third request, after help to each of the two before it at that check-in: the meet-it-again line and on, read 0", () => {
+    const rows = [CARD, C("1/2", { intent: "miss", read: "misconception" }), KEY, ASK("samajh nahi aaya"), HELP1, ASK("phir bhi samajh nahi aaya"), HELP2, ASK("nahi samjha")];
+    assert.deepEqual(flagsAt([...rows, GO]), []);
+    // (the same third request answered by a line that is not the meet-it-again line still flags)
+    assert.deepEqual(flagsAt([...rows, T({ text: "Chalo, agla sawaal dekhte hain.", seams: [] })]), [8]);
+  });
+  test("a give-up and a plain no are requests too (the check's own lists)", () => {
+    const rows = [CARD, C("1/2", { intent: "miss", read: "misconception" }), KEY, C("pata nahi", { intent: "give_up" }), HELP1, C("nahi", { intent: "clarify" }), HELP2, ASK("samajh nahi aaya"), GO];
+    assert.deepEqual(flagsAt(rows), []);
+  });
+  test("a first request answered with no help: flags", () => {
+    assert.deepEqual(flagsAt([CARD, C("1/2", { intent: "miss", read: "misconception" }), KEY, ASK("samajh nahi aaya"), GO]), [4]);
+  });
+  test("a second request answered with no help: flags", () => {
+    assert.deepEqual(flagsAt([CARD, C("1/2", { intent: "miss", read: "misconception" }), KEY, ASK("samajh nahi aaya"), HELP1, ASK("phir bhi samajh nahi aaya"), GO]), [6]);
+  });
+  test("a third request where one turn before was not help (no help seam): flags", () => {
+    const NOHELP = T({ text: "Chalo, board dekho. Yahan tak theek hai?", seams: [] });
+    const f = flagsAt([CARD, C("1/2", { intent: "miss", read: "misconception" }), KEY, ASK("samajh nahi aaya"), HELP1, ASK("phir bhi samajh nahi aaya"), NOHELP, ASK("nahi samjha"), GO]);
+    assert.ok(f.includes(8), `flags ${f}`);
+  });
+  test("a third request at a check-in that followed no told answer: flags", () => {
+    const NOKEY = T({ text: "Nahi, phir se socho. Yahan tak theek hai?", seams: [] });
+    const f = flagsAt([CARD, C("1/2", { intent: "miss", read: "misconception" }), NOKEY, ASK("samajh nahi aaya"), HELP1, ASK("phir bhi samajh nahi aaya"), HELP2, ASK("nahi samjha"), GO]);
+    assert.ok(f.includes(8), `flags ${f}`);
+  });
+});
