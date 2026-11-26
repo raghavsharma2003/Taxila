@@ -3773,6 +3773,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         else { const ib = body.findIndex((x) => keyS(x) === k); if (ib >= 0) replyP.push(...body.splice(ib, 1)); }
         if (replyP.length) guard.replyFirst = true;
       }
+      // (d38 RULING-A7 P3: the cap's turn at a return — state.js returnFifthOf, the move's capReturn: her line about the side-topic (the AI
+      // line, the said-again line, the park) is said first, then the told answer or C1's help, as her reply is)
+      if (state.lastMove?.capReturn && !replyP.length) { const lead0 = asideP.filter((x) => !/[?？]\s*$/.test(norm(x))); if (lead0.length) { replyP.push(...lead0); asideP.splice(0, asideP.length, ...asideP.filter((x) => !lead0.includes(x))); guard.replyFirst = true; } }
     }
     // (v6.11 G2, main on director19: a return asked the child about their aside and posed a card in the same turn — a return ends her turn)
     const asideQ = asideP.length && (/[?？]\s*$/.test(asideP.at(-1)) || (!!guard.returnLine && asideP.includes(guard.returnLine))) && !graded0?.ungraded ? true : false;

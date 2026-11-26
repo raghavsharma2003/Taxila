@@ -205,6 +205,12 @@ const dropB4 =(m) => { if (!m || typeof m !== "object") return m; const o = { ..
  *  The fields never carry from one move to the next (help builds its move from the last one). → out, changed in place. */
 /** d37 RULING-G item 7: the move's help is the point's wording (its pointAlt or simpler) said at a card — the question at `path` a card's. */
 const pointHelpAtCard = (lm, path) => ["pointAlt", "simpler"].includes(String(lm?.help?.rung ?? "")) && /\.ask$/.test(String(path ?? "")) && /:card$/.test(String(lm?.cell?.part ?? lm?.help?.part ?? ""));
+/** d38 RULING-A7 P7 (the driven walks, step-a-again): an invitation in the asked step's place says no wording of the step, so the wording
+ *  heard last stays the move's prompt — the child's "phir se bolo" after it gets the other wording (049 B1), never the one just heard. */
+function keepStepWording(prev, lm, set) {
+  const was = prev?.lastMove?.stepAsk;
+  if (lm.stepAsk?.prompt && !lm.splitClose && was?.prompt && !prev.lastMove.splitClose && was.skillId === lm.stepAsk.skillId && was.step === lm.stepAsk.step && was.prompt !== lm.stepAsk.prompt) set({ stepAsk: { ...lm.stepAsk, prompt: was.prompt } });
+}
 export function yourTurnPass(prev, out, script, childText = "", { capInvite = null, capReask = null } = {}) {
   const s = out?.state;
   if (!s?.lastMove || !script) return out;
@@ -230,6 +236,7 @@ export function yourTurnPass(prev, out, script, childText = "", { capInvite = nu
       const her = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
       const lastQ = [...her].reverse().find((t) => atQuestionOf(script, t) === capInvite);
       set({ yourTurn: forms[(s.yourTurnN ?? 0) % forms.length], yourTurnAfter: closingQuestion(lastQ ?? "") ?? closingQuestion(out.ui?.ask?.text ?? lm.stepAsk?.prompt ?? "") });
+      keepStepWording(prev, lm, set);
       return out;
     }
   }
@@ -305,7 +312,10 @@ export function yourTurnPass(prev, out, script, childText = "", { capInvite = nu
     const nowText0 = lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null;
     const a0 = nowText0 ? atQuestionOf(script, nowText0) : null, p0 = a0 && a0 !== "?short" ? a0 : null;
     if (p0 && questionPathOf(script, pl0.yourTurnAfter) === p0) set({ askNot: pl0.yourTurnAfter });
-    return out;
+    // (d38 RULING-A7 P1: C3 holds whatever her turn before was — after an invitation (C1's turn, or any), a turn at a question heard four
+    // times that would say it again on her own takes C3's form below; the child's own request for it, its Hindi form, is honoured as always)
+    const q4 = p0 && !/teachback/.test(p0) && lm.kind !== "teachback" && (s.qHeard?.[p0] ?? 0) >= 4;
+    if (!q4 || tbQ || lm.hindiForm || HEAR_Q.test(String(childText ?? "")) || lm.stayCheckin || lm.greetAsk || ["wrap", "safeguard", "break", "done"].includes(String(lm.kind ?? ""))) return out;
   }
   // (to-brain 051 C4: the cap counts what the child hears — a request for Hindi answered with the part's `hindi` form is a turn of the run, and
   // the third such turn ends on the invitation after the form (brain/say.js says the form, then the invitation); a request to hear the question
@@ -357,12 +367,13 @@ export function yourTurnPass(prev, out, script, childText = "", { capInvite = nu
   // (to-brain 055 C3: no fifth hearing on her own, in any form — a turn that would say the question a fifth time takes the form that does not:
   // with help in it, the help and the invitation in the question's place; with none, the short ask. A child's own request for it is honoured
   // above: HEAR_Q, the Hindi form)
-  if (capQ && heardQ >= 4 && !tbQ && !saidInv) {
+  if (capQ && heardQ >= 4 && !tbQ) {
     const forms = yourTurnForms(script, s.ctx?.lang === "english" ? "english" : "hinglish");
     if (helpIn(lm) && forms.length) {
       const her = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
       const lastQ = [...her].reverse().find((t) => atQuestionOf(script, t) === capQ);
       set({ yourTurn: forms[(s.yourTurnN ?? 0) % forms.length], yourTurnAfter: closingQuestion(lastQ ?? "") ?? closingQuestion(out.ui?.ask?.text ?? lm.stepAsk?.prompt ?? "") });
+      keepStepWording(prev, lm, set);
     } else set({ waitShort: true });
     return out;
   }

@@ -18,7 +18,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { lessonFlags, PENDING } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
+import { lessonFlags, PENDING, PREDICATES } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
 import { atQuestionOf } from "../server/director/question-run.js";
 
 const ROOT = new URL("..", import.meta.url).pathname;
@@ -41,40 +41,21 @@ const WALKS = Object.entries(AT).flatMap(([w, a]) => Object.entries(CASES).map((
 
 // Expected to fail ONLY until the item that fixes each lands in this session (BRIEF-P step 1); empty at the session's last commit.
 const EXPECTED = new Set([
-  "card-a-aireply 18 questionFifthOnHerOwn",
-  "card-a-aireply 18 questionFiveTimes",
-  "card-a-clar 16 questionFifthOnHerOwn",
-  "card-a-clar 16 questionFiveTimes",
-  "card-a-hindi 16 questionFifthOnHerOwn",
-  "card-a-hindi 16 questionFiveTimes",
-  "card-a-pic 16 questionFifthOnHerOwn",
-  "card-a-pic 16 questionFiveTimes",
+  "card-a-aireply 18 replyCheckin",
   "card-a-try 18 waitSecondNotReask",
-  "card-a-yes 16 waitSecondNotReask",
   "card-b-clar 16 yourTurnNotThird",
-  "card-c-aireply 16 questionFifthOnHerOwn",
-  "card-c-aireply 16 questionFiveTimes",
-  "card-c-aireply 18 questionFifthOnHerOwn",
-  "card-c-aireply 18 questionFiveTimes",
-  "card-c-aireply 20 keyWithWordingUnsaid",
-  "card-c-aireply 20 readerAsideColumn",
-  "card-c-park 18 questionFifthOnHerOwn",
-  "card-c-park 18 questionFiveTimes",
-  "card-c-park 20 questionFifthOnHerOwn",
-  "card-c-park 20 questionFiveTimes",
-  "step-a-again 20 reaskSameAfterHelp",
+  "card-a-yes 16 waitSecondNotReask",
+  "card-c-aireply 20 aiAskAnswered",
+  "card-c-park 20 replyCheckin",
   "step-a-aireply 22 stepToldEarly",
   "step-a-give 20 giveUpVerdict",
   "step-a-hindi 22 stepToldEarly",
   "step-a-miss 20 stepToldEarly",
   "step-a-park 20 stepToldEarly",
-  "step-a-pic 20 questionFifthOnHerOwn",
-  "step-a-pic 20 questionFiveTimes",
-  "step-a-pic 20 reaskSameAfterHelp",
   "step-a-right 20 stepToldEarly",
   "step-b-clar 20 stepToldEarly",
-  "step-c-aireply 22 goOnJointTwice",
   "step-c-aireply 22 stepToldEarly",
+  "step-c-aireply 22 goOnJointTwice",
   "step-c-park 22 keyWithWordingUnsaid",
 ]);
 
@@ -124,4 +105,24 @@ test("055 gate: every gated predicate reads 0 on every row of every driven walk"
   for (const w of WALKS) for (const x of lessonFlags({ rows: R[w.name], script: SCRIPT }).filter((y) => !PENDING.has(y.predicate))) flags.push(`${w.name} ${x.row} ${x.predicate}`);
   assert.deepEqual(flags.filter((f) => !EXPECTED.has(f)), [], "flags outside the expected-to-fail list");
   assert.deepEqual([...EXPECTED].filter((f) => !flags.includes(f)), [], "expected-to-fail cases that now pass: take them off the list");
+});
+
+// (the readings RULING-A7 names, each side, on the driven rows themselves)
+const flagAt = (rows, i, name) => lessonFlags({ rows, script: SCRIPT }).some((x) => x.row === i && x.predicate === name);
+const child = (text) => ({ who: "child", text, read: "no_evidence" });
+
+test("P1: yourTurnNotThird passes help answering the child's request at a question heard four times, ending on an invitation — the second running too", { timeout: 180_000 }, () => {
+  const rows = run()["card-a-clar"];
+  const i = start(rows, WALKS.find((w) => w.name === "card-a-clar")) + 9;
+  assert.equal(rows[i - 1].text, "samajh nahi aaya");
+  assert.equal(PREDICATES.yourTurnNotThird({ rows }, rows[i], i, { script: SCRIPT }), null);
+  // (a second such turn running: the clarify again, the help again ending on an invitation)
+  const two = [...rows.slice(0, i + 1), child("phir bhi samajh nahi aaya"), rows[i]];
+  assert.equal(PREDICATES.yourTurnNotThird({ rows: two }, two[i + 2], i + 2, { script: SCRIPT }), null);
+  // (the other side: the same help turn she chose herself — after a wrong answer, no request — still flags)
+  const own = [...rows.slice(0, i - 1), { ...rows[i - 1], text: "7", read: "incorrect" }, rows[i]];
+  assert.match(String(PREDICATES.yourTurnNotThird({ rows: own }, own[i], i, { script: SCRIPT })), /invitation/);
+  // (and the request's help before the fourth hearing reads as before: the walk at three hearings is not this turn)
+  const three = [...rows.slice(0, i - 9), ...rows.slice(i - 7, i + 1)];
+  assert.match(String(PREDICATES.yourTurnNotThird({ rows: three }, three.at(-1), three.length - 1, { script: SCRIPT })), /invitation/);
 });

@@ -81,6 +81,30 @@ export function pointHelpReaskAt(r, script, prevT = null) {
   const ss = new Set(helpSentences(String(r.text ?? "")).map(helpNorm));
   return ["pointAlt", "simpler"].some((f) => { const v = atPath(script, `${p.point}.${f}`); return [v?.hi, v?.en, typeof v === "string" ? v : null].filter(Boolean).some((x) => helpSentences(x).map(helpNorm).some((y) => ss.has(y))); });
 }
+/** d38 RULING-A7 P1: the child's requests for help at a question, as said — a clarify, a give-up, a picture request, a request for Hindi
+ *  (this check's own lists). */
+const CLARIFY_ASKED = /(?<![\p{L}])(?:samajh\s+(?:nahi|nahin|nhi)\s+(?:aaya|aya|aa\s+raha|aa\s+rahi)|(?:nahi|nahin|nhi)\s+samajh\s+(?:aaya|aya)|samjha\s+(?:nahi|nahin|nhi)|samjhao|i\s+(?:don'?t|do\s+not|didn'?t|did\s+not)\s+(?:understand|get\s+it)|explain\s+again)(?![\p{L}])/iu;
+const GIVE_UP_ASKED = /(?<![\p{L}])(?:(?:mujhe\s+)?(?:nahi|nahin|nhi)\s+pata|pata\s+(?:nahi|nahin|nhi)|(?:aap|tum)\s+(?:hi\s+)?batao|i\s+(?:don'?t|do\s+not)\s+know|no\s+idea)(?![\p{L}])/iu;
+const PICTURE_ASKED = /(?<![\p{L}])(?:(?:picture|tasveer|photo|drawing|diagram|chitra)(?:\s+\S+){0,2}?\s+(?:dikhao|dikhaao|dikha\s+do|banao|bana\s+do)|(?:screen|board)\s+par\s+(?:dikhao|dikhaao|dikha\s+do|banao|bana\s+do)|show\s+(?:me\s+)?(?:a\s+)?(?:picture|drawing))(?![\p{L}])/iu;
+const HINDI_ASKED = /(?<![\p{L}])(?:hindi\s+(?:mein|me|main)|in\s+hindi)(?![\p{L}])/iu;
+const atOwn = (script, path) => String(path ?? "").split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], script);
+/** d38 RULING-A7 P1: row i is help answering the child's request for help (a clarify, a give-up, a picture request, or a request for Hindi
+ *  at a question with no Hindi form) at a question heard four times or more before it — the question her last turn ending on a question
+ *  asked, its hearings her turns ending on it. */
+function requestHelpAtFour(L, i, script) {
+  const c = L.rows[i - 1], r = L.rows[i];
+  if (c?.who !== "child" || !helpTurn(r)) return false;
+  const t = String(c.text ?? "").replace(/\s+/g, " ").trim();
+  let P = null;
+  for (let j = i - 1; j >= 0 && !P; j--) if (L.rows[j].who === "teacher") { const a = atQuestionOf(script, L.rows[j].text); if (a && a !== "?short") P = a; }
+  if (!P) return false;
+  const hindiNoForm = HINDI_ASKED.test(t) && !(atOwn(script, P)?.hindi);
+  if (!(CLARIFY_ASKED.test(t) || GIVE_UP_ASKED.test(t) || PICTURE_ASKED.test(t) || hindiNoForm)) return false;
+  let n = 0;
+  for (let j = 0; j < i; j++) if (L.rows[j].who === "teacher" && atQuestionOf(script, L.rows[j].text) === P) n++;
+  return n >= 4;
+}
+
 export const D34B_PREDICATES = {
   /** to-brain 049 B6 (d33's), and to-brain 051 C6: a return never asks when after the aside said when (director33 c5-t01 steady 40, c5-t03
    *  steering 50: "Tumne sixer ki baat ki thi: woh kab ki baat hai?" after "kal maine cricket khela"), nor what they like in it to a child who
@@ -118,6 +142,9 @@ export const D34B_PREDICATES = {
     if (r.who !== "teacher" || !ctx?.script || !invites(ctx.script, r)) return null;
     // (to-brain 053 B2: after try-first or a bare yes, the second such turn waits with the invitation, the short ask said the turn before)
     if (b2Turn(r)) return null;
+    // (d38 RULING-A7 P1: help answering the child's request at a question heard four times ends on the invitation — C3 forbids every other
+    // ending there and the child asked, so she is helped — the second such turn running too; help she chose herself is read as before)
+    if (requestHelpAtFour(L, i, ctx.script)) return null;
     // (main's ruling A(ii) of d38, as RULING-H item 15 reads it for endsOnQuestion and stepTryFirst: a turn that is exactly the go-ahead
     // answering a try-first is no turn at anything else — it is skipped when her turns at the question are counted)
     const two = [];

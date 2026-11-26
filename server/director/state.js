@@ -3796,7 +3796,9 @@ function returnFifthOf(prev, input, heard, said) {
   if (input?.event !== "turn" || input.branch || prev?.safeguard || input.cls?.flags?.distress || input.cls?.flags?.wantsToStop || recordedWalk(input)) return null;
   const col = columnName(input, prev);
   if (!input.cls?.asideReply && col !== "aside") return null;
-  if (HEAR_Q.test(String(input.text ?? "")) || ["language", "stop", "end", "break", "goodbye", "repeat", "visual", "picture"].includes(String(input.cls?.request?.type ?? ""))) return null;
+  // (d38 RULING-A7 P1: the child's own request — never the walk's: planTurn reads a reply to her AI line's question, the card held unsaid, as a
+  // "repeat" with src card_unsaid, which asks for nothing; the reply after the AI line is a return like any other)
+  if (HEAR_Q.test(String(input.text ?? "")) || (["language", "stop", "end", "break", "goodbye", "repeat", "visual", "picture"].includes(String(input.cls?.request?.type ?? "")) && input.cls?.request?.src !== "card_unsaid")) return null;
   const script = scriptFor(input.kit)?.script;
   // (after the AI line her question back holds the step or the card for the turn after the child's reply — heldTurn: the open question is
   // the held half's, and the cap is read on it)
@@ -3812,7 +3814,6 @@ function returnFifthOf(prev, input, heard, said) {
   const qText = card ? base.lastUi.ask.text : stepQ;
   const P = qText && script ? atQuestionOf(script, qText) : null;
   if (!P || P === "?short" || /teachback/.test(P) || (heard[P] ?? 0) < 4) return null;
-  if (helpBefore(prev, input, said)) return null;
   let built;
   try {
     built = helpAfter(prev, input, stepCells(prev, input), null);
@@ -3826,7 +3827,9 @@ function returnFifthOf(prev, input, heard, said) {
   } catch { return null; }
   const lm = built.state.lastMove;
   // (or the turn the walk reads as a side-topic said again — the honest AI line asked again goes on into the question it held: 054 D3)
-  const aside = !!(lm.asideAck || lm.returnReply || lm.returned || lm.tasteAsked) || (built.state.later?.length ?? 0) > (prev.later?.length ?? 0);
+  // (d38 RULING-A7 P3: and the said-again line — an aside said again after its return was had, the move's asideAgain — is a reply to a
+  // side-topic like the others: RULING-A3 item 2 names it)
+  const aside = !!(lm.asideAck || lm.returnReply || lm.returned || lm.tasteAsked || lm.asideAgain) || (built.state.later?.length ?? 0) > (prev.later?.length ?? 0);
   // (main's ruling A4 of d38: after C1's turn at a return — the question's one allowed fifth hearing — a further side-topic at that question gets
   // her reply and the told answer, though the turn as built would end on 052 B4's pointed invitation: never a sixth hearing, never a park
   // that only points at a question heard five times)
@@ -3848,7 +3851,9 @@ function returnFifthOf(prev, input, heard, said) {
  *  move's asideAck and returnReply, the state's returnAnswer), a park (the state's `later`), a parked topic served (`returned`). */
 function graftReturn(prev, built, out) {
   const b = built.state, lmB = b.lastMove ?? {};
-  const f = Object.fromEntries(["asideAck", "returnReply", "returned", "tasteAsked"].filter((k) => lmB[k] != null).map((k) => [k, lmB[k]]));
+  const f = Object.fromEntries(["asideAck", "returnReply", "returned", "tasteAsked", "asideAgain"].filter((k) => lmB[k] != null).map((k) => [k, lmB[k]]));
+  // (d38 RULING-A7 P1: the cap's turn at a return is said after her line about the side-topic — brain/say.js reads capReturn)
+  f.capReturn = true;
   if (b.tasteAsked && b.tasteAsked !== prev.tasteAsked) out.state.tasteAsked = b.tasteAsked;
   if (out.state.lastMove) out.state.lastMove = { ...out.state.lastMove, ...f };
   if (out.move) out.move = { ...out.move, ...f };
