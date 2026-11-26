@@ -1074,6 +1074,10 @@ Object.assign(PREDICATES, D37H_PREDICATES);
 // d38a-predicates.mjs, both gated)
 import { D38A_PREDICATES } from "./d38a-predicates.mjs";
 Object.assign(PREDICATES, D38A_PREDICATES);
+// (d38 builder S2, main's item U1: a parked side-topic's return never said while a card a remediation took over is owed its way back —
+// d38s-predicates.mjs, gated)
+import { D38S_PREDICATES } from "./d38s-predicates.mjs";
+Object.assign(PREDICATES, D38S_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

@@ -69,6 +69,9 @@ for (const [k, lines] of [["four-give", [...FOUR, "give"]], ["c1-give", [...FOUR
 const FOLLOW = { fwrong: "aadha" };
 for (const [k, lines] of [["c1-yes-right", [...FOUR, "miss", "yes", "right"]], ["c1-yes-wrong", [...FOUR, "miss", "yes", "fwrong", "right"]], ["yes-right", [...FOUR, "yes", "right"]]])
   WALKS.push({ name: `pizza-t1-${k}`, topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: lines.map((x) => FOLLOW[x] ?? L[x]) });
+// (d38 main's item U1: a side-topic parked at the pizza card, then "haan" — its named mistake — so its remediation starts, the follow-up answered
+// right: the card comes back; answered right: its verdict, and the parked topic's return where the walk says it)
+WALKS.push({ name: "pizza-u1-park", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["park", "yes", "right", "right"].map((x) => L[x]) });
 WALKS.push({ name: "pizza-t1-low", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["yes", "right"].map((x) => L[x]) });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
@@ -378,4 +381,22 @@ test("T1 (RULING-A10): the return from a remediation's follow-up card at the cap
       seams: [{ left: "start", right: "key" }, { left: "key", right: "checkin" }] };
     const L3 = [...rows.slice(0, j + 1), child("pata nahi"), { ...tell, cell: { part: "c4-maths-ch05-t01-s1:e3:card", column: "give_up" } }];
     assert.match(String(kw(L3, L3.length - 1)), /never said/, "told after another question's remediation"); }
+});
+
+test("U1 (main's item): the way back to a card a remediation took over comes before a parked side-topic's return — returnBeforeWayBack each side", { timeout: 180_000 }, () => {
+  const R = run();
+  const rows = R["pizza-u1-park"], i0 = start(rows, WALKS.find((x) => x.name === "pizza-u1-park"));
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  assert.ok(seams(rows[i0 + 3]).includes("remediation"), norm(rows[i0 + 3].text));
+  const back = rows[i0 + 5];
+  assert.equal(atQuestionOf(SCRIPT, back.text), PIZZA, `the card comes back: ${norm(back.text)}`);
+  assert.ok(!seams(back).includes("return"), "no return while the way back is owed");
+  const after = rows[i0 + 7];
+  assert.equal(rows[i0 + 6].read, "correct");
+  assert.deepEqual(seams(after).slice(0, 2), ["verdict", "return"], `the verdict, then the return: ${norm(after.text)}`);
+  // (the other side: the return said on the follow-up's verdict, the card still open — flags)
+  const early = { ...back, text: `${back.text.split(". ")[0]}. Cricket ki baari aa gayi: uske baare mein thoda aur batao na?`, seams: [{ left: "start", right: "verdict" }, { left: "verdict", right: "return" }] };
+  const L2 = [...rows.slice(0, i0 + 5), early];
+  assert.match(String(PREDICATES.returnBeforeWayBack({ rows: L2 }, early, L2.length - 1, { script: SCRIPT })), /way back/);
+  assert.equal(PREDICATES.returnBeforeWayBack({ rows }, after, i0 + 7, { script: SCRIPT }), null);
 });

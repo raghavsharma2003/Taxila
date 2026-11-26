@@ -5328,7 +5328,11 @@ function step0(prev, input) {
     const thenDone = String(prev.activeItemId ?? "").includes(":then:") && live !== prev.activeItemId && !String(live ?? "").includes(":then:") && !s.splitHold
       && !/:ask:worked|:worked/.test(String(live ?? ""))
       && !["incorrect", "misconception"].includes(String(input.cls?.outcome ?? "")) && !move.request && !input.cls?.request?.type;
-    const due = boundary || thenDone ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
+    // (d38 main's item U1, q/dry1/m stuck c6-ch06-t01 68: the way back to a card a remediation took over comes before a parked side-topic's
+    // return — on the turn that re-poses that card, or that gives its told answer at the cap (RULING-A10 T1), no return is said: it is said at
+    // the first place it would be once the card has its verdict or its told answer)
+    const wayBack = (s.reposed ?? []).length > (prev.reposed ?? []).length || !!move.capRepose;
+    const due = (boundary || thenDone) && !wayBack ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
       && (live !== e.onItem || move.kind === "break" || parkOverdue(s, e) || thenDone)) : null;
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
