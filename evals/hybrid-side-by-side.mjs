@@ -5,6 +5,7 @@
 //
 //   node --env-file=.env.local evals/hybrid-side-by-side.mjs [--matrix] [--topic <id>] [--class 6] [--scenario steady,offtopic,stuck] [--cap 150] [--usd 2] [--out <dir>]
 //   node evals/hybrid-side-by-side.mjs --dry      plumbing check: no network, stubbed model lines, nothing to judge
+//   --drive <file.json>                           (dry, d38 P7) driven lessons: driver() below; tests/r8-d38-055gate
 //   --staged                                      (eval only) a topic with no pilot script walks its staged script
 //                                                 (data/lesson-scripts-staged), snapshot in <out>/scripts; the server never serves one
 //   --learners meera,meeraForgot,kabir,player     round 8 (integration 26, "taught this child"): each lesson starts from a seeded
@@ -16,7 +17,7 @@
 // tests/learner-live.test.mjs does. The child is scripted (a fixed line per turn, whatever she said), so both lanes hear
 // exactly the same words. Model calls per scenario: about 2 per turn per lane (the classifier when code cannot decide, and
 // her reply): 3 scenarios × 10 turns ≈ 120 small calls (6 lessons). Ask main before more than about 20 lessons.
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { initLessonState, step, requeueMissedReturn } from "../server/director/state.js";
 import { findItem } from "../server/director/items.js";
 import { classify, classifyFast, targetFor } from "../server/director/classify.js";
@@ -207,8 +208,29 @@ async function classOf(state, kit, text, classLevel) {
   return { ...(await classify(args)), path };
 }
 
+/** d38 RULING-A7 P7 (tests/r8-d38-055gate): --drive <file.json> walks driven lessons, [{ name, topicId, classLevel, seek: "card"|"step",
+ *  skip, then: [line, …] }]: the child answers what is live with its key ("haan" when nothing is) until the seek'th-plus-one card or asked
+ *  step is on the table, then says the `then` lines in order ("@key": what is live, answered right), then answers what is live for `tail`
+ *  turns, and the lesson ends. Read, planned and recorded as every matrix lesson is. */
+const DRIVE_MAX = 300;
+function driver({ seek, skip = 0, then = [], tail = 0 }) {
+  let sk = Number(skip), at = -1;
+  // (what is live: the item on the table, else the asked step's own key — an asked step whose quick item is off the table is still asked)
+  const stepKey = (s, kit) => { const sa = s.lastMove?.stepAsk; const k = sa?.prompt && !s.lastMove.splitClose ? scriptFor(kit)?.script?.skills?.find((x) => x.skillId === sa.skillId)?.workedExample?.steps?.[sa.step]?.ask?.key : null; return k == null ? null : String(k); };
+  const key = (s, kit) => { const it = s.activeItemId ? findItem(s, kit, s.activeItemId) : null; return it ? String(it.answer) : stepKey(s, kit) ?? "haan"; };
+  return { then, next(s, kit) {
+    if (at < 0) {
+      const isStep = !!(s.lastMove?.stepAsk?.prompt && !s.lastMove.splitClose);
+      const isCard = String(s.lastUi?.ask?.itemId ?? "").startsWith("script:") && !isStep;
+      if ((seek === "card" && isCard) || (seek === "step" && isStep)) { if (sk-- <= 0) at = 0; }
+      if (at < 0) return key(s, kit);
+    }
+    if (at < then.length) { const t = then[at++]; return t === "@key" ? key(s, kit) : t; }
+    return at++ < then.length + Number(tail) ? key(s, kit) : null;
+  } };
+}
 /** One lesson on one lane: the opening, then every scripted line. */
-async function lesson(lane, kit, classLevel, lines, persona = null, learner = null) {
+async function lesson(lane, kit, classLevel, lines, persona = null, learner = null, drive = null) {
   // round 8: a seeded learner (her plan, warm-up, start records and interests); none = the no-history child as before
   const seeded = learner ? seedLearner(kit.topicId, learner) : null;
   // H1 (director5): a reactive scripted child answers what is on the table, by persona; else the fixed lines
@@ -246,7 +268,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
   s.recent = [...(s.recent ?? []), { who: "teacher", text: opening }];
   let live = { state: newLearnerState({ childId: CHILD(classLevel).id, classLevel }), maxSeq: 0 };
   // (H1.1: the persona sets its own budget, Learning maxTurnsFor: steady leaves at 40, so skills 2-3 are reached)
-  const MAX = child ? (toEnd ? TO_END_MAX + LEAVE_WAIT_H : maxTurnsFor(persona)) : lines.length;
+  const MAX = drive ? DRIVE_MAX : child ? (toEnd ? TO_END_MAX + LEAVE_WAIT_H : maxTurnsFor(persona)) : lines.length;
   const lastSkill = scriptFor(kit)?.script?.skills?.at(-1)?.skillId ?? null;
   let lastBoardUp = false;
   // (v6.1 harness: the board the child saw last turn, to tell a picture ask that drew something new from one that re-drew it)
@@ -263,7 +285,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
   let shownKind = null;
   let leaveWait = 0;
   for (let i = 0; i < MAX; i++) {
-    let text = lines?.[i];
+    let text = drive ? drive.next(s, kit) : lines?.[i];
     let leaving = false;
     let childIntent = null;
     if (child) {
@@ -711,7 +733,9 @@ const MATRIX = process.argv.includes("--matrix");
 const LEARNERS = arg("learners", "").split(",").map((x) => x.trim()).filter(Boolean);
 // H1 (director5): --reactive plays the reactive child (evals/child-sim/reactive.mjs), persona = the scenario name
 const REACTIVE = process.argv.includes("--reactive");
-const runs = LEARNERS.length
+const DRIVE = arg("drive", null) ? JSON.parse(readFileSync(arg("drive", null), "utf8")) : null;
+const runs = DRIVE ? DRIVE.map((d) => ({ topicId: d.topicId, classLevel: d.classLevel ?? Number(/^c(\d+)-/.exec(d.topicId)?.[1] ?? 6), name: d.name, drive: d }))
+  : LEARNERS.length
   ? (MATRIX ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : [...MATRIX_TOPICS, ["c5-maths-ch02-t02", 5]])
     : [[arg("topic", "c6-maths-ch06-t01"), Number(arg("class", "6"))]]).flatMap(([topicId, classLevel]) => LEARNERS.map((learner) => ({ topicId, classLevel, name: arg("scenario", "steady"), learner })))
   : MATRIX
@@ -732,18 +756,18 @@ if (process.env.TAXILA_R7_SCRIPT && scriptOn()) {
 const dir = OUT;
 mkdirSync(dir, { recursive: true });
 snapshotStaged(dir, STAGED_TOPICS);
-for (const { topicId, classLevel, name: scenario, learner = null } of runs) {
+for (const { topicId, classLevel, name: scenario, learner = null, drive = null } of runs) {
   const kit = kitFromFile(getTopic(topicId));
   // (two topics of one class in one run, director5's c5 t01 and t02: named by topic)
-  const name = learner ? `${learner}-${scenario}-${topicId.replace(/-maths-/, "-")}` : MATRIX ? (arg("topics", "") ? `${scenario}-${topicId.replace(/-maths-/, "-")}` : `${scenario}-c${classLevel}`) : scenario;
+  const name = drive ? scenario : learner ? `${learner}-${scenario}-${topicId.replace(/-maths-/, "-")}` : MATRIX ? (arg("topics", "") ? `${scenario}-${topicId.replace(/-maths-/, "-")}` : `${scenario}-c${classLevel}`) : scenario;
   if (SKIP.has(name)) continue;
   // one lane after the other, so neither lane's latency is measured while the other is calling
   // --agent-only: the agent lane alone (main 2026-11-04: the agent half rerun with its production invariants)
   const AGENT_ONLY = process.argv.includes("--agent-only");
-  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null, learner);
+  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, drive ? drive.then : SCENARIOS[scenario], drive ? null : REACTIVE ? scenario : null, learner, drive ? driver(drive) : null);
   // --director-only: the Director lane alone (main 2026-11-04: the Director-half rerun after block 2; the agent lane is frozen)
   const DIRECTOR_ONLY = process.argv.includes("--director-only");
-  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null, learner);
+  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, drive ? drive.then : SCENARIOS[scenario], drive ? null : REACTIVE ? scenario : null, learner, drive ? driver(drive) : null);
   const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
   writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, ...(learner ? { learner, knows: seedLearner(topicId, learner).plan } : {}), dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
   // (a script run whose lesson walked no script beat is a broken run, never a result: it stops loudly)
