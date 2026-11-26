@@ -692,17 +692,6 @@ function walkNextV2(s, input, prefix, sk) {
   {
     const done = (id) => s.itemsDone.includes(id) || s.skipped.includes(id);
     const rp = (s.reposeQ ?? []).find((r) => done(r.after) && s.activeItemId !== r.after);
-    // (d38 RULING-A10 T1: a remediation of the card's named mistake started at four or more hearings of its question was that question's C1
-    // turn — walkRemedy marks it atCap. Once its follow-up card is closed the question is not said again in any form: her turn is the
-    // follow-up's verdict, then the card's told answer with its reason and its check-in — the card let go with its key in code)
-    if (rp?.atCap) {
-      s.reposeQ = (s.reposeQ ?? []).filter((r) => r !== rp);
-      if (!s.skipped.includes(rp.id)) s.skipped.push(rp.id);
-      s.activeItemId = undefined; s.scriptCard = undefined; s.hintLevel = 0;
-      const beat = cardBeatRef(s, kit, rp.item);
-      return plan("reteach", SH.reposeMissed(), { skillId: rp.item.skillId, stayCheckin: true, capRepose: rp.atCap,
-        gave: { answer: keyInLang(rp.item, s.ctx.lang), why: gaveWhyOf(kit, rp.item, s.ctx.lang) ?? "", ...keyAsWritten(rp.item, s.ctx.lang) }, ...(beat ? { scriptBeat: beat } : {}) });
-    }
     if (rp) {
       s.reposeQ = (s.reposeQ ?? []).filter((r) => r !== rp);
       s.skipped = s.skipped.filter((x) => x !== rp.id);
@@ -1328,11 +1317,11 @@ function walkRemedy(s, input, item) {
   // v6.4 K1 (main, director12: misconception routes left the card without its key — c4 ×7, c6 steady never heard 30 cm / 20 cm):
   // the card the remediation took over is posed again, once, after its follow-up card is closed
   // (a replay of a recorded run walks what that run walked — tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
-  // (d38 RULING-A10 T1: a remediation started at four or more hearings of the card's question is that question's C1 turn — one a question,
-  // RULING-A7 P2: c1At — and its return is the told answer, never the question again: atCap, the question's path)
+  // (d38 RULING-A10 T1, kept by RULING-A11 W1: a remediation started at four or more hearings of the card's question is that question's C1
+  // turn — one a question, RULING-A7 P2: c1At. Its way back is the question as built: walkNextV2's re-pose)
   const capP = (() => { const P = openQuestionOf(s, scriptFor(kit)?.script ?? null); return P && s.lastUi?.ask?.itemId === item.id && (s.qHeard?.[P] ?? 0) >= 4 ? P : null; })();
   if (capP) { const part = cardPartOf(kit, { itemId: item.id }); if (part) s.c1At = { ...(s.c1At ?? {}), [part]: true }; }
-  if (!scriptFor(kit)?.script?.recordedRun) s.reposeQ = [...(s.reposeQ ?? []).filter((r) => r.id !== item.id), { id: item.id, after: `script:${item.skillId}:then:${targets}`, item, ...(capP ? { atCap: capP } : {}) }];
+  if (!scriptFor(kit)?.script?.recordedRun) s.reposeQ = [...(s.reposeQ ?? []).filter((r) => r.id !== item.id), { id: item.id, after: `script:${item.skillId}:then:${targets}`, item }];
   s.activeItemId = undefined; s.hintLevel = 0;
   friendOf = s.ctx.firstName ?? "";
   const then = friendly(scriptThenItem(item.skillId, r));
@@ -4775,7 +4764,10 @@ export function step(prev, input) {
     const wg = wait?.reaskHeard || wait?.fifth ? { waitGive: true } : {};
     if (wait && out.state.lastMove) { out.state.lastMove = { ...out.state.lastMove, waitN: wait.n, waitP: wait.P, ...wg }; if (out.move) out.move = { ...out.move, waitN: wait.n, waitP: wait.P, ...wg }; }
   }
-  if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "", { capInvite: capInviteP, capReask: capReaskP });
+  // (d38 RULING-A11 W1: where the walk started a remediation of the card's named mistake in the cap's place — that question's C1 turn — its
+  // follow-up card is asked as built: the invitation never stands in for it)
+  const remNow = out?.state?.lastMove?.scriptBeat?.kind === "remediation";
+  if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "", { capInvite: remNow ? null : capInviteP, capReask: remNow ? null : capReaskP });
   // (d38 RULING-A7 P2: a help turn at a question heard four times that ends on an invitation IS that question's C1 turn, whichever path said
   // it — C1 on a miss, C3 at help, a request's help under P1: it sets the same mark, and the next miss, give-up or non-answer is told)
   { const lm2 = out?.state?.lastMove;
@@ -5173,8 +5165,9 @@ function step0(prev, input) {
   // v6.1 R7/R8: the beat's or card's AUTHORED simpler (format 2.3), said instead of anything model-written
   if (p.simpler) move.simpler = String(p.simpler);
   if (p.stayCheckin) { move.checkinOk = true; move.stayCheckin = true; }
-  // (d38 RULING-A10 T1: the told answer at the return from a follow-up card at the cap — brain/say.js records its key)
-  if (p.capRepose) move.capRepose = p.capRepose;
+  // (d38 RULING-A11 W1: the way back from a remediation's follow-up card — the original question as built, at any hearing count: brain/say.js
+  // never makes it the short ask)
+  if (p.reposed) move.reposed = true;
   // (Brain 044 T1: the greeting's simpler wording said on its own turn; the hook comes next)
   if (p.greetHelp) move.greetHelp = true;
   if (p.greetAsk) move.greetAsk = String(p.greetAsk);
@@ -5329,8 +5322,8 @@ function step0(prev, input) {
       && !/:ask:worked|:worked/.test(String(live ?? ""))
       && !["incorrect", "misconception"].includes(String(input.cls?.outcome ?? "")) && !move.request && !input.cls?.request?.type;
     // (d38 main's item U1, q/dry1/m stuck c6-ch06-t01 68: the way back to a card a remediation took over comes before a parked side-topic's
-    // return — on the turn that re-poses that card, or that gives its told answer at the cap (RULING-A10 T1), no return is said: it is said at
-    // the first place it would be once the card has its verdict or its told answer)
+    // return — on the turn that re-poses that card (RULING-A11 W1: at any hearing count) no return is said: it is said at the first place it
+    // would be once the card has its verdict or its told answer)
     const wayBack = (s.reposed ?? []).length > (prev.reposed ?? []).length || !!move.capRepose;
     const due = (boundary || thenDone) && !wayBack ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
       && (live !== e.onItem || move.kind === "break" || parkOverdue(s, e) || thenDone)) : null;

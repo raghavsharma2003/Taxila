@@ -367,7 +367,9 @@ export function yourTurnPass(prev, out, script, childText = "", { capInvite = nu
   // (to-brain 055 C3: no fifth hearing on her own, in any form — a turn that would say the question a fifth time takes the form that does not:
   // with help in it, the help and the invitation in the question's place; with none, the short ask. A child's own request for it is honoured
   // above: HEAR_Q, the Hindi form)
-  if (capQ && heardQ >= 4 && !tbQ) {
+  // (d38 RULING-A11 W1: the way back from a remediation's follow-up card — state.js walkNextV2's re-pose — is a return from another question
+  // with a whole remediation between: the question as built, at any hearing count, once for each remediation; never the short ask)
+  if (capQ && heardQ >= 4 && !tbQ && !lm.reposed) {
     const forms = yourTurnForms(script, s.ctx?.lang === "english" ? "english" : "hinglish");
     if (helpIn(lm) && forms.length) {
       const her = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));

@@ -136,7 +136,7 @@ const lastQuestion = (L, i, script) => { for (let k = i - 1; k >= 0; k--) { cons
  *  turn. Before row i: a turn of hers with a remediation seam answering a child's line read as a misconception, the question her last turn
  *  before it ended on (P0) heard four times or more before it, and P either P0 or the follow-up card that remediation posed (the question
  *  it ends on); every turn of hers between it and row i ends on P0, on P or on no question. This check's own reading. */
-function remC1Before(L, i, script, P) {
+export function remC1Before(L, i, script, P) {
   for (let j = i - 1; j > 0; j--) {
     const x = L.rows[j];
     if (x.who !== "teacher") continue;
@@ -253,6 +253,30 @@ export function c1ReturnAt(L, i, script, P) {
   return true;
 }
 
+/** d38 RULING-A11 W1: the way back from a remediation's follow-up card — a return from another question with a whole remediation between, a
+ *  fifth (or later) hearing on her own that is allowed once for each remediation. Row i (a) opens on the verdict or told answer of a
+ *  remediation's follow-up card (the row's own cell is a follow-up part, `…:rem:<n>:then`, its first seam `verdict` or `key`), (b) says the
+ *  back-to joint (one of the script's own joints.backTo forms), (c) ends on the question P, and (d) is the first such turn since the last
+ *  remediation (a `remediation` seam) before it, which came after P was asked. This check's own reading. */
+const backToForms = (script) => (script?.joints?.backTo ?? []).flatMap(formsOf).map(keyOf).filter(Boolean);
+const wayBackShape = (L, i, script, P) => {
+  const r = L.rows[i];
+  if (r?.who !== "teacher" || questionOfTurn(script, r.text) !== P || !/:rem:\d+:then$/.test(String(r.cell?.part ?? ""))) return false;
+  if (!["verdict", "key"].includes(String((r.seams ?? [])[0]?.right ?? ""))) return false;
+  const own = sentences(r.text).map(keyOf), forms = backToForms(script);
+  return own.some((t) => forms.includes(t));
+};
+export function wayBackAt(L, i, script, P) {
+  if (!script || !P || !wayBackShape(L, i, script, P)) return false;
+  for (let j = i - 1; j > 0; j--) {
+    const x = L.rows[j];
+    if (x.who !== "teacher") continue;
+    if (wayBackShape(L, j, script, P)) return false;
+    if ((x.seams ?? []).some((y) => y.right === "remediation")) return (lastQuestion(L, j, script)?.P ?? null) === P;
+  }
+  return false;
+}
+
 export const D38A_PREDICATES = {
   keyWithWordingUnsaid(L, r, i, ctx) {
     if (r.who !== "teacher" || ENDS(r)) return null;
@@ -282,6 +306,8 @@ export const D38A_PREDICATES = {
     if (n < 5 || ownRequest(L, i, ctx?.script, P)) return null;
     // (main's ruling A4: C1's one turn at a return — her reply, help in a wording not said before, the question — at its fifth hearing)
     if (n === 5 && c1ReturnAt(L, i, ctx?.script, P)) return null;
+    // (RULING-A11 W1: the way back from a remediation's follow-up card, once for each remediation, at any count)
+    if (wayBackAt(L, i, ctx?.script, P)) return null;
     return `the question ${P} heard a ${n}th time, on her own`;
   },
 };

@@ -1637,7 +1637,7 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     // (to-brain 053 D: the yes-or-no key said as its fact is recorded as a key)
     keyFact: !!out.guard?.ynFact,
     // (to-brain 054 C2: the key said as its why alone is recorded as a key)
-    keyWhy: out.guard?.whyKey ?? out.guard?.capReposeKey ?? null,
+    keyWhy: out.guard?.whyKey ?? null,
     // (d38 RULING-A8 Q6: the yes-or-no key said as its why alone at a give-up — recorded as the key where no side-topic line leads it; at a
     // return its seam stays as built, so its back-to-work joint is said as before: the words are unchanged)
     ynHelpKey: out.guard?.ynHelpKey ?? null,
@@ -3077,9 +3077,6 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     else if (helpYn) guard.ynHelpKey = helpYn;
     const ynSentence = ynFact ?? helpYn ?? whyKey ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
     const gaveS = gaveA ? ynSentence ?? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;
-    // (d38 RULING-A10 T1: the card's told answer after a remediation's follow-up at the cap — state.js capRepose — is said after the follow-up's
-    // verdict, in its part; it is recorded as the key it is, as a key said inside a verdict's part is: seams.js keyWhy)
-    if (gaveS && state.lastMove?.capRepose) guard.capReposeKey = gaveS;
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|is sawaal ka|woh wala|the last|this question|that one)/i.test(x);
     let ss = sentences(reply).map(norm).filter(Boolean)
       .filter((x) => !isGave(x) && !(card && (cardSs.includes(x) || (x.length > 3 && card.includes(x.replace(/[.!?।]+$/, ""))))));
