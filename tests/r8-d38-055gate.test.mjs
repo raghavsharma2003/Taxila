@@ -72,6 +72,10 @@ WALKS.push({ name: "pizza-w1-first", topicId: TOPIC, seek: "card", skip: 1, tail
 // (d38 main's item U1: a side-topic parked at the pizza card, then "haan" — its named mistake — so its remediation starts, the follow-up answered
 // right: the card comes back; answered right: its verdict, and the parked topic's return where the walk says it)
 WALKS.push({ name: "pizza-u1-park", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["park", "yes", "right", "right"].map((x) => L[x]) });
+// (d38 RULING-A11 W3, pr2 item 1: the pizza card's told answer at a return is a key seam, joined as the circle card's same turn — four hearings,
+// C1 on "7", the AI question and its reply; four hearings, the AI question and its reply twice, then "No")
+WALKS.push({ name: "pizza-a-aireply", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR, "miss", "ai", "reply"].map((x) => L[x]) });
+WALKS.push({ name: "pizza-c-aireply", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...[...FOUR, "ai", "reply", "ai", "reply"].map((x) => L[x]), "No"] });
 WALKS.push({ name: "pizza-w1-low", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["yes", "right"].map((x) => L[x]) });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
@@ -396,4 +400,15 @@ test("U1 (main's item): the way back to a card a remediation took over comes bef
   const L2 = [...rows.slice(0, i0 + 5), early];
   assert.match(String(PREDICATES.returnBeforeWayBack({ rows: L2 }, early, L2.length - 1, { script: SCRIPT })), /way back/);
   assert.equal(PREDICATES.returnBeforeWayBack({ rows }, after, i0 + 7, { script: SCRIPT }), null);
+});
+
+test("W3 (RULING-A11): a yes-or-no card's told answer at a return is a key seam, after her reply or the AI line, as the circle card's", { timeout: 180_000 }, () => {
+  const R = run();
+  for (const [name, off, first] of [["pizza-a-aireply", 11, "aiReply"], ["pizza-c-aireply", 11, "aiLine"], ["card-a-aireply", 11, "aiReply"]]) {
+    const rows = R[name], i = start(rows, WALKS.find((x) => x.name === name)) + off;
+    assert.deepEqual((rows[i].seams ?? []).map((x) => x.right), [first, "key", "checkin"], `${name}: ${norm(rows[i].text)}`);
+  }
+  const a = R["pizza-a-aireply"][start(R["pizza-a-aireply"], WALKS.find((x) => x.name === "pizza-a-aireply")) + 11];
+  const c = R["card-a-aireply"][start(R["card-a-aireply"], WALKS.find((x) => x.name === "card-a-aireply")) + 11];
+  assert.deepEqual(a.seams.map((x) => x.joint ?? null), c.seams.map((x) => x.joint ?? null), "the same joints as the circle card's turn");
 });

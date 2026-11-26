@@ -74,7 +74,10 @@ describe("C3 at a return, a card (c4-maths-ch05-t01, its second card): C1 given,
   });
   test("the AI line asks back and says no question of the lesson", () => { assert.equal(atQuestionOf(w.script, ai.text), null, ai.text); });
   test("the return: her reply, its back-to-work joint, then the told answer with its reason (the key) — never the question", () => {
-    assert.deepEqual(seamOf(ret).slice(0, 2), ["start>aiReply", "aiReply>verdict:afterAiLine"], ret.text);
+    // (d38 RULING-A11 W3, re-pinned: was "aiReply>verdict:afterAiLine" — the yes-or-no key recorded as a verdict at a return, with the
+    // verdict's joint (22c8af1ab). A told answer is a key on every path, with the seam-table pair and joint the circle card's same turn takes:
+    // reply > key, which the table joins with none)
+    assert.deepEqual(seamOf(ret).slice(0, 2), ["start>aiReply", "aiReply>key"], ret.text);
     assert.equal(ret.cell?.column, "aside_reply", ret.text);
     assert.equal(ret.lm.help?.card, "close", ret.text); assert.equal(ret.heardCap, w.P, ret.text);
     assert.notEqual(atQuestionOf(w.script, ret.text), w.P, ret.text);

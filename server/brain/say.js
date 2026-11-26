@@ -1638,8 +1638,8 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     keyFact: !!out.guard?.ynFact,
     // (to-brain 054 C2: the key said as its why alone is recorded as a key)
     keyWhy: out.guard?.whyKey ?? null,
-    // (d38 RULING-A8 Q6: the yes-or-no key said as its why alone at a give-up — recorded as the key where no side-topic line leads it; at a
-    // return its seam stays as built, so its back-to-work joint is said as before: the words are unchanged)
+    // (d38 RULING-A8 Q6: the yes-or-no key said as its why alone at a give-up — recorded as the key; RULING-A11 W3: at a return too, joined as
+    // the circle card's same turn: seams.js)
     ynHelpKey: out.guard?.ynHelpKey ?? null,
     // (to-brain 054 A(i) D2: the turn after her reply's point turn takes no second go-on joint)
     noReplyJoint: !!state?.lastMove?.noReplyJoint,
