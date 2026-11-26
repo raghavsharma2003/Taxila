@@ -182,7 +182,10 @@ function commit(st, r, ctx) {
   // joint do not move it: help is about the part she is on)
   const moving = parts.filter((p) => TEACH.has(p.part) && p.part !== "simpler" && !p.checkin && !p.joint && p.beat);
   const last = moving.at(-1);
-  const keyed = KEY_SAID.test(String(r.text ?? "")) || !!r.check?.gave || !!r.keyFact;
+  // (d38 RULING-A7 P6: and the told answer said as its reason alone — round d37's form, which KEY_SAID predates: a turn whose record carries a
+  // `key` seam after a miss verdict, or a told step (its told-step record or seam), is the told answer of that part — fixture stuck 44)
+  const rs = (r.seams ?? []).map((x) => x.right);
+  const keyed = KEY_SAID.test(String(r.text ?? "")) || !!r.check?.gave || !!r.keyFact || rs.some((k, n) => k === "key" && rs.slice(0, n).includes("missVerdict")) || !!r.stepAnswer?.told;
   if (last) {
     const skill = last.part === "bridge" ? bridgeSkillOf(r, script) : ["close", "closed"].includes(last.part) ? st.lastCardSkill ?? skillIdOf(r, script) : skillIdOf(r, script);
     const same = st.addr && st.addr.beat === last.beat && st.addr.skill === skill;

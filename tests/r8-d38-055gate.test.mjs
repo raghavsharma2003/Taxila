@@ -38,6 +38,8 @@ const CASES = {
 };
 const AT = { card: { seek: "card", skip: 2, P: ".skills[0].explain[2].ask" }, step: { seek: "step", skip: 0, P: ".skills[0].workedExample.steps[0].ask" } };
 const WALKS = Object.entries(AT).flatMap(([w, a]) => Object.entries(CASES).map(([k, lines]) => ({ name: `${w}-${k}`, topicId: TOPIC, seek: a.seek, skip: a.skip, tail: 3, then: lines.map((x) => L[x]) })));
+// (P6: the told answer at the cap said as its reason alone, then a clarify answered with help twice and a third — at the card)
+WALKS.push({ name: "card-p6", topicId: TOPIC, seek: "card", skip: 2, tail: 3, then: [...FOUR.map((x) => L[x]), "7", "7", "samajh nahi aaya", "phir bhi samajh nahi aaya", "phir bhi samajh nahi aaya"] });
 
 // Expected to fail ONLY until the item that fixes each lands in this session (BRIEF-P step 1); empty at the session's last commit.
 const EXPECTED = new Set([
@@ -169,4 +171,18 @@ test("P3 (as restated): the told answer or step in a turn that opens on her repl
     // (four hearings, the step's wordings unsaid, no C1 turn before: still flags)
     const noC1 = rows.map((x, k) => (k === j0 + 7 ? { ...x, text: "Yeh jawab nahi hai.", seams: [{ left: "start", right: "stepMiss" }] } : x));
     assert.match(String(PREDICATES.stepToldEarly({ rows: noC1 }, noC1[i], i, stepCtx(noC1, i))), /step told/); }
+});
+
+test("P6: requestHelped reads a key seam after a miss verdict as the told answer of that part — the go-on line after it passes only with every wording said", { timeout: 180_000 }, () => {
+  const rows = run()["card-p6"], i0 = start(rows, WALKS.find((x) => x.name === "card-p6"));
+  const told = rows[i0 + 9];
+  assert.deepEqual((told.seams ?? []).map((x) => x.right), ["missVerdict", "key", "checkin"], norm(told.text));
+  assert.ok(!/jawab hai|answer is/i.test(told.text), "the told answer said as its reason alone");
+  // (the fixture walk's row 48: after two helps at the told answer's check-in, the third request answered by the go-on line and a return)
+  const M = { who: "teacher", text: "Koi baat nahi, yeh hum aage phir dekhenge. Waise, cricket mein tumne kabhi kuch barabar baanta hai?", move: "reteach",
+    seams: [{ left: "start", right: "goOn", joint: "afterKeyGoOn", form: "Koi baat nahi, yeh hum aage phir dekhenge." }, { left: "goOn", right: "return", joint: null }], pageParts: [{ part: "return", from: 43 }] };
+  const kid = { who: "child", text: "phir bhi samajh nahi aaya", read: "no_evidence · clarify", intent: "clarify" };
+  const flags = (n) => { const L2 = [...rows.slice(0, n), kid, M]; return lessonFlags({ rows: L2, script: SCRIPT }).filter((x) => x.row === L2.length - 1 && x.predicate === "requestHelped"); };
+  assert.deepEqual(flags(i0 + 14), [], "every wording of the part said: passes");
+  assert.equal(flags(i0 + 12).length, 1, "a wording of the part still unsaid: the same turn flags");
 });
