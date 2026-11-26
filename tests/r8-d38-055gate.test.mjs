@@ -41,19 +41,19 @@ const WALKS = Object.entries(AT).flatMap(([w, a]) => Object.entries(CASES).map((
 // (P6: the told answer at the cap said as its reason alone, then a clarify answered with help twice and a third — at the card)
 WALKS.push({ name: "card-p6", topicId: TOPIC, seek: "card", skip: 2, tail: 3, then: [...FOUR.map((x) => L[x]), "7", "7", "samajh nahi aaya", "phir bhi samajh nahi aaya", "phir bhi samajh nahi aaya"] });
 
-// Expected to fail ONLY until the item that fixes each lands in this session (BRIEF-P step 1); empty at the session's last commit.
-const EXPECTED = new Set([
-  "card-a-try 18 waitSecondNotReask",
-  "card-a-yes 16 waitSecondNotReask",
-  "card-c-aireply 20 aiAskAnswered",
-  "step-a-give 20 giveUpVerdict",
-  "step-a-hindi 22 stepToldEarly",
-  "step-a-miss 20 stepToldEarly",
-  "step-a-right 20 stepToldEarly",
-  "step-b-clar 20 stepToldEarly",
-  "step-c-aireply 22 goOnJointTwice",
-  "step-c-park 22 keyWithWordingUnsaid",
-]);
+// Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
+// OLDER: the same turn, flagged the same, on the same driven walk at ed292d10b (release 63, before the cap) — the right answer at an asked
+// step read as nothing after a help that stays at the step (older fault 1, not this pass's to fix), and the told step at a wait whose
+// lines hold side-topics (keyWithWordingUnsaid's wait reading).
+const OLDER = ["step-b-clar 20 stepToldEarly", "step-c-park 22 keyWithWordingUnsaid"];
+// STOPPED: clashes held for main's ruling — a turn as ruled that a gated predicate no ruling names flags (builder P stopped at each):
+// the told answer at the wait's second turn after C1 (waitSecondNotReask), the AI line then the told answer and its check-in
+// (aiAskAnswered), and the told step's back-to-work joint straight after the return turn's (goOnJointTwice).
+const STOPPED = ["card-a-yes 16 waitSecondNotReask", "card-a-try 18 waitSecondNotReask", "card-c-aireply 20 aiAskAnswered", "step-c-aireply 22 goOnJointTwice"];
+// (NOT listed, so this test fails on them until main rules: step-a-miss 20, step-a-right 20, step-a-hindi 22 stepToldEarly and step-a-give
+// 20 giveUpVerdict — after C1's turn at an asked step the child's next line is read as nothing (older fault 1), and the cap's path makes
+// that a told step; none of these turns is on the walk at ed292d10b)
+const EXPECTED = new Set([...OLDER, ...STOPPED]);
 
 let RUN = null;
 function run() {
