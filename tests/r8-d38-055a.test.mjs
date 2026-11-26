@@ -210,3 +210,26 @@ describe("keyWithWordingUnsaid after C1's turn at a return (main's ruling A4: it
     assert.deepEqual(flagsOf([...four, at(`Achha. ${R}`, { seams: RET }), C("8"), told], SCRIPT, "keyWithWordingUnsaid"), [12]);
   });
 });
+
+describe("keyAfterFive read to main's ruling A3 item 3 (d38): C1's one turn at the fifth miss passes; the key is demanded at the miss after it", () => {
+  const S2 = { ...SCRIPT, joints: { yourTurn: [{ hi: "Chalo, ab tumhari baari." }] } };
+  const Q = "Do aur do kitne hote hain?", R = "Toh do jama do kya hua?", P = "t-s1:e1:card";
+  const at = (t, seams = []) => T(t, { cell: { part: P }, seams });
+  const W = (x) => ({ who: "child", text: x, read: "incorrect" });
+  const HELP_INV = [{ right: "missVerdict" }, { right: "help" }, { right: "yourTurn" }];
+  // (four misses met, two wordings said: the card's simpler and the point's other wording)
+  const four = [at(Q), W("5"), at(`Nahi. Ungliyon par gino. ${R}`), W("6"), at(`Nahi. ${Q}`), W("7"), at(`Nahi. Point ki doosri baat. ${R}`), W("8"), at(`Nahi. ${Q}`), W("9")];
+  const fl = (rows) => rows.map((r, i) => PREDICATES.keyAfterFive({ rows }, r, i, { script: S2, o: {} })).map((x, i) => (x ? i : -1)).filter((i) => i >= 0);
+  test("the fifth miss: help in the unsaid wording ending on the invitation, the first at that question, passes", () => {
+    assert.deepEqual(fl([...four, at("Nahi. Point ki aasaan baat. Chalo, ab tumhari baari.", HELP_INV)]), []);
+  });
+  test("the miss after it with no key flags; with the key it passes", () => {
+    const c1 = at("Nahi. Point ki aasaan baat. Chalo, ab tumhari baari.", HELP_INV);
+    assert.deepEqual(fl([...four, c1, W("3"), at(`Nahi. ${Q}`)]), [12]);
+    assert.deepEqual(fl([...four, c1, W("3"), at("Nahi. Iska sahi jawab 4 hai.")]), []);
+  });
+  test("the fifth miss met with a wording said before, or ending on the question, flags", () => {
+    assert.deepEqual(fl([...four, at("Nahi. Point ki doosri baat. Chalo, ab tumhari baari.", HELP_INV)]), [10]);
+    assert.deepEqual(fl([...four, at(`Nahi. Point ki aasaan baat. ${Q}`, [{ right: "missVerdict" }, { right: "help" }, { right: "card" }])]), [10]);
+  });
+});

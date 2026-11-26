@@ -173,6 +173,24 @@ const c1ReturnShape = (L, i, script, P) => {
   const first = (r.seams ?? []).find((x) => x.left === "start")?.right ?? (r.seams ?? [])[0]?.right;
   return SIDE_OPEN.has(String(first ?? "")) && newWordingIn(L, i, script, String(r.cell?.part ?? ""));
 };
+/** Main's ruling A3 item 3 (d38): C1's turn after a miss — help in a wording of the part not said before in the lesson, ending on an
+ *  invitation (the script's joints.yourTurn form as its last sentence, or the row's last seam yourTurn), and the first such turn at that part.
+ *  This check's own reading. */
+const invitesOwn = (script, r) => {
+  const last = keyOf(sentences(r?.text).at(-1) ?? "");
+  const forms = (script?.joints?.yourTurn ?? []).flatMap(formsOf).map((t) => keyOf(sentences(t).at(-1) ?? t));
+  return (!!last && forms.includes(last)) || (r?.seams ?? []).at(-1)?.right === "yourTurn";
+};
+const c1InviteShape = (L, i, script) => {
+  const r = L.rows[i];
+  return r?.who === "teacher" && invitesOwn(script, r) && (r.seams ?? []).some((x) => x.right === "help") && newWordingIn(L, i, script, String(r.cell?.part ?? ""));
+};
+export function c1InviteAt(L, i, script) {
+  if (!script || !c1InviteShape(L, i, script)) return false;
+  const part = String(L.rows[i].cell?.part ?? "");
+  for (let j = 0; j < i; j++) if (String(L.rows[j].cell?.part ?? "") === part && c1InviteShape(L, j, script)) return false;
+  return true;
+}
 /** Main's ruling A4 (d38): the one fifth hearing on her own allowed — C1's one turn at a return: a turn that (a) opens on her reply to a
  *  side-topic (SIDE_OPEN, its first seam), (b) then says help in a wording of the part not said before in the lesson, (c) ends on the
  *  question P, (d) is the first such turn at P. Its count is the caller's: the fifth hearing only (a sixth is never allowed). */

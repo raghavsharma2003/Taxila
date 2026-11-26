@@ -33,6 +33,7 @@ import { pagesOf, isLeadText } from "./d27-predicates.mjs";
 import { goAheadAloneAt } from "./d37h-predicates.mjs";
 import { partStartOf, helpOtherFigure, reaskNoFormAt } from "./d30-predicates.mjs";
 import { newPointBeforeCheckin, REPLY_SEAMS } from "./d37a-predicates.mjs";
+import { c1InviteAt } from "./d38a-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(",")}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(",")}}` : JSON.stringify(v ?? null));
@@ -243,11 +244,15 @@ export const D29_PREDICATES = {
   },
   /** Small: after five wrong answers to one question — its card's and the quick question that asked it first — the card gets its key
    *  (c5-t02 offtopic 20: the ladder ran on into the point's wordings). The count is the turns on that beat's card or quick question that
-   *  answer a wrong answer; the fifth one says the key. */
-  keyAfterFive(L, r, i) {
+   *  answer a wrong answer; the fifth one says the key. Main's ruling A3 item 3 (d38): or C1's one turn there, and the key at the next. */
+  keyAfterFive(L, r, i, ctx) {
     const rows = L.rows ?? [];
     if (r.who !== "teacher" || !WRONG_READS.has(readOf(rows[i - 1]))) return null;
     const n = missesOnQuestion(rows, i);
-    return n >= 5 && !KEY_WORDS.test(String(r.text ?? "")) && !r.keyFact ? `wrong answer ${n} to one question and no key` : null;
+    if (!(n >= 5 && !KEY_WORDS.test(String(r.text ?? "")) && !r.keyFact)) return null;
+    // (main's ruling A3 item 3 of d38, to-brain 055 C1: a fifth miss where a wording is unsaid is C1's one turn — help in an unsaid wording
+    // ending on an invitation, the first at that question (d38a's own reading) — and the key comes at the miss after it)
+    if (c1InviteAt(L, i, ctx?.script)) return null;
+    return `wrong answer ${n} to one question and no key`;
   },
 };
