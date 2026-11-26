@@ -100,6 +100,20 @@ WALKS.push({ name: "circ-rem-ai", topicId: TOPIC, seek: "card", skip: 2, tail: 3
 // (d38 RULING-A12 X5, builder S2's open clash: at the worked problem's first asked step, a Hindi request (the step's Hindi form), then "phir se
 // bolo" twice — each answered with the form she last heard — then a bare yes three times)
 WALKS.push({ name: "step-hindi-wait", topicId: TOPIC, seek: "step", skip: 0, tail: 3, fresh: true, then: ["hindi", "again", "again", "yes", "yes", "yes"].map((x) => L[x]) });
+// (d38 RULING-A12 X3 as main ruled it on the X3 stop: yourTurnNotThird at the cap — the C1 turn after an order-049 B4 invitation, at the circle
+// card (two "phir se bolo", two give-ups, then "7" twice) and at the pizza card's follow-up card (six lines read as nothing); order 054 C3's
+// named-reason turn after the way back (the reviewer's circ-loop), then a further miss of each kind told)
+WALKS.push({ name: "probe-card-aagg7", topicId: TOPIC, seek: "card", skip: 2, tail: 3, P: AT.card.P, fresh: true, then: [L.again, L.again, L.give, L.give, "7", "7"] });
+WALKS.push({ name: "pz4-fw-kam4", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", ...Array(6).fill("aadhe se kam"), "haan"] });
+WALKS.push({ name: "circ-loop", topicId: TOPIC, seek: "card", skip: 2, tail: 3, P: AT.card.P, then: [...FOUR.map((x) => L[x]), "2/1", "@key", "2/1", "@key", "2/1", "@key"] });
+for (const [k, last] of [["miss", "2/1"], ["7", "7"], ["give", L.give]])
+  WALKS.push({ name: `circ-loop-${k}`, topicId: TOPIC, seek: "card", skip: 2, tail: 3, P: AT.card.P, then: [...FOUR.map((x) => L[x]), "2/1", "@key", "2/1", last] });
+// (RULING-A12's gate list: the reviewer's pz-loop and the four u1-park walks)
+WALKS.push({ name: "pz-loop", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", "@key", "haan", "@key", "haan", "@key", "haan"] });
+WALKS.push({ name: "u1-park-right", topicId: TOPIC, seek: "card", skip: 1, tail: 6, pizza: true, fresh: true, then: [L.park, "haan", "@key", "@key"] });
+WALKS.push({ name: "u1-park-miss2", topicId: TOPIC, seek: "card", skip: 1, tail: 6, pizza: true, fresh: true, then: [L.park, "haan", "@key", "7", "7"] });
+WALKS.push({ name: "u1-park-miss2-four", topicId: TOPIC, seek: "card", skip: 1, tail: 6, pizza: true, then: [...FOUR.map((x) => L[x]), L.park, "haan", "@key", "7", "7"] });
+WALKS.push({ name: "u1-circ-park-miss2", topicId: TOPIC, seek: "card", skip: 2, tail: 6, P: AT.card.P, fresh: true, then: [L.park, "2/1", "@key", "7", "7"] });
 WALKS.push({ name: "pz4-fw-give4", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", "pata nahi", "pata nahi", "pata nahi", "pata nahi", "haan"] });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
@@ -573,4 +587,36 @@ test("X5 (RULING-A12): reaskSameAfterHelp does not read the question's Hindi for
   assert.equal(flagAt(helped, i0 + 3, "reaskSameAfterHelp"), true, "after a help turn");
   const own = rows.map((x, k) => (k === i0 + 2 ? { ...x, text: "7", read: "incorrect", intent: undefined } : x));
   assert.equal(flagAt(own, i0 + 3, "reaskSameAfterHelp"), true, "on her own");
+});
+
+test("X3 (RULING-A12, as main ruled on the stop): yourTurnNotThird at four or more hearings passes the C1 turn after a B4 invitation and order 054 C3's named-reason turn, once a question; a further miss is told; each other side flags", { timeout: 180_000 }, () => {
+  const R = run();
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  const yt = (rows, i) => PREDICATES.yourTurnNotThird({ rows }, rows[i], i, { script: SCRIPT });
+  const at0 = (name) => start(R[name], WALKS.find((x) => x.name === name));
+  // (a) the C1 turn, an order-049 B4 invitation before it
+  for (const [name, b4, c1] of [["probe-card-aagg7", 5, 9], ["pz4-fw-kam4", 13, 17]]) {
+    const rows = R[name], i0 = at0(name);
+    assert.equal(seams(rows[i0 + b4]).at(-1), "yourTurn", `${name}: the B4 invitation: ${norm(rows[i0 + b4].text)}`);
+    assert.ok(seams(rows[i0 + c1]).includes("help") && seams(rows[i0 + c1]).at(-1) === "yourTurn", `${name}: C1: ${norm(rows[i0 + c1].text)}`);
+    assert.equal(yt(rows, i0 + c1), null, name);
+    assert.ok(seams(rows[i0 + c1 + 2]).includes("key"), `${name}: then told: ${norm(rows[i0 + c1 + 2].text)}`);
+    // (a help turn at the cap in a wording already said, ending on an invitation — the B4 turn's own help again — flags)
+    const again = rows.map((x, k) => (k === i0 + c1 ? { ...x, text: rows[i0 + b4].text, seams: rows[i0 + b4].seams } : x));
+    assert.match(String(yt(again, i0 + c1)), /invitation/, `${name}: a wording already said`);
+  }
+  // (b) order 054 C3's turn after the way back (circ-loop 18), and a further miss of any kind is told
+  { const rows = R["circ-loop"], i = at0("circ-loop") + 11;
+    assert.deepEqual(seams(rows[i]), ["missVerdict", "help", "yourTurn"], norm(rows[i].text));
+    assert.equal(yt(rows, i), null);
+    // (a second named-reason turn at the question — the same turn again after the same miss — flags)
+    const two = [...rows.slice(0, i + 2), { ...rows[i] }];
+    assert.match(String(yt(two, i + 2)), /invitation/, "a second named-reason turn");
+    // (the same turn below four hearings — the three "phir se bolo" and their hearings left out — flags as before)
+    const i0 = at0("circ-loop"), low = [...rows.slice(0, i0), ...rows.slice(i0 + 6)];
+    assert.match(String(yt(low, i - 6)), /invitation/, "below four hearings"); }
+  for (const name of ["circ-loop-miss", "circ-loop-7", "circ-loop-give"]) {
+    const rows = R[name], i = at0(name) + 13;
+    assert.ok(seams(rows[i]).includes("key") && seams(rows[i]).at(-1) === "checkin", `${name}: told: ${norm(rows[i].text)}`);
+  }
 });

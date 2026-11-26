@@ -10,9 +10,17 @@
 //   reaskSameAfterHelp     RULING-A12 X5 (wraps d32's): the question in its Hindi form is no help turn (RULING-A11 W4) — the child's own
 //                          request for the question (d38a's ownRequest, this check's reading of "phir se bolo" and its like) answered with
 //                          the form she last heard, her turn before no help turn, is not flagged. step-hindi-wait 14 and 16.
-import { questionOfTurn, wayBackAt, remC1Before, ownRequest } from "./d38a-predicates.mjs";
+//   yourTurnNotThird       RULING-A12 X3 as main ruled it on the X3 stop (wraps d34b's): at a question heard four or more times (d38a's
+//                          heardOfLast) a help turn cannot end on the question, so its invitation passes where it is (a) the question's C1
+//                          turn (d38a's c1InviteAt, read at four or more hearings) though an order-049 B4 invitation stood before it, or
+//                          (b) order 054 C3's turn — the miss verdict and the named wrong answer's own reason, not said before in the
+//                          lesson (d37c's namedReasonNewAt), once a question. (c), help answering the child's request, is d34b's own.
+//                          Every other invitation, and every one below four hearings, is read as before. probe-card-aagg7 16, pz4-fw-kam4
+//                          22, circ-loop 18.
+import { questionOfTurn, wayBackAt, remC1Before, ownRequest, heardOfLast, c1InviteAt } from "./d38a-predicates.mjs";
 import { D32_PREDICATES } from "./d32-predicates.mjs";
-import { D37C_PREDICATES } from "./d37c-predicates.mjs";
+import { D34B_PREDICATES } from "./d34b-predicates.mjs";
+import { D37C_PREDICATES, namedReasonNewAt } from "./d37c-predicates.mjs";
 
 const seamsOf = (r) => (r?.seams ?? []).map((x) => String(x.right ?? ""));
 const ENDS = new Set(["safeguard", "goodbye"]);
@@ -41,7 +49,23 @@ const HELP_SEAMS = new Set(["help", "caption", "noPicture", "remediation"]);
 const helpTurn = (r) => seamsOf(r).some((x) => HELP_SEAMS.has(x));
 const invitesAt = (r) => seamsOf(r).at(-1) === "yourTurn";
 
+/** RULING-A12 X3: row i is order 054 C3's turn at the cap — her turn opens on a miss verdict and says the named wrong answer's own reason, new
+ *  in the lesson — and no earlier turn of hers at the same part was such a turn ending on an invitation (once a question). */
+const c3TurnAt = (L, i, script) => {
+  const r = L.rows[i], part = String(r?.cell?.part ?? "");
+  if (!seamsOf(r).includes("missVerdict") || !namedReasonNewAt(L, i, script)) return false;
+  for (let j = 0; j < i; j++) { const x = L.rows[j]; if (x.who === "teacher" && String(x.cell?.part ?? "") === part && invitesAt(x) && seamsOf(x).includes("missVerdict") && namedReasonNewAt(L, j, script)) return false; }
+  return true;
+};
+
 export const D38S_PREDICATES = {
+  // (RULING-A12 X3 as main ruled it: yourTurnNotThird as d34b reads it, and at four or more hearings the C1 turn and 054 C3's turn pass)
+  yourTurnNotThird(L, r, i, ctx) {
+    const was = D34B_PREDICATES.yourTurnNotThird(L, r, i, ctx);
+    if (!was || !Array.isArray(L?.rows) || heardOfLast(L, i, ctx?.script) < 4) return was;
+    if (c1InviteAt(L, i, ctx.script, (j) => heardOfLast(L, j, ctx.script) >= 4)) return null;
+    return c3TurnAt(L, i, ctx.script) ? null : was;
+  },
   // (d38 RULING-A12 X5: reaskSameAfterHelp as d32 reads it, and the child's own request for the question answered with the form she last heard
   // passes where her turn before (the question-turn before an invitation, as d32 reads it) was no help turn — the question's Hindi form is none.
   // The same closing question after a help turn still flags, asked for or not)

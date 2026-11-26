@@ -68,6 +68,13 @@ function namedReason(n, child) {
   for (const w of Array.isArray(n.wrongAnswers) ? n.wrongAnswers : []) if ([w?.answer, ...(w?.accept ?? [])].some((x) => x != null && sameAnswer(child, String(x))) && hi(w?.why)) return hi(w.why);
   return null;
 }
+/** d38 RULING-A12 X3 (main's ruling on the X3 stop): row i says the named wrong answer's own reason for the child's line before it (at the
+ *  row's own card part), a reason none of her turns before it said — order 054 C3's turn. This check's own reading. */
+export function namedReasonNewAt(L, i, script) {
+  const r = L.rows[i];
+  const reason = namedReason(nodeOfPart(script, partOf(r))?.node, childBefore(L, i));
+  return !!reason && saysAny(r.text, reason) && !before(L, i).some((t) => saysAny(t, reason));
+}
 /** C2: a key whose value (every number of the card's `key`) is said twice in the key and its reason (any key). */
 function keyValueTwice0(L, r, i, ctx) {
   if (!keyRow(r)) return null;
