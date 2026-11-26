@@ -34,7 +34,7 @@ export function partStartOf(r, p) {
   }
 }
 
-import { endsOnYourTurn } from "../../server/director/question-run.js";
+import { endsOnYourTurn, atQuestionOf } from "../../server/director/question-run.js";
 import { otherFigureOf, sharesThing } from "../../server/brain/seams.js";
 import { ownHelpLast } from "./d31-predicates.mjs";
 import { newPointBeforeCheckin, lastReplyAt, REPLY_SEAMS } from "./d37a-predicates.mjs";
@@ -197,6 +197,23 @@ export function whyLeadOf(r) {
   if (!(r?.seams ?? []).some((x) => x.right === "verdict")) return null;
   const t = String(r.text ?? "");
   return /^[^.?!:]{3,40}, kyunki /.test(t) ? "kyunki" : /^[^.?!:]{3,40}\. Dekho, /.test(t) ? "dekho" : /^[^.?!:]{3,25}: /.test(t) && !/^(?:toh poora jawab|iska jawab|is sawaal ka|yahan sahi jawab)/i.test(t) ? "colon" : null;
+}
+/** d38 RULING-A7 P3: the hearings of a question before row i — her turns ending on one of its forms (this check's count) — and the question
+ *  her last turn ending on a question asked. */
+export function heardBefore(L, i, script) {
+  let P = null;
+  for (let j = i - 1; j >= 0 && !P; j--) if (L.rows[j].who === "teacher") { const a = atQuestionOf(script, L.rows[j].text); if (a && a !== "?short") P = a; }
+  if (!P) return { P: null, n: 0 };
+  let n = 0;
+  for (let j = 0; j < i; j++) if (L.rows[j].who === "teacher" && atQuestionOf(script, L.rows[j].text) === P) n++;
+  return { P, n };
+}
+/** d38 RULING-A7 P3: row i is her reply to a side-topic, then the told answer (a `key` seam) and its check-in and nothing else, at a question
+ *  heard five times before it. */
+function keyAtReturn(L, r, i, script) {
+  const k = (r.seams ?? []).map((x) => x.right), at = lastReplyAt(r);
+  if (!script || at < 0 || k.slice(at + 1).join(">") !== "key>checkin") return false;
+  return heardBefore(L, i, script).n >= 5;
 }
 export const D30_PREDICATES = {
   /** d31 046 follow-up rule 1: a re-ask ends on the card's reask, its whole question, its Hindi form or a short ask — never on a proper part
@@ -377,7 +394,7 @@ export const D30_PREDICATES = {
   },
   /** P6: a turn that holds her reply to an aside never ends on a check-in, whatever follows the reply (c4 offtopic 46: reply, bridge, point,
    *  check-in; c5-t02 offtopic 38: reply, point, check-in). Gated (Brain 046 Q3): where the card is held for a due return the turn ends on the return's question. */
-  replyCheckin(L, r, i) {
+  replyCheckin(L, r, i, ctx) {
     if (r.who !== "teacher") return null;
     const sm = r.seams ?? [];
     // (a worked example that asks no step ends each told step on its own step check-in — that walk's, read by workedCheckin: the
@@ -389,6 +406,9 @@ export const D30_PREDICATES = {
     // (main's sixth ruling item 2: exactly D2 — her joint and ONE new point between, nothing else; and every reply seam is read: a park, a
     // return, her line to a side-topic at a check-in (seam aside) opening the turn, as well as her replies)
     if (newPointBeforeCheckin(L, r, i, REPLY_SEAMS)) return null;
+    // (d38 RULING-A7 P3: the told answer at a return — her reply, then the key (the row's own `key` seam) and its check-in, nothing else
+    // between — where the open question has been heard five times: the told answer is the new thing, as a new point is)
+    if (keyAtReturn(L, r, i, ctx?.script)) return null;
     return lastReplyAt(r) >= 0 && sm.at(-1)?.right === "checkin" ? `her reply's turn (${sm.map((x) => x.right).join(" > ")}) ends on a check-in` : null;
   },
   /** P4: the "nothing easier" line is never said before something has been taught (row 4 in stuck c4, c5-t02, c6; offtopic c4; steering c4,

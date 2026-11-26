@@ -21,12 +21,14 @@
 import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion, questionObjectAt, endsOnReaskOf, hearingsInRun } from "../../server/director/question-run.js";
 import { asideTurn, helpTurn } from "./d34b-predicates.mjs";
 import { D34C_PREDICATES } from "./d34c-predicates.mjs";
-import { D30_PREDICATES } from "./d30-predicates.mjs";
+import { D30_PREDICATES, heardBefore } from "./d30-predicates.mjs";
 import { D35A_PREDICATES } from "./d35a-predicates.mjs";
 import { helpPart, ladderOf, sentencesOf as helpSentences, normSentence } from "../../server/director/help.js";
 import { saidIn } from "../../server/director/script.js";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+/** d38 RULING-A7 P3: the seams her turn opens on when it answers a side-topic. */
+const SIDE_FIRST = new Set(["asideReply", "aiReply", "aiLine", "park", "aside"]);
 const SLOT = "zzslotzz";
 const qKey = (t) => low(String(t ?? "").replace(/\{\w+\}/g, ` ${SLOT} `)).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 const sentencesOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+/).filter(Boolean);
@@ -309,6 +311,9 @@ export const D37B_PREDICATES = {
     // (RULING-B3: and on wait two where the turn that last said the question ended on its reask — wait two is then what wait three is)
     { const w = r.who === "teacher" && waitCue(r) && r.stepAnswer?.told ? waitRowOf(L, i, ctx?.script) : null;
       if (w?.n === 2 && reaskHeardBefore(L, w.first, ctx.script, w.P) && stepHelpSpent(L, r, i, ctx?.script)) return null; }
+    // (d38 RULING-A7 P3: the told step at a return — her turn opens on her reply to a side-topic (a reply, the AI line's reply or the AI line,
+    // a park, a said-again line: this check's own list) — where the step's question has been heard five times before it)
+    if (r.who === "teacher" && r.stepAnswer?.told && SIDE_FIRST.has(String(seamsOf(r)[0] ?? "")) && heardBefore(L, i, ctx?.script).n >= 5) return null;
     return D30_PREDICATES.stepToldEarly(L, r, i, ctx);
   },
   /** Main's second ruling on cause B, item 1 (053 B2 re-pinned by name): the first wait turn (her turn before said the question itself) says

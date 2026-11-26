@@ -45,7 +45,6 @@ const EXPECTED = new Set([
   "card-a-try 18 waitSecondNotReask",
   "card-a-yes 16 waitSecondNotReask",
   "card-c-aireply 20 aiAskAnswered",
-  "card-c-park 20 replyCheckin",
   "step-a-aireply 22 stepToldEarly",
   "step-a-give 20 giveUpVerdict",
   "step-a-hindi 22 stepToldEarly",
@@ -53,7 +52,6 @@ const EXPECTED = new Set([
   "step-a-park 20 stepToldEarly",
   "step-a-right 20 stepToldEarly",
   "step-b-clar 20 stepToldEarly",
-  "step-c-aireply 22 stepToldEarly",
   "step-c-aireply 22 goOnJointTwice",
   "step-c-park 22 keyWithWordingUnsaid",
 ]);
@@ -136,4 +134,28 @@ test("P2: one C1 turn a question however it came — C3's help after a clarify a
     assert.ok((told.seams ?? []).some((x) => ["key", "workedStep"].includes(x.right)), `${w}: the miss after it is told: ${norm(told.text)}`);
     assert.notEqual((told.seams ?? []).at(-1)?.right, "yourTurn", `${w}: never two help turns running ending on an invitation`);
   }
+});
+
+test("P3: the told answer at a return passes replyCheckin and stepToldEarly at five hearings — and each still flags its other side", { timeout: 180_000 }, () => {
+  const R = run();
+  // (replyCheckin: a said-again line, the key, its check-in — after the return turn, five hearings)
+  { const rows = R["card-c-park"], i = start(rows, WALKS.find((x) => x.name === "card-c-park")) + 13;
+    assert.deepEqual((rows[i].seams ?? []).map((x) => x.right), ["aside", "key", "checkin"], norm(rows[i].text));
+    assert.equal(PREDICATES.replyCheckin({ rows }, rows[i], i, { script: SCRIPT }), null);
+    // (a reply and a check-in with nothing between still flags)
+    const bare = { ...rows[i], seams: rows[i].seams.filter((x) => x.right !== "key") };
+    assert.match(String(PREDICATES.replyCheckin({ rows }, bare, i, { script: SCRIPT })), /check-in/);
+    // (and the same turn where the question was heard four times — two of the child's requests and their hearings left out — flags)
+    const j0 = start(rows, WALKS.find((x) => x.name === "card-c-park"));
+    const four = [...rows.slice(0, j0), ...rows.slice(j0 + 2)];
+    assert.match(String(PREDICATES.replyCheckin({ rows: four }, four[i - 2], i - 2, { script: SCRIPT })), /check-in/); }
+  // (stepToldEarly: the AI line, the told step — after the return turn, five hearings)
+  { const rows = R["step-c-aireply"], i = start(rows, WALKS.find((x) => x.name === "step-c-aireply")) + 11;
+    assert.ok(rows[i].stepAnswer?.told, norm(rows[i].text));
+    assert.equal(PREDICATES.stepToldEarly({ rows }, rows[i], i, { script: SCRIPT, prevIntent: rows[i - 1].intent ?? null, prevRead: rows[i - 1].read, prevChild: rows[i - 1].text }), null);
+    // (a step told at a return before four hearings still flags)
+    const j0 = start(rows, WALKS.find((x) => x.name === "step-c-aireply"));
+    const three = [...rows.slice(0, j0), ...rows.slice(j0 + 4)];
+    const k = i - 4;
+    assert.match(String(PREDICATES.stepToldEarly({ rows: three }, three[k], k, { script: SCRIPT, prevIntent: three[k - 1].intent ?? null, prevRead: three[k - 1].read, prevChild: three[k - 1].text })), /step told/); }
 });
