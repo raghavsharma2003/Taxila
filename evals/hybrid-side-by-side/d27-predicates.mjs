@@ -182,17 +182,19 @@ function commit(st, r, ctx) {
   // joint do not move it: help is about the part she is on)
   const moving = parts.filter((p) => TEACH.has(p.part) && p.part !== "simpler" && !p.checkin && !p.joint && p.beat);
   const last = moving.at(-1);
-  // (d38 RULING-A7 P6: and the told answer said as its reason alone — round d37's form, which KEY_SAID predates: a turn whose record carries a
-  // `key` seam after a miss verdict, or a told step (its told-step record or seam), is the told answer of that part — fixture stuck 44)
+  const keyed = KEY_SAID.test(String(r.text ?? "")) || !!r.check?.gave || !!r.keyFact;
+  // (d38 RULING-A7 P6, read by requestHelped ONLY: the told answer said as its reason alone — round d37's form, which KEY_SAID predates: a
+  // turn whose record carries a `key` seam after a miss verdict, or a told step, is the told answer of that part — fixture stuck 44)
   const rs = (r.seams ?? []).map((x) => x.right);
-  const keyed = KEY_SAID.test(String(r.text ?? "")) || !!r.check?.gave || !!r.keyFact || rs.some((k, n) => k === "key" && rs.slice(0, n).includes("missVerdict")) || !!r.stepAnswer?.told;
+  const told = rs.some((k, n) => k === "key" && rs.slice(0, n).includes("missVerdict")) || !!r.stepAnswer?.told;
   if (last) {
     const skill = last.part === "bridge" ? bridgeSkillOf(r, script) : ["close", "closed"].includes(last.part) ? st.lastCardSkill ?? skillIdOf(r, script) : skillIdOf(r, script);
     const same = st.addr && st.addr.beat === last.beat && st.addr.skill === skill;
-    st.addr = { beat: last.beat, kind: last.part, skill, keyed: same ? st.addr.keyed : false };
+    st.addr = { beat: last.beat, kind: last.part, skill, keyed: same ? st.addr.keyed : false, told: same ? !!st.addr.told : false };
   }
   // (a key said as help — after a miss or a request, never a right answer's verdict — keys the part she is on)
   if (keyed && st.addr && prevIntent !== "right") st.addr = { ...st.addr, keyed: true };
+  if (told && st.addr && prevIntent !== "right") st.addr = { ...st.addr, told: true };
   // (the cards said: a card said again after other parts were said is a return)
   const beats = new Set(parts.filter((p) => TEACH.has(p.part) && !p.checkin && !p.joint && p.beat).map((p) => p.beat));
   const said = parts.filter((p) => p.part === "card" && p.beat).map((p) => `${skillIdOf(r, script)}|${p.beat}`);
@@ -304,7 +306,9 @@ export const D27_PREDICATES = {
     // the work order's answer; a clarify or a Hindi request there is help on the point or the step, read below)
     if (req === "give_up" && /:quick$/.test(String(r.cell?.part ?? "")) && (r.pageParts ?? [])[0]?.part === "quickReply") return null;
     if (req === "give_up" && /:worked:step\d+:ask$/.test(String(r.cell?.part ?? "")) && /^worked:step\d+$/.test(String((r.pageParts ?? [])[0]?.beat ?? ""))) return null;
-    const a = st.addr;
+    const a0 = st.addr;
+    // (d38 RULING-A7 P6: the part told as its reason alone counts as keyed here)
+    const a = a0 ? { ...a0, keyed: !!(a0.keyed || a0.told) } : a0;
     if (!a || !ctx.script) return null;
     const { parts } = st.cur;
     if (parts.some((p) => p.part === "simpler" && p.beat === a.beat)) return null;
