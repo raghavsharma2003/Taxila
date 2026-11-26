@@ -40,7 +40,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { hindiFormOf, pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, whyNamesKey, helpJoint, rotationDone, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
+import { hindiFormOf, pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, whyNamesKey, helpJoint, rotationDone, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence, ladderOf } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -3806,19 +3806,48 @@ function heardCap(prev, input, heard, said) {
   // (RULING-B5 item 2: in a wait the question is heard three times at most — wait four is the cap whatever help is left: state.js step's
   // waitCap. The four hearings after misses, R1, are unchanged outside a wait)
   if (!P || P === "?short" || /teachback/.test(P) || ((heard[P] ?? 0) < 4 && !input.waitCap)) return null;
+  // (to-brain 055 C4, main's ruling C of d38: the wait is outside C1 — a wait turn at the cap (wait three at four hearings, wait four) is the
+  // cap as order 054 built it, whatever help is left: RULING-B5 item 2. A child who only says "haan" is not asking for another wording)
+  const waitOnly = !!(input.waitCap || input.waitHelp);
   if (liveId && String(liveId).startsWith("script:") && !stepQ) {
     const part = cardPartOf(input.kit, { itemId: liveId });
     if (!part) return null;
-    const d0 = pickHelp({ script, part, request: "hint", said, misses: KEY_AFTER_MISSES, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
-      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: col === "wrong" || col === "misconception" ? prev.answerAt?.[part] ?? null : null });
     const wrong = col === "wrong" || col === "misconception";
+    // (main's ruling A(i) of d38: C1 is one turn a question — after it, the next miss, give-up or non-answer is the key, whatever is unsaid)
+    const noC1 = waitOnly || !!prev.c1At?.[part];
+    // (to-brain 055 C1: what a child who asked now would get — a wrong answer's hint, a give-up's or no answer's help — with nothing unsaid
+    // the key; with a wording unsaid, the first, a wording she has said in near-same words skipped (ruling B: nearAll))
+    const d0 = pickHelp({ script, part, request: wrong || noC1 ? "hint" : "give_up", said, misses: KEY_AFTER_MISSES, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
+      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: wrong ? prev.answerAt?.[part] ?? null : null, noC1, nearAll: true });
     // (to-brain 054 C3: at the named wrong answer, its unsaid reason first — the miss verdict, the reason and the question; no cap this turn)
     if (d0?.capReason && wrong) { const d = { ...d0, friend: friendOf, liveId }; return { P, noCap: true, pre: { decision: d, input: helpInput(input, d, liveId), hint: true } }; }
+    // (to-brain 055 C1: the cap would tell while a wording of the open part is unsaid — that wording is the turn, as help, and it ends on an
+    // invitation, never on the question (heard four times): question-run.js yourTurnPass reads `capInvite`. The answer is told at the next
+    // miss, give-up or non-answer once nothing is unsaid)
+    if (d0?.card === "keep" && d0.rung?.text && !noC1 && !helpSentencesOf(d0.rung.text).some((x) => inSaid(x, said))) {
+      const d = { ...d0, request: wrong ? "hint" : "give_up", friend: friendOf, liveId, capInvite: P, c1: true };
+      return { P, noCap: true, capInvite: true, pre: wrong ? { decision: d, input: helpInput(input, d, liveId), hint: true } : { decision: d, stay: true } };
+    }
     if (d0?.card !== "close") return null;
     const d = { ...d0, request: wrong ? "hint" : "give_up", friend: friendOf, liveId, heardCap: P };
     return { P, pre: { decision: d, input: helpInput(input, d, liveId), hint: true } };
   }
   if (stepQ) {
+    // (to-brain 055 C1 at an asked step: the step's wordings in its ladder's order — its simpler, the worked problem's other wording and
+    // simpler — the first none of whose sentences she has said, word for word or in near-same words (inSaid; ruling B), is the turn, as help
+    // ending on an invitation, once a step (ruling A(i)); the step is told at the next give-up, miss or non-answer, or once none is left)
+    const sp = !waitOnly ? (() => { try { return helpPartOf(prev, input)?.part ?? null; } catch { return null; } })() : null;
+    const hp = sp && !prev.c1At?.[sp] ? helpPart(script, sp) : null;
+    if (hp?.kind === "worked_step" && hp.step) {
+      const L0 = prev.ctx?.lang === "english" ? "english" : "hinglish";
+      const left = ladderOf(script, hp).map((r) => ({ ...r, text: saidIn(r.value, L0) })).find((r) => r.text && String(r.text).trim() && !helpSentencesOf(r.text).some((x) => inSaid(x, said)));
+      if (left) {
+        const t0 = String(left.text).trim();
+        const rung = { field: left.field, path: left.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: left.board ?? hp.board ?? null };
+        const d = { part: hp.id, kind: hp.kind, keyed: false, request: "give_up", rung, board: rung.board, card: liveId ? "keep" : "wait", key: null, joint: null, stepAsked: true, friend: friendOf, liveId, capInvite: P, c1: true };
+        return { P, noCap: true, capInvite: true, pre: { decision: d, stay: true } };
+      }
+    }
     const { request: _r, ...rest } = input.cls ?? {};
     // (read as a give-up whose help is spent: the walk tells the step, as after a second request there — the child's words are the record's)
     return { P, skipHelp: true, input: { ...input, text: "pata nahi", cls: { ...rest, outcome: "no_evidence", asideReply: false, flags: { ...(rest.flags ?? {}), dontKnow: true, confused: false } }, heardCap: P } };
@@ -4124,7 +4153,9 @@ function helpBefore(prev, input, said) {
     // (Brain 044 Small: the wrong answers to this question so far — its card's and its quick question's — and this one)
     const misses = missesOn(prev, part, liveId) + 1;
     const d0 = pickHelp({ script: scriptFor(input.kit)?.script, part, request: "hint", said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
-      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, misses, last: prev.answerAt?.[part] ?? null });
+      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, misses, last: prev.answerAt?.[part] ?? null,
+      // (main's ruling A(i) of d38: one C1 turn a question — after it the cap's key)
+      noC1: !!prev.c1At?.[part] });
     if (!d0) return null;
     const d = { ...d0, friend: friendOf, liveId };
     return { decision: d, input: helpInput(input, d, liveId), hint: true };
@@ -4337,6 +4368,12 @@ export function step(prev, input) {
   if (!tryAgain && !pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre);
   if (heard && out?.state) out.state.qHeard = heard;
   if (cap?.P && !cap.noCap && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, heardCap: cap.P }; if (out.move) out.move = { ...out.move, heardCap: cap.P }; }
+  // (to-brain 055 C1: the cap's help in a wording still unsaid ends on an invitation — yourTurnPass, below)
+  // (and the key after the misses that give it — help.js pickHelp's C1 at KEY_AFTER_MISSES, helpBefore — the same: its question the live card's)
+  const capInviteP = cap?.capInvite ? cap.P : pre?.decision?.c1 && prev?.lastUi?.ask?.text ? atQuestionOf(scriptFor(input.kit)?.script ?? null, prev.lastUi.ask.text) : null;
+  // (main's ruling A(i) of d38: the parts at which a C1 turn has been given — one a question; kept on the state)
+  { const c1P = cap?.capInvite ? cap.pre?.decision?.part ?? null : pre?.decision?.c1 ? pre.decision.part ?? null : null;
+    if (out?.state && (c1P || prev?.c1At)) out.state.c1At = { ...(prev?.c1At ?? {}), ...(out.state.c1At ?? {}), ...(c1P ? { [c1P]: true } : {}) }; }
   // (Brain 044: a picture asked for at an asked step is the step's picture — its caption, then the step's question again, the step still asked;
   // never a check-in inside the worked example: dry steady c6 18 once T1 moved the lesson there)
   if (input?.event === "turn" && scriptOn() && !recordedNow && prev?.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose && columnName(input0, prev) === "picture"
@@ -4597,7 +4634,7 @@ export function step(prev, input) {
     const wg = wait?.reaskHeard ? { waitGive: true } : {};
     if (wait && out.state.lastMove) { out.state.lastMove = { ...out.state.lastMove, waitN: wait.n, waitP: wait.P, ...wg }; if (out.move) out.move = { ...out.move, waitN: wait.n, waitP: wait.P, ...wg }; }
   }
-  if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "");
+  if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "", { capInvite: capInviteP });
   if (out?.state && prev?.answerAt && !out.state.answerAt) out.state.answerAt = prev.answerAt;
   // (RULING-G item 4: the held card asked in its Hindi form — brain/say.js keeps the switch line as the turn's lead part, so the card's
   // board comes in at the card's first word, never under the switch line)

@@ -502,7 +502,7 @@ export function capReasonOf(script, part, last, said = [], lang = "hinglish") {
   const t0 = String(t).trim();
   return { field: r.field, path: r.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: part.board ?? null };
 }
-export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null, explain = false, boardUp = null, heldCard = false }) {
+export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null, explain = false, boardUp = null, heldCard = false, noC1 = false, nearAll = false }) {
   if (!HELP_REQUESTS.includes(asked)) return null;
   const part = helpPart(script, partId);
   if (!part) return null;
@@ -527,6 +527,15 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     const capReason = capReasonOf(script, part, last, said, L);
     if (capReason) return { part: part.id, kind: part.kind, keyed: false, request, rung: capReason, board: capReason.board, card: "keep", key: null, joint: null, capReason: true };
     const key = keyLine(part, L);
+    // (to-brain 055 C1, main's ruling A(i) and B of d38: the answer is told only when nothing of the open part is left unsaid — where a wording
+    // is unsaid, the FIRST a child who asked now would get, in the ladder's order, is the turn instead (`c1`), once a question. A wording any
+    // sentence of which she has said in near-same words (inSaid) is not unsaid — said whole it would repeat her, cut it is not the authored
+    // wording (`nearAll`: the card's own hint read so too). `noC1` keeps the key whatever help is left: the wait (ruling C), or a C1 turn
+    // already given at this question (ruling A(i))
+    if (key && !noC1) {
+      const left = pickHelp({ script, part: partId, keyed, closed, request: asked, said, lang, lessonKey, jointN, misses: 0, last, bridgeAgain, closedWhy, explain, boardUp, heldCard, nearAll: true });
+      if (left?.card === "keep" && left.rung?.text && !sentencesOf(left.rung.text).some((x) => inSaid(x, said))) return { ...left, c1: true, missCap: misses };
+    }
     if (key) return { part: part.id, kind: part.kind, keyed: false, request, rung: null, board: key.board, card: "close", key, joint: null, missCap: misses };
   }
   // (dc-r8-director29 Brain 045 P3: at an asked worked step a give-up or a clarify gets the step's own simpler, then the step's question again —
@@ -588,7 +597,7 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // got the key at its first miss, the card's own hint read as said from the then-card's)
   // (to-brain 052 A1: and said word for word — another card's hint written the same way is not this card's: dry steady c5-ch02-t03 row 50,
   // c1's simpler read as c3's, and c3's named miss got the own reason, then the key)
-  const ownHint = (r) => isCard && (r.path === `${part.path}.simpler`);
+  const ownHint = (r) => !nearAll && isCard && (r.path === `${part.path}.simpler`);
   const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !(ownHint(r) ? sentencesOf(r.text).every((s) => saidWordForWord(s, said)) : sentencesOf(r.text).some((s) => inSaid(s, said))));
   const base = { part: part.id, kind: part.kind, keyed: !!keyed, request, ...(hindiHelp ? { hindiAsked: true } : {}), ...(closed && !keyed ? { closed: true } : {}) };
   // (dc-r8-director30 Brain 046 Q2: a request for Hindi at a live card or an asked step gets the question's own `hindi` form — the easier-words

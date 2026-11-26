@@ -90,7 +90,10 @@ describe("D1: a return led by a verdict opens on a back-to word; with none left 
     for (const x of ["Ab cricket ki baat karte hain: usmein sabse mazedaar kya hai?", "Jaisa kaha tha, ab cricket par aate hain, uski sabse achhi baat kya hai?", "Chalo, ab cricket ki baat karte hain.", "Cricket ki baari aa gayi: uske baare mein thoda aur batao na?", "Achha, ab cricket ki baat sunti hoon, uske baare mein kuch aur bataoge?"]) assert.ok(BACK_TO_LEAD.test(x), x);
     for (const x of ["Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", "Cricket wali baat batao na, tumhe uski kaunsi baat pasand hai?", "Cricket mein kya kuch aisa hai jise tum naap sakte ho?", "Tumne cricket ki baat chhedi thi; ab batao, uske baare mein kya kehna tha?"]) assert.ok(!BACK_TO_LEAD.test(x), x);
   });
-  const { out } = await walkSay("c5-maths-ch02-t01", [...STEERING_C5T01, "haan"], "steering");
+  // (d38 re-pin, to-brain 055 C1 as main ruled in RULING-A2 A(i): the eleventh line's miss is the cap with remediation[2].simpler unsaid — it
+  // is now that wording ending on the invitation (C1), and the key with its reason comes at one more miss, "6 kilometre" again; was: the key
+  // at the eleventh line. The verdict and the told return at "teesra hissa" are as before)
+  const { out } = await walkSay("c5-maths-ch02-t01", [...STEERING_C5T01.slice(0, 11), "6 kilometre", ...STEERING_C5T01.slice(11), "haan"], "steering");
   test("steering c5-t01 (director36's row 26: verdict, then \"Sixer ki baat tumne ki thi: …\"): no back-to form survives, so the told return is said with the verdict, as at a23e5c45d — never a go-on turn with no question", () => {
     const v = out.at(-2), next = out.at(-1);
     assert.deepEqual(v.seams, ["verdict", "return"], v.text);

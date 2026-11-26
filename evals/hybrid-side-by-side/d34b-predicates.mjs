@@ -16,6 +16,7 @@
 import { atQuestionOf, endsOnYourTurn, endsOnShortAsk, runOfTwo, endsOnReaskOf } from "../../server/director/question-run.js";
 import { helpPart, at as atPath, sentencesOf as helpSentences, normSentence as helpNorm } from "../../server/director/help.js";
 import { D33_PREDICATES } from "./d33-predicates.mjs";
+import { goAheadAloneAt } from "./d37h-predicates.mjs";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 /** to-brain 053 B2: her turn after try-first or a bare yes at the question just said — she waits (the short ask, then the invitation). */
@@ -117,8 +118,10 @@ export const D34B_PREDICATES = {
     if (r.who !== "teacher" || !ctx?.script || !invites(ctx.script, r)) return null;
     // (to-brain 053 B2: after try-first or a bare yes, the second such turn waits with the invitation, the short ask said the turn before)
     if (b2Turn(r)) return null;
+    // (main's ruling A(ii) of d38, as RULING-H item 15 reads it for endsOnQuestion and stepTryFirst: a turn that is exactly the go-ahead
+    // answering a try-first is no turn at anything else — it is skipped when her turns at the question are counted)
     const two = [];
-    for (let j = i - 1; j >= 0 && two.length < 2; j--) if (L.rows[j].who === "teacher") two.unshift(L.rows[j]);
+    for (let j = i - 1; j >= 0 && two.length < 2; j--) if (L.rows[j].who === "teacher" && !goAheadAloneAt(L, L.rows[j], j)) two.unshift(L.rows[j]);
     return two.length === 2 && runOfTwo(ctx.script, two.map((x) => (invites(ctx.script, x) ? "" : x.text))) ? null
       : "a turn ends on the invitation (joints.yourTurn) where her two turns before did not end on one question";
   },

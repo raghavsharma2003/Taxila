@@ -195,10 +195,19 @@ describe("B3 after main's R1 and R2: the cap is on her own repeats", async () =>
     const { lm, o } = fifth(card, ...HAAN);
     assert.equal(lm.heardCap, undefined); assert.ok(!lm.gave); assert.ok(lm.waitShort); assert.equal(o.state.keyedPart ?? null, null);
   });
-  test("at a card: after a miss, or a give-up, the fifth hearing is the key with its reason", () => {
+  // (d38 re-pin, to-brain 055 C1 as main ruled in RULING-A2 A(i): this card's wordings are all unsaid at the cap, so the first cue is C1 —
+  // its first unsaid wording ending on the invitation, no key — and the next miss or give-up is the key with its reason. Was: the key at the
+  // first cue)
+  /** The turn after `o`, her turn (C1's, which says no question) in the record as the invitation. */
+  const next = (o, text, cls) => step({ ...o.state, recent: [...(o.state.recent ?? []), { who: "child", text }, { who: "teacher", text: "Ab tum batao." }] },
+    { event: "turn", kit, text, cls: { confidence: 0.9, flags: {}, ...cls }, now: (o.state.turn + 1) * 20_000 });
+  test("at a card: after a miss, or a give-up, the fifth hearing is C1 (an unsaid wording, the invitation, no key); the next is the key with its reason", () => {
     for (const cue of [WRONG, GIVE_UP]) {
       const { lm, o, P } = fifth(card, ...cue);
-      assert.equal(lm.heardCap, P, cue[0]); assert.ok(lm.gave, cue[0]); assert.ok(o.state.keyedPart, cue[0]);
+      assert.equal(lm.heardCap, undefined, cue[0]); assert.ok(!lm.gave, cue[0]); assert.ok(!o.state.keyedPart, cue[0]); assert.ok(lm.yourTurn, cue[0]);
+      assert.ok(o.state.c1At?.[lm.help?.part ?? lm.cell?.part], cue[0]);
+      const o2 = next(o, ...cue), lm2 = o2.state.lastMove ?? {};
+      assert.equal(lm2.heardCap, P, cue[0]); assert.ok(lm2.gave, cue[0]); assert.ok(o2.state.keyedPart, cue[0]);
     }
   });
   test("R2: a short ask is no hearing — after one, a miss is not capped", () => {
@@ -220,10 +229,13 @@ describe("B3 after main's R1 and R2: the cap is on her own repeats", async () =>
     assert.equal(w2.heardCap, undefined); assert.ok(!w2.stepFrom); assert.equal(w2.waitN, 2);
     assert.equal(w3.heardCap, P); assert.ok(w3.stepFrom != null); assert.equal(w3.waitN, 3);
   });
-  test("at an asked step: after a miss, or a give-up, the fifth hearing tells the step", () => {
+  // (d38 re-pin, as above: the step's simpler unsaid at the cap — C1 first, the step told at the next miss or give-up. Was: told at the first)
+  test("at an asked step: after a miss, or a give-up, the fifth hearing is C1 (the step's unsaid wording, the invitation); the next tells the step", () => {
     for (const cue of [WRONG, GIVE_UP]) {
-      const { lm, P } = fifth(stepS, ...cue);
-      assert.equal(lm.heardCap, P, cue[0]); assert.ok(lm.stepFrom != null, cue[0]);
+      const { lm, o, P } = fifth(stepS, ...cue);
+      assert.equal(lm.heardCap, undefined, cue[0]); assert.ok(lm.stepFrom == null, cue[0]); assert.ok(lm.yourTurn, cue[0]);
+      const lm2 = next(o, ...cue).state.lastMove ?? {};
+      assert.equal(lm2.heardCap, P, cue[0]); assert.ok(lm2.stepFrom != null, cue[0]);
     }
   });
 });

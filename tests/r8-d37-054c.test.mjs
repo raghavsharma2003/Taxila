@@ -85,14 +85,19 @@ describe("C3: at the cap, the named wrong answer's unsaid reason first — the m
     assert.equal(d.card, "keep"); assert.equal(d.key, null); assert.ok(d.capReason);
     assert.equal(nk(d.rung.text), nk(whyAlt));
   });
-  test("once a card: with the reason said, the cap is the key", () => {
+  // (d38 re-pins, to-brain 055 C1 as main ruled in RULING-A2 A(i): with a wording of the card unsaid the cap is first C1 — that wording, the
+  // card kept, no key — and the key once a C1 turn was given at the card (`noC1`, state.js c1At). Was: the key at once)
+  test("once a card: with the reason said, the cap is C1 while a wording is unsaid, then the key", () => {
     const said = addSaid([], whyAlt, 3);
     const d = pickHelp({ script, part, request: "hint", said, misses: KEY_AFTER_MISSES, last: named });
-    assert.equal(d.card, "close"); assert.ok(d.key);
+    assert.equal(d.card, "keep"); assert.ok(d.c1); assert.equal(d.key, null); assert.ok(d.rung?.text);
+    const k = pickHelp({ script, part, request: "hint", said, misses: KEY_AFTER_MISSES, last: named, noC1: true });
+    assert.equal(k.card, "close"); assert.ok(k.key);
   });
-  test("another answer (not the named one) at the cap: the key, as built", () => {
+  test("another answer (not the named one) at the cap: C1 while a wording is unsaid, then the key, as built", () => {
     const d = pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES, last: { outcome: "incorrect", wrongListed: false } });
-    assert.equal(d.card, "close");
+    assert.equal(d.card, "keep"); assert.ok(d.c1);
+    assert.equal(pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES, last: { outcome: "incorrect", wrongListed: false }, noC1: true }).card, "close");
   });
   test("questionFiveTimes re-pinned: a fifth hearing passes only on the turn whose body is the named reason said for the first time at the card", () => {
     const card = "Jo hissa lamba nikla, woh doosre se kitne cm lamba hai?";

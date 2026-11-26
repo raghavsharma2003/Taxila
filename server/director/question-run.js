@@ -205,7 +205,7 @@ const dropB4 =(m) => { if (!m || typeof m !== "object") return m; const o = { ..
  *  The fields never carry from one move to the next (help builds its move from the last one). → out, changed in place. */
 /** d37 RULING-G item 7: the move's help is the point's wording (its pointAlt or simpler) said at a card — the question at `path` a card's. */
 const pointHelpAtCard = (lm, path) => ["pointAlt", "simpler"].includes(String(lm?.help?.rung ?? "")) && /\.ask$/.test(String(path ?? "")) && /:card$/.test(String(lm?.cell?.part ?? lm?.help?.part ?? ""));
-export function yourTurnPass(prev, out, script, childText = "") {
+export function yourTurnPass(prev, out, script, childText = "", { capInvite = null } = {}) {
   const s = out?.state;
   if (!s?.lastMove || !script) return out;
   s.lastMove = dropB4(s.lastMove);
@@ -222,6 +222,17 @@ export function yourTurnPass(prev, out, script, childText = "") {
   const saidInv = !!pl0.yourTurn && lastText.endsWith(String(pl0.yourTurn).replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "") + ".");
   if (saidInv) s.yourTurnN = (prev?.yourTurnN ?? 0) + 1;
   const set = (f) => { Object.assign(s.lastMove, f); if (out.move) Object.assign(out.move, f); };
+  // (to-brain 055 C1: where the cap would tell while a wording of the open part is unsaid, that wording is said as help (state.js heardCap)
+  // and the turn ends on an invitation — the script's joints.yourTurn, rotated — never on the question, heard four times)
+  if (capInvite) {
+    const forms = yourTurnForms(script, s.ctx?.lang === "english" ? "english" : "hinglish");
+    if (forms.length) {
+      const her = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
+      const lastQ = [...her].reverse().find((t) => atQuestionOf(script, t) === capInvite);
+      set({ yourTurn: forms[(s.yourTurnN ?? 0) % forms.length], yourTurnAfter: closingQuestion(lastQ ?? "") ?? closingQuestion(out.ui?.ask?.text ?? lm.stepAsk?.prompt ?? "") });
+      return out;
+    }
+  }
   // (to-brain 053 B2 — director34 c4 steady 26 to 30, c4-ch01-t02 steady 26 to 30, c5-t03 steering 16 to 20, c5-t02 stuck 22, offtopic 24:
   // after "Haan, pehle tum try karo." and after a bare "haan", "yes", "theek hai" at a card or an asked step whose question her turn before
   // said (or stood for, by a short ask or an invitation), she does not say the question whole again: she waits — the short ask on the first

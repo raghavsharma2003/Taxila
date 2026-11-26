@@ -97,6 +97,22 @@ describe("keyWithWordingUnsaid read to main's ruling (RULING-A2 A(i), B, C), mad
   });
 });
 
+describe("yourTurnNotThird read to main's ruling A(ii) (RULING-A2): the go-ahead alone answering a try-first is no turn at the question", () => {
+  const S2 = { ...SCRIPT, joints: { yourTurn: [{ hi: "Chalo, ab tumhari baari." }] } };
+  const Q = "Do aur do kitne hote hain?", R = "Toh do jama do kya hua?", INV = "Nahi. Ungliyon par gino. Chalo, ab tumhari baari.";
+  const card = (t) => T(t, { cell: { part: "t-s1:e1:card", column: "wrong" }, seams: [{ right: "missVerdict" }, { right: "help" }, { right: "yourTurn" }] });
+  test("the invitation after her two turns at the question with the go-ahead alone between passes", () => {
+    const rows = [T(Q), C("5"), T(`Nahi. ${R}`), C("pehle main try karun?"), T("Haan, pehle tum try karo."), C("7"), card(INV)];
+    assert.deepEqual(rows.map((r, i) => PREDICATES.yourTurnNotThird({ rows }, r, i, { script: S2 })).map((x, i) => (x ? i : -1)).filter((i) => i >= 0), []);
+  });
+  test("the other side: a go-ahead with more said after it, or one that answers no try-first, still counts as her turn", () => {
+    for (const rows of [[T(Q), C("5"), T(`Nahi. ${R}`), C("pehle main try karun?"), T("Haan, pehle tum try karo. Ab phir se socho."), C("7"), card(INV)],
+      [T(Q), C("5"), T(`Nahi. ${R}`), C("haan"), T("Haan, pehle tum try karo."), C("7"), card(INV)], [T("Pehle ek baat."), C("haan"), T(Q), C("pehle main try karun?"), T("Haan, pehle tum try karo."), C("7"), card(INV)]]) {
+      assert.deepEqual(rows.map((r, i) => PREDICATES.yourTurnNotThird({ rows }, r, i, { script: S2 })).map((x, i) => (x ? i : -1)).filter((i) => i >= 0), [6]);
+    }
+  });
+});
+
 describe("questionFifthOnHerOwn (C3), made rows", () => {
   const Q = "Do aur do kitne hote hain?", R = "Toh do jama do kya hua?";
   const four = [T(Q), C("5"), T(`Nahi. Ungliyon par gino. ${R}`), C("aapko cricket pasand hai?"), T(`Main AI hoon. Ab wapas aate hain. ${Q}`), C("6"), T(`Nahi. Point ki doosri baat. ${R}`), C("pata nahi")];
