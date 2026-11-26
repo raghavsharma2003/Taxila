@@ -49,7 +49,7 @@ describe("keyWithWordingUnsaid (C1), made rows", () => {
     assert.deepEqual(flagsOf([...all, T("Nahi. Teen jama ek chaar. Yahan tak theek hai?", { cell: { part: card }, ...KEY })], SCRIPT, "keyWithWordingUnsaid"), []);
     assert.deepEqual(flagsOf([...lead, T("Galti ki aasaan baat. Chalo, ab tumhari baari.", { cell: { part: card } })], SCRIPT, "keyWithWordingUnsaid"), []);
   });
-  test("a wording one of whose sentences is only near another said sentence is unsaid (word for word)", () => {
+  test("a wording one of whose sentences has only three words in four in a said sentence is still unsaid", () => {
     assert.deepEqual(flagsOf([...lead.slice(0, 4), T("Nahi. Galti ki doosri baaten. Teen aur ek kitne hote hain?", { cell: { part: card } }), C("5"),
       T("Nahi. Teen jama ek chaar.", { cell: { part: card }, ...KEY })], SCRIPT, "keyWithWordingUnsaid"), [6]);
   });
@@ -62,6 +62,38 @@ describe("keyWithWordingUnsaid (C1), made rows", () => {
     assert.deepEqual(flagsOf([...four, told()], SCRIPT, "keyWithWordingUnsaid"), [8]);
     const allSaid = [...four.slice(0, 6), Q("Sawaal aasaan tarah. Jodoge ya ghataoge, batao?"), C("pata nahi")];
     assert.deepEqual(flagsOf([...allSaid, told()], SCRIPT, "keyWithWordingUnsaid"), []);
+  });
+});
+
+describe("keyWithWordingUnsaid read to main's ruling (RULING-A2 A(i), B, C), made rows", () => {
+  const card = "t-s1:e1:card", Q = "Do aur do kitne hote hain?", R = "Toh do jama do kya hua?";
+  const at = (t) => T(t, { cell: { part: card } });
+  const four = [at(Q), C("5"), at(`Nahi. ${R}`), C("5"), at(`Nahi. ${Q}`), C("phir se bolo"), at(Q), C("5")];
+  const told = at("Nahi. Do jama do chaar. Yahan tak theek hai?"); Object.assign(told, KEY);
+  test("A(i): a told answer after a C1 turn at that question (after the fourth hearing, a wording, ending on the invitation) passes", () => {
+    assert.deepEqual(flagsOf([...four, at("Nahi. Ungliyon par gino. Chalo, ab tumhari baari."), C("5"), told], SCRIPT, "keyWithWordingUnsaid"), []);
+  });
+  test("A(i), the other side: the same told answer with no C1 turn, or with the wording said before the fourth hearing, flags", () => {
+    assert.deepEqual(flagsOf([...four, told], SCRIPT, "keyWithWordingUnsaid"), [8]);
+    const early = [at(Q), C("5"), at("Nahi. Ungliyon par gino. Chalo, ab tumhari baari."), C("5"), at(`Nahi. ${R}`), C("5"), at(`Nahi. ${Q}`), C("5"), at(R), C("5")];
+    assert.deepEqual(flagsOf([...early, told], SCRIPT, "keyWithWordingUnsaid"), [10]);
+  });
+  const allBut = [at(Q), C("5"), at(`Nahi. Ungliyon par gino. ${R}`), C("5"), at(`Nahi. Point ki doosri baat. ${Q}`), C("5")];
+  test("B: a wording one sentence of which she said in near-same words (eight in ten of its words, in order) is not unsaid", () => {
+    assert.deepEqual(flagsOf([...allBut, at(`Nahi. Point ki sabse aasaan baat. ${R}`), C("5"), told], SCRIPT, "keyWithWordingUnsaid"), []);
+  });
+  test("B, the other side: its words out of order, or fewer than eight in ten, are not near: the wording is unsaid", () => {
+    assert.deepEqual(flagsOf([...allBut, at(`Nahi. Baat aasaan point ki. ${R}`), C("5"), told], SCRIPT, "keyWithWordingUnsaid"), [8]);
+    assert.deepEqual(flagsOf([...allBut, at(`Nahi. Point ki aasaani. ${R}`), C("5"), told], SCRIPT, "keyWithWordingUnsaid"), [8]);
+  });
+  const wait = [at(Q), C("haan"), at("Ab phir se socho, jawab kya hoga?"), C("haan"), at(R), C("haan"), at(`Ungliyon par gino. ${Q}`), C("haan")];
+  test("C: the told answer that is the wait's last turn (bare yes since the question, her turn before answering a bare yes) passes", () => {
+    assert.deepEqual(flagsOf([...wait, told], SCRIPT, "keyWithWordingUnsaid"), []);
+    assert.deepEqual(flagsOf([...wait.slice(0, 7), C(""), told], SCRIPT, "keyWithWordingUnsaid"), []);
+  });
+  test("C, the other side: a miss since the question, or her turn before answering a give-up, is no wait: it flags", () => {
+    assert.deepEqual(flagsOf([...wait.slice(0, 7), C("6"), told], SCRIPT, "keyWithWordingUnsaid"), [8]);
+    assert.deepEqual(flagsOf([at(Q), C("pata nahi"), at(`Ungliyon par gino. ${Q}`), C("haan"), told], SCRIPT, "keyWithWordingUnsaid"), [4]);
   });
 });
 
@@ -90,8 +122,8 @@ describe("questionFifthOnHerOwn (C3), made rows", () => {
 
 describe("the frozen director37 rows (to-brain 055: the rows the order names)", () => {
   const got = (k) => { const out = []; for (const l of ["offtopic-c4-ch01-t02", "steering-c6-ch06-t01", "steering-c5-ch02-t01", "steering-c5-ch02-t02", "steering-c6-ch07-t03", "stuck-c6-ch07-t03"]) { const { rows, script } = load(l); for (const i of flagsOf(rows, script, k)) out.push(`${l} ${i}`); } return out; };
-  test("keyWithWordingUnsaid: the four rows of the order and steering c5-ch02-t02 22 (the same fault, not named): five rows in four lessons", () => {
-    assert.deepEqual(got("keyWithWordingUnsaid"), ["steering-c6-ch06-t01 22", "steering-c5-ch02-t01 22", "steering-c5-ch02-t02 22", "steering-c6-ch07-t03 22", "stuck-c6-ch07-t03 42"]);
+  test("keyWithWordingUnsaid: the order's rows and steering c5-ch02-t02 22 (the same fault, not named), less the two c6-ch07-t03 rows ruling B reads as said (remediation[0].simpler's second sentence near its say): three rows", () => {
+    assert.deepEqual(got("keyWithWordingUnsaid"), ["steering-c6-ch06-t01 22", "steering-c5-ch02-t01 22", "steering-c5-ch02-t02 22"]);
   });
   test("questionFifthOnHerOwn: offtopic c4-ch01-t02 34 (the fifth, after her reply) and 42 (the seventh); 36 (Hindi) and 44 (\"phir se bolo\") are the child's own", () => {
     assert.deepEqual(got("questionFifthOnHerOwn"), ["offtopic-c4-ch01-t02 34", "offtopic-c4-ch01-t02 42"]);

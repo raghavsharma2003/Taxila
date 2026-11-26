@@ -4,7 +4,11 @@
 //                          it), while a help wording of that part — the script's own, in the list below — was never said in the lesson
 //                          (no sentence of it said, word for word, in any of her turns up to and including that one). director37:
 //                          steering c6-ch06-t01 22, steering c5-ch02-t01 22, steering c5-ch02-t02 22, steering c6-ch07-t03 22, stuck
-//                          c6-ch07-t03 42 (five rows in four lessons).
+//                          c6-ch07-t03 42 (five rows in four lessons). Main's ruling (d38, RULING-A2): A(i) C1 is one turn a question — a
+//                          told answer after a C1 turn at that question passes; B a wording any sentence of which she has said in near-same
+//                          words (this file's own test, heardNear: eight in ten of its words, in order, in one sentence of hers) is not
+//                          unsaid; C the wait is outside C1 — a told answer whose child lines since the question are bare (a yes, nothing
+//                          read) and whose turn before answered a bare line passes.
 //   questionFifthOnHerOwn  C3: a fifth (or later) counted hearing of one question — her turn ends on any form the script writes for it
 //                          (prompt, reask, hindi; Hinglish or English), whole, re-asked, in Hindi, or after help or a remediation — that is
 //                          not the answer to the child's own request for it ("phir se bolo", a request for Hindi where the question has a
@@ -48,12 +52,29 @@ export function wordingsOf(script, part) {
 const hiOf = (v) => (typeof v === "string" ? v : typeof v?.hi === "string" ? v.hi : null);
 /** The sentence keys of her turns, rows 0..i. */
 const saidUpTo = (L, i) => { const s = new Set(); for (const x of L.rows.slice(0, i + 1)) if (x.who === "teacher") for (const t of sentences(x.text)) s.add(keyOf(t)); return s; };
-/** The wordings of a part never said up to row i (no sentence of one said word for word): [path]. */
+/** Main's ruling B (d38, RULING-A2): this check's OWN near-same test — a sentence is heard if at least eight in ten of its words, in order,
+ *  are in one sentence she has said in the lesson (the longest common run of words, in order, against the sentence's own length). */
+const wordsOf = (k) => String(k ?? "").split(" ").filter(Boolean);
+function inOrder(a, b) {
+  const m = a.length, n = b.length, d = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let x = 1; x <= m; x++) for (let y = 1; y <= n; y++) d[x][y] = a[x - 1] === b[y - 1] ? d[x - 1][y - 1] + 1 : Math.max(d[x - 1][y], d[x][y - 1]);
+  return d[m][n];
+}
+export function heardNear(sentence, said) {
+  const k = keyOf(sentence);
+  if (!k) return false;
+  if (said.has(k)) return true;
+  const w = wordsOf(k);
+  for (const x of said) if (inOrder(w, wordsOf(x)) >= 0.8 * w.length) return true;
+  return false;
+}
+/** The wordings of a part never said up to row i (no sentence of one heard, word for word or in near-same words — ruling B: a wording that
+ *  cannot be said whole without repeating her is not unsaid): [path]. */
 export function unsaidWordings(L, i, script, part) {
   const list = wordingsOf(script, part);
   if (!list) return [];
   const said = saidUpTo(L, i);
-  return list.filter((p) => { const t = hiOf(at(script, p)); return t && t.trim() && !sentences(t).some((s) => said.has(keyOf(s))); });
+  return list.filter((p) => { const t = hiOf(at(script, p)); return t && t.trim() && !sentences(t).some((s) => heardNear(s, said)); });
 }
 
 /** Every question the script writes (an object with a `prompt`; the teach-back's is not read) → its path, keyed by each form's last
@@ -104,6 +125,34 @@ function hearingsUpTo(L, i, script) {
   return h;
 }
 const keySeam = (r) => (r.seams ?? []).some((x) => x.right === "key");
+/** The last turn of hers before row i that ends on a question → { P, j } | null. */
+const lastQuestion = (L, i, script) => { for (let k = i - 1; k >= 0; k--) { const x = L.rows[k]; if (x.who !== "teacher") continue; const p = questionOfTurn(script, x.text); if (p) return { P: p, j: k }; } return null; };
+/** Main's ruling A(i): a C1 turn at question P before row i — a turn of hers after P's fourth hearing that says a wording of the part (a
+ *  sentence of it heard in that turn, near-same reading above) and does not end on P. */
+const c1TurnBefore = (L, i, script, part, P) => {
+  const list = (wordingsOf(script, part) ?? []).map((p) => hiOf(at(script, p))).filter((t) => t && t.trim());
+  if (!P || !list.length) return false;
+  for (let j = i - 1; j >= 0; j--) {
+    const x = L.rows[j];
+    if (x.who !== "teacher" || questionOfTurn(script, x.text) === P || (hearingsUpTo(L, j - 1, script)[P] ?? 0) < 4) continue;
+    const own = new Set(sentences(x.text).map(keyOf));
+    if (list.some((t) => sentences(t).some((s) => heardNear(s, own)))) return true;
+  }
+  return false;
+};
+/** Main's ruling C: what a wait is made of, as said — a bare yes, or nothing the walk reads (no words, a filler). This check's own list. */
+const BARE_SAID = /^(?:haan|haa|ha|han|haan ji|ji|ji haan|hmm+|hm+|umm*|achha|accha|acha|achcha|theek hai|thik hai|theek|ok|okay|okk|yes|yeah|yep|sure|hmm achha|hmm haan|haan achha|haan theek hai)?$/;
+const bare = (r) => r?.who === "child" && BARE_SAID.test(keyOf(r.text));
+/** Main's ruling C: the told answer that is the wait's last turn — the child's lines since the question was last said are all bare, and her
+ *  turn before answered a bare line too (a turn of the wait: its help, or its return to the question). */
+const waitTold = (L, i, q) => {
+  if (!q) return false;
+  const kids = L.rows.slice(q.j + 1, i).filter((x) => x.who === "child");
+  if (!kids.length || !kids.every(bare)) return false;
+  let k = i - 1;
+  while (k >= 0 && L.rows[k].who !== "teacher") k--;
+  return k > 0 && bare(L.rows[k - 1]);
+};
 const ENDS = (r) => ["safeguard", "goodbye"].includes(String(r?.move ?? ""));
 
 export const D38A_PREDICATES = {
@@ -112,13 +161,18 @@ export const D38A_PREDICATES = {
     const key = keySeam(r), step = !!r.stepAnswer?.told;
     if (!key && !step) return null;
     const part = String(r.cell?.part ?? "");
+    const q = lastQuestion(L, i, ctx?.script);
     if (!key) {
       // (a told step is C1's only at the cap: the step's question heard four times or more before this turn)
-      const P = (() => { for (let k = i - 1; k >= 0; k--) { const x = L.rows[k]; if (x.who !== "teacher") continue; const p = questionOfTurn(ctx?.script, x.text); if (p) return p; } return null; })();
+      const P = q?.P;
       if (!P || !/workedExample\.steps\[\d+\]/.test(P) || (hearingsUpTo(L, i - 1, ctx?.script)[P] ?? 0) < 4) return null;
     }
     const left = unsaidWordings(L, i, ctx?.script, part);
-    return left.length ? `a told ${key ? "answer" : "step"} while ${left.join(", ")} was never said` : null;
+    if (!left.length) return null;
+    // (ruling A(i): C1 is one turn a question — the told answer after a C1 turn at that question passes, whatever is still unsaid; ruling C:
+    // the wait is outside C1 — the told answer that is the wait's last turn passes)
+    if (c1TurnBefore(L, i, ctx?.script, part, q?.P) || waitTold(L, i, q)) return null;
+    return `a told ${key ? "answer" : "step"} while ${left.join(", ")} was never said`;
   },
   questionFifthOnHerOwn(L, r, i, ctx) {
     if (r.who !== "teacher" || ENDS(r)) return null;
