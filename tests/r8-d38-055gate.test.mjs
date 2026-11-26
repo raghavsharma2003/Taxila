@@ -41,18 +41,21 @@ const WALKS = Object.entries(AT).flatMap(([w, a]) => Object.entries(CASES).map((
 // (P6: the told answer at the cap said as its reason alone, then a clarify answered with help twice and a third — at the card)
 WALKS.push({ name: "card-p6", topicId: TOPIC, seek: "card", skip: 2, tail: 3, then: [...FOUR.map((x) => L[x]), "7", "7", "samajh nahi aaya", "phir bhi samajh nahi aaya", "phir bhi samajh nahi aaya"] });
 
+// (d38 RULING-A8 Q1: a right answer after a help turn at an asked step is read against the step's own key — a give-up's help and a clarify's
+// help at one hearing (ending on the step's question), at the card the same two to show cards were never affected; C1's three are the a-walks)
+for (const [w, a] of Object.entries(AT)) for (const k of ["give", "clar"]) WALKS.push({ name: `${w}-q1-${k}`, topicId: TOPIC, seek: a.seek, skip: a.skip, tail: 3, fresh: true, then: [L[k], L.right] });
+// (and the return's help — C1 at a return, after the AI line and its reply — then the right answer)
+WALKS.push({ name: "step-q1-ret", topicId: TOPIC, seek: "step", skip: 0, tail: 3, then: [...FOUR, "ai", "reply", "right"].map((x) => L[x]) });
+
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
-// OLDER: the same turn, flagged the same, on the same driven walk at ed292d10b (release 63, before the cap) — the right answer at an asked
-// step read as nothing after a help that stays at the step (older fault 1, not this pass's to fix), and the told step at a wait whose
-// lines hold side-topics (keyWithWordingUnsaid's wait reading).
-const OLDER = ["step-b-clar 20 stepToldEarly", "step-c-park 22 keyWithWordingUnsaid"];
+// OLDER: the same turn, flagged the same, on the same driven walk at ed292d10b (release 63, before the cap) — the told step at a wait whose
+// lines hold side-topics (keyWithWordingUnsaid's wait reading). (RULING-A8 Q1 took off step-b-clar 20 stepToldEarly: the right answer at an
+// asked step is no longer read as nothing after help)
+const OLDER = ["step-c-park 22 keyWithWordingUnsaid"];
 // STOPPED: clashes held for main's ruling — a turn as ruled that a gated predicate no ruling names flags (builder P stopped at each):
 // the told answer at the wait's second turn after C1 (waitSecondNotReask), the AI line then the told answer and its check-in
 // (aiAskAnswered), and the told step's back-to-work joint straight after the return turn's (goOnJointTwice).
 const STOPPED = ["card-a-yes 16 waitSecondNotReask", "card-a-try 18 waitSecondNotReask", "card-c-aireply 20 aiAskAnswered", "step-c-aireply 22 goOnJointTwice"];
-// (NOT listed, so this test fails on them until main rules: step-a-miss 20, step-a-right 20, step-a-hindi 22 stepToldEarly and step-a-give
-// 20 giveUpVerdict — after C1's turn at an asked step the child's next line is read as nothing (older fault 1), and the cap's path makes
-// that a told step; none of these turns is on the walk at ed292d10b)
 const EXPECTED = new Set([...OLDER, ...STOPPED]);
 
 let RUN = null;
@@ -86,7 +89,7 @@ test("055 gate: the driven walks reach the cap as each case says", { timeout: 18
     w.then.forEach((t, k) => { if (t !== "@key") assert.equal(rows[i0 + 2 * k]?.text, t, `${w.name}: line ${k}`); assert.equal(rows[i0 + 2 * k + 1]?.who, "teacher", `${w.name}: her turn after line ${k}`); });
     // (four hearings before the case's fourth line: the question, then three times at the child's request, each her turn at the question)
     const P = AT[w.name.split("-")[0]].P;
-    for (let k = 0; k < 3; k++) assert.equal(atQuestionOf(SCRIPT, rows[i0 + 2 * k + 1].text), P, `${w.name}: hearing ${k + 2}`);
+    if (!w.fresh) for (let k = 0; k < 3; k++) assert.equal(atQuestionOf(SCRIPT, rows[i0 + 2 * k + 1].text), P, `${w.name}: hearing ${k + 2}`);
     // (a: the fourth line is a miss and her turn is C1's — help ending on an invitation, the question not said)
     if (w.name.split("-")[1] === "a") {
       const c1 = rows[i0 + 7];
@@ -185,4 +188,29 @@ test("P6: requestHelped reads a key seam after a miss verdict as the told answer
   const flags = (n) => { const L2 = [...rows.slice(0, n), kid, M]; return lessonFlags({ rows: L2, script: SCRIPT }).filter((x) => x.row === L2.length - 1 && x.predicate === "requestHelped"); };
   assert.deepEqual(flags(i0 + 14), [], "every wording of the part said: passes");
   assert.equal(flags(i0 + 12).length, 1, "a wording of the part still unsaid: the same turn flags");
+});
+
+test("Q1 (RULING-A8): after any help turn at an asked step the child's next line is read against the step's own key — the right answer confirmed, a wrong one a recorded miss; cards as before", { timeout: 180_000 }, () => {
+  const R = run();
+  const at0 = (name) => start(R[name], WALKS.find((x) => x.name === name));
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  // (the right answer after help: a give-up's and a clarify's help at one hearing, C1's at four — the step's confirm, the walk goes on)
+  for (const [name, off] of [["step-q1-give", 2], ["step-q1-clar", 2], ["step-a-right", 8], ["card-q1-give", 2], ["card-q1-clar", 2], ["card-a-right", 8], ["step-q1-ret", 10]]) {
+    const rows = R[name], i = at0(name) + off;
+    assert.equal(rows[i].who, "child", name);
+    assert.equal(rows[i].read, "correct", `${name}: the right answer "${rows[i].text}" read as ${rows[i].read}`);
+    const t = rows[i + 1];
+    if (name.startsWith("step")) { assert.ok(seams(t).includes("stepConfirm"), `${name}: ${norm(t.text)}`); assert.ok(!t.stepAnswer?.told, `${name}: not told`); }
+    else assert.equal(seams(t)[0], "verdict", `${name}: ${norm(t.text)}`);
+    assert.doesNotMatch(t.text, /^Nahi\b/, `${name}: never "no" to the right answer`);
+  }
+  // (C1 then a wrong answer: a recorded miss, then the miss verdict and the told step)
+  { const rows = R["step-a-miss"], i = at0("step-a-miss") + 8;
+    assert.equal(rows[i].read, "incorrect", `step-a-miss: "${rows[i].text}" read as ${rows[i].read}`);
+    assert.ok(rows[i + 1].stepAnswer?.told && seams(rows[i + 1]).includes("stepMiss"), norm(rows[i + 1].text)); }
+  // (C1 then a give-up: the told step, no verdict word to a give-up)
+  { const rows = R["step-a-give"], i = at0("step-a-give") + 8;
+    assert.equal(rows[i].text, "pata nahi");
+    assert.ok(rows[i + 1].stepAnswer?.told, norm(rows[i + 1].text));
+    assert.doesNotMatch(rows[i + 1].text, /^Nahi, yeh nahi hai/, norm(rows[i + 1].text)); }
 });

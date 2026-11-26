@@ -4084,6 +4084,17 @@ function helpFields(kit, d) {
  * last state, as the part was left — the walk does not move. The wording is said over its part's board; a key over the answer board,
  * from its first word; a Hindi request's language is the lesson's from now on, as the walk's language request sets it.
  */
+/** d38 RULING-A8 Q1: a help turn at an asked step (a give-up's, a clarify's, C1's, C3's, the Hindi form's) leaves the step the open question —
+ *  its quick item is back on the table, so the child's next line is read against the step's own key exactly as straight after its ask. step()
+ *  takes the quick item off the table before the walk reads the child's line (Brain 042), so prev's own is gone by now: without this "5"
+ *  after the help was read as nothing — re-asked (since Brain 045 P3) or, at the cap, told as "Nahi, yeh nahi hai." */
+function stepOnTable(s, prev, kit) {
+  const sa = prev.lastMove?.stepAsk;
+  const a = sa ? skillScriptOf(kit, sa.skillId)?.workedExample?.steps?.[sa.step]?.ask : null;
+  if (!a) { s.activeItemId = prev.activeItemId; if (prev.quickItem) s.quickItem = prev.quickItem; return; }
+  const qi = friendly(scriptStepAskItem(sa.skillId, sa.step, a));
+  s.quickItem = qi; s.activeItemId = qi.id;
+}
 function helpStay(prev, input, d) {
   const s = structuredClone(prev);
   s.turn += 1;
@@ -4104,7 +4115,7 @@ function helpStay(prev, input, d) {
     const { itemId: _i, stepAgain: _sa, ...rest } = base;
     move = { ...rest, kind: "reteach", ...f, stepAsk: { ...prev.lastMove.stepAsk, prompt: d.hindiForm } };
     ui = prev.lastUi;
-    s.activeItemId = prev.activeItemId; if (prev.quickItem) s.quickItem = prev.quickItem;
+    stepOnTable(s, prev, input.kit);
   } else if (d.card === "hindiForm" && liveId) {
     // (Brain 046 Q2: the card's Hindi form is the card's question this turn, over the card's own beat and board)
     const it = findItem(prev, input.kit, liveId);
@@ -4125,7 +4136,7 @@ function helpStay(prev, input, d) {
     const { itemId: _i, stepAgain: _sa, ...rest } = base;
     move = { ...rest, kind: "reteach", ...f, stepAsk: stepAskAgain(input.kit, prev.lastMove.stepAsk, { ...prev.lastMove.stepAsk }, prev.ctx?.lang ?? "hinglish") };
     ui = prev.lastUi;
-    s.activeItemId = prev.activeItemId; if (prev.quickItem) s.quickItem = prev.quickItem;
+    stepOnTable(s, prev, input.kit);
   } else {
     // (wait: no card is asked — a point's or a remediation's clarify, a worked step, a key's check-in; she ends on the check-in, and a
     // card held for the turn after stays held)
