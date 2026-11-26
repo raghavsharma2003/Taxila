@@ -89,7 +89,8 @@ const startPointTurn = (L, r) => (r.seams ?? []).some((x) => x.joint === "startA
 /** Main's sixth ruling item 4: what may come before the held card in the turn after its check-in — help on that point (its wordings, the
  *  nothing-easier line and the line into the card), her park or said-again line (or her reply to the AI line's answer), the switch or the
  *  easier-words line. */
-const BEFORE_HELD_CARD = new Set(["help", "simpler", "helpSpent", "helpToCard", "park", "aside", "asideReply", "aiReply", "hindiSwitch", "easierWords"]);
+// (d38 RULING-A9 R1: and her AI line said again — the short form, no question back — a said-again line, always said)
+const BEFORE_HELD_CARD = new Set(["help", "simpler", "helpSpent", "helpToCard", "park", "aside", "asideReply", "aiReply", "hindiSwitch", "easierWords", "aiLine"]);
 export const D37A_PREDICATES = {
   goOnNoTeach(L, r, i) {
     // (main's fourth ruling item 2: the rule that stops a lesson stalling is never three turns running without a teaching part. Main's fifth
