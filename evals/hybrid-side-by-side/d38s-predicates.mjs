@@ -12,12 +12,13 @@
 //                          the form she last heard, her turn before no help turn, is not flagged. step-hindi-wait 14 and 16.
 //   yourTurnNotThird       RULING-A12 X3 as main ruled it on the X3 stop (wraps d34b's): at a question heard four or more times (d38a's
 //                          heardOfLast) a help turn cannot end on the question, so its invitation passes where it is (a) the question's C1
-//                          turn (d38a's c1InviteAt, read at four or more hearings) though an order-049 B4 invitation stood before it, or
+//                          turn (d38a's c1InviteAt, read at four or more hearings; X6a: the first, no C1 turn before it — d38a's
+//                          c1TurnBefore) though an order-049 B4 invitation stood before it, or
 //                          (b) order 054 C3's turn — the miss verdict and the named wrong answer's own reason, not said before in the
 //                          lesson (d37c's namedReasonNewAt), once a question. (c), help answering the child's request, is d34b's own.
 //                          Every other invitation, and every one below four hearings, is read as before. probe-card-aagg7 16, pz4-fw-kam4
 //                          22, circ-loop 18.
-import { questionOfTurn, wayBackAt, remC1Before, ownRequest, heardOfLast, c1InviteAt } from "./d38a-predicates.mjs";
+import { questionOfTurn, wayBackAt, remC1Before, ownRequest, heardOfLast, c1InviteAt, c1TurnBefore } from "./d38a-predicates.mjs";
 import { D32_PREDICATES } from "./d32-predicates.mjs";
 import { D34B_PREDICATES } from "./d34b-predicates.mjs";
 import { D37C_PREDICATES, namedReasonNewAt } from "./d37c-predicates.mjs";
@@ -63,7 +64,10 @@ export const D38S_PREDICATES = {
   yourTurnNotThird(L, r, i, ctx) {
     const was = D34B_PREDICATES.yourTurnNotThird(L, r, i, ctx);
     if (!was || !Array.isArray(L?.rows) || heardOfLast(L, i, ctx?.script) < 4) return was;
-    if (c1InviteAt(L, i, ctx.script, (j) => heardOfLast(L, j, ctx.script) >= 4)) return null;
+    // (main's item X6a: the FIRST C1 turn at that question only — none given before it, at a return or by a remediation: c1TurnBefore, narrow)
+    let P = null;
+    for (let k = i - 1; k >= 0 && !P; k--) if (L.rows[k].who === "teacher") P = questionOfTurn(ctx.script, L.rows[k].text);
+    if (c1InviteAt(L, i, ctx.script, (j) => heardOfLast(L, j, ctx.script) >= 4) && !c1TurnBefore(L, i, ctx.script, String(r.cell?.part ?? ""), P)) return null;
     return c3TurnAt(L, i, ctx.script) ? null : was;
   },
   // (d38 RULING-A12 X5: reaskSameAfterHelp as d32 reads it, and the child's own request for the question answered with the form she last heard

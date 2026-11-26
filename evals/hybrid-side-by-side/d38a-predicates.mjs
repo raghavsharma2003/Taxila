@@ -137,16 +137,23 @@ const lastQuestion = (L, i, script) => { for (let k = i - 1; k >= 0; k--) { cons
  *  before it ended on (P0) heard four times or more before it, and P is P0 (RULING-A12 X1: the ORIGINAL question only — never the follow-up
  *  card that remediation posed); every turn of hers between it and row i ends on P0 or on no question. This check's own reading. */
 export function remC1Before(L, i, script, P) {
+  // (main's item X6b: the remediation's own follow-up card's turns — at its `:rem:n:then` part, ending on the card that remediation posed — are
+  // read through; a turn at any other question still ends the look back)
+  const followQs = new Set();
   for (let j = i - 1; j > 0; j--) {
     const x = L.rows[j];
     if (x.who !== "teacher") continue;
     const q = questionOfTurn(script, x.text);
     if ((x.seams ?? []).some((y) => y.right === "remediation") && /^misconception/.test(String(L.rows[j - 1]?.read ?? ""))) {
-      const q0 = lastQuestion(L, j, script);
+      const q0 = lastQuestion(L, j, script), qRem = questionOfTurn(script, x.text);
+      if ([...followQs].some((f) => f !== qRem)) return false;
       // (d38 RULING-A12 X1: that question's C1 turn only — never its follow-up card's, which is a question like any other)
       return !!q0 && (hearingsUpTo(L, j - 1, script)[q0.P] ?? 0) >= 4 && P === q0.P;
     }
-    if (q && q !== P) return false;
+    if (q && q !== P) {
+      if (!/:rem:\d+:then$/.test(String(x.cell?.part ?? ""))) return false;
+      followQs.add(q);
+    }
   }
   return false;
 }
@@ -262,7 +269,8 @@ export function c1ReturnAt(L, i, script, P) {
  *  remediation's follow-up card (the row's own cell is a follow-up part, `…:rem:<n>:then`, its first seam `verdict` or `key`), (b) says the
  *  back-to joint (one of the script's own joints.backTo forms), (c) ends on the question P, and (d) is the first such turn since the last
  *  remediation (a `remediation` seam) before it, which came after P was asked. This check's own reading. RULING-A12 X2: or (a') a `returnCard`
- *  turn whose turn before was that follow-up card's told answer with its check-in (toldWayBackShape); once a remediation, either shape. */
+ *  turn whose turn before was that follow-up card's told answer with its check-in (toldWayBackShape; X6c: a helpSpent seam may come before the
+ *  returnCard); once a remediation, either shape. */
 const backToForms = (script) => (script?.joints?.backTo ?? []).flatMap(formsOf).map(keyOf).filter(Boolean);
 const wayBackShape = (L, i, script, P) => {
   const r = L.rows[i];
@@ -275,7 +283,9 @@ const wayBackShape = (L, i, script, P) => {
  *  whose turn of hers before was that follow-up card's told answer with its check-in (a `key` seam and a `checkin` seam, the same part). */
 const toldWayBackShape = (L, i, script, P) => {
   const r = L.rows[i], part = String(r?.cell?.part ?? "");
-  if (r?.who !== "teacher" || questionOfTurn(script, r.text) !== P || !/:rem:\d+:then$/.test(part) || String((r.seams ?? [])[0]?.right ?? "") !== "returnCard") return false;
+  // (main's item X6c: or the help-spent line first, then the returnCard — her help at the follow-up card was spent)
+  const s0 = (r?.seams ?? []).map((x) => String(x.right ?? "")), rc = s0[0] === "helpSpent" ? s0[1] : s0[0];
+  if (r?.who !== "teacher" || questionOfTurn(script, r.text) !== P || !/:rem:\d+:then$/.test(part) || rc !== "returnCard") return false;
   let k = i - 1;
   while (k >= 0 && L.rows[k].who !== "teacher") k--;
   const t = L.rows[k], ts = (t?.seams ?? []).map((x) => String(x.right ?? ""));

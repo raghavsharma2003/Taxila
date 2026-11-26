@@ -114,6 +114,11 @@ WALKS.push({ name: "u1-park-right", topicId: TOPIC, seek: "card", skip: 1, tail:
 WALKS.push({ name: "u1-park-miss2", topicId: TOPIC, seek: "card", skip: 1, tail: 6, pizza: true, fresh: true, then: [L.park, "haan", "@key", "7", "7"] });
 WALKS.push({ name: "u1-park-miss2-four", topicId: TOPIC, seek: "card", skip: 1, tail: 6, pizza: true, then: [...FOUR.map((x) => L[x]), L.park, "haan", "@key", "7", "7"] });
 WALKS.push({ name: "u1-circ-park-miss2", topicId: TOPIC, seek: "card", skip: 2, tail: 6, P: AT.card.P, fresh: true, then: [L.park, "2/1", "@key", "7", "7"] });
+// (main's item X6, the fourth review's walks: the follow-up card taking a turn of help before it is answered right, then a miss or a give-up at
+// the original card (told); the follow-up told after five give-ups, the way back opening on the help-spent line)
+WALKS.push({ name: "circ4-fwg-right-miss", topicId: TOPIC, seek: "card", skip: 2, tail: 2, P: AT.card.P, then: [...FOUR.map((x) => L[x]), "2/1", L.give, "@key", "7"] });
+WALKS.push({ name: "pz4-fwg-right-give", topicId: TOPIC, seek: "card", skip: 1, tail: 2, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", L.give, "@key", L.give] });
+WALKS.push({ name: "pz4-fw-give", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", ...Array(5).fill(L.give), "haan"] });
 WALKS.push({ name: "pz4-fw-give4", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", "pata nahi", "pata nahi", "pata nahi", "pata nahi", "haan"] });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
@@ -619,4 +624,55 @@ test("X3 (RULING-A12, as main ruled on the stop): yourTurnNotThird at four or mo
     const rows = R[name], i = at0(name) + 13;
     assert.ok(seams(rows[i]).includes("key") && seams(rows[i]).at(-1) === "checkin", `${name}: told: ${norm(rows[i].text)}`);
   }
+});
+
+test("X6 (main's item, the fourth review): yourTurnNotThird's C1 clause only for the first C1 turn; remC1Before reads through the follow-up card's own turns; the way back may open on the help-spent line — each side", { timeout: 180_000 }, async () => {
+  const { unsaidWordings, c1ReturnAt, remC1Before } = await import("../evals/hybrid-side-by-side/d38a-predicates.mjs");
+  const R = run();
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  const at0 = (name) => start(R[name], WALKS.find((x) => x.name === name));
+  const yt = (rows, i) => PREDICATES.yourTurnNotThird({ rows }, rows[i], i, { script: SCRIPT });
+  const kw = (rows, i) => PREDICATES.keyWithWordingUnsaid({ rows }, rows[i], i, { script: SCRIPT });
+  const kb = (rows, i) => PREDICATES.keyBeforeHint({ rows }, rows[i], i, { script: SCRIPT });
+  const q5 = (rows, i) => [PREDICATES.questionFifthOnHerOwn({ rows }, rows[i], i, { script: SCRIPT }), PREDICATES.questionFiveTimes({ rows }, rows[i], i, { script: SCRIPT, o: { teacherTexts: rows.slice(0, i).filter((x) => x.who === "teacher").map((x) => x.text) } })];
+  const textOf = (path) => { const v = path.split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], SCRIPT); return v?.hi ?? v; };
+  /** A help turn in the first wording of the part still unsaid, ending on the invitation, put after the child's "7" at row k. */
+  const secondHelp = (rows, k, part = "c4-maths-ch05-t01-s1:e3:card") => {
+    const L0 = [...rows.slice(0, k), child("7")];
+    const w = unsaidWordings({ rows: L0 }, L0.length, SCRIPT, part)[0];
+    assert.ok(w, "a wording still unsaid");
+    return [...L0, { who: "teacher", text: `${textOf(w)} Ab tum batao.`, seams: [{ left: "start", right: "help" }, { left: "help", right: "yourTurn" }], cell: { part, column: "wrong" } }];
+  };
+  // (X6a: after a C1 turn given by a remediation started at four hearings — circ-loop-7, the way back, then "7" — a help turn in a new wording
+  // ending on an invitation is no first C1 turn: flags; after a C1 turn at a return — card-c-park — the same: flags)
+  { const rows = R["circ-loop-7"], i0 = at0("circ-loop-7"), back = i0 + 9;
+    assert.deepEqual(seams(rows[back]), ["verdict", "returnCard"], norm(rows[back].text));
+    const L2 = secondHelp(rows, back + 1);
+    assert.match(String(yt(L2, L2.length - 1)), /invitation/, "after a remediation's C1"); }
+  { const rows = R["card-c-park"], i0 = at0("card-c-park");
+    const k = rows.findIndex((x, n) => n > i0 && x.who === "teacher" && c1ReturnAt({ rows }, n, SCRIPT, AT.card.P));
+    assert.ok(k > 0, "C1's turn at a return");
+    const L2 = secondHelp(rows, k + 1);
+    assert.match(String(yt(L2, L2.length - 1)), /invitation/, "after C1 at a return"); }
+  // (X6b: the told answer after the remediation that was the question's C1 turn, the follow-up card having taken a turn of help, passes)
+  for (const [name, off] of [["circ4-fwg-right-miss", 13], ["pz4-fwg-right-give", 13]]) {
+    const rows = R[name], i = at0(name) + off;
+    assert.ok(seams(rows[i]).includes("key"), `${name}: ${norm(rows[i].text)}`);
+    assert.equal(seams(rows[i - 4])[0], "help", `${name}: the follow-up's help turn: ${norm(rows[i - 4].text)}`);
+    assert.deepEqual([kw(rows, i), kb(rows, i)], [null, null], name);
+    // (the other side: that turn at ANOTHER question's part, not the follow-up — the next card's — and the look back ends there, as before)
+    const other = rows.map((x, k) => (k === i - 4 ? { ...x, text: rows.find((y) => y.who === "teacher" && atQuestionOf(SCRIPT, y.text) === ".skills[0].explain[3].ask").text, cell: { part: "c4-maths-ch05-t01-s1:e4:card", column: "other" } } : x));
+    assert.equal(remC1Before({ rows: other }, i, SCRIPT, atQuestionOf(SCRIPT, rows[i - 2].text)), false, `${name}: another question between`);
+    assert.match(String(kw(other, i)), /never said/, `${name}: another question between`);
+  }
+  // (X6c: the way back opening on the help-spent line after the follow-up's told answer passes; with no follow-up closed before it, or as a
+  // second way back, it flags)
+  { const rows = R["pz4-fw-give"], i0 = at0("pz4-fw-give"), told = i0 + 15, back = i0 + 17;
+    assert.deepEqual(seams(rows[told]), ["key", "checkin"], norm(rows[told].text));
+    assert.deepEqual(seams(rows[back]), ["helpSpent", "returnCard"], norm(rows[back].text));
+    assert.deepEqual(q5(rows, back), [null, null]);
+    const open = rows.map((x, k) => (k === told ? { ...x, text: "Chhote-bade tukde gin kar naam nahi rakhte. Roti ka bada tukda: aadhe se kam, aadha, ya aadhe se zyada?", seams: [{ left: "start", right: "help" }, { left: "help", right: "card" }] } : x));
+    assert.ok(q5(open, back).every((x) => /heard a \d+th time/.test(String(x))), "no follow-up closed before it");
+    const again = [...rows.slice(0, back + 1), child("pata nahi"), { ...rows[back] }];
+    assert.ok(q5(again, again.length - 1).every((x) => /heard a \d+th time/.test(String(x))), "a second way back"); }
 });
