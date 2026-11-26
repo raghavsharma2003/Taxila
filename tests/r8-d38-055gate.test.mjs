@@ -91,6 +91,9 @@ WALKS.push({ name: "pizza-w1-low", topicId: TOPIC, seek: "card", skip: 1, tail: 
 // first hearing. The follow-up card is a question like any other: never told with a wording of its part unsaid and no C1 turn at IT)
 WALKS.push({ name: "pz4-fw-kam", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", "aadhe se kam", "aadhe se kam", "aadhe se kam"] });
 WALKS.push({ name: "pzlow-fw-kam", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, fresh: true, then: ["haan", "aadhe se kam", "aadhe se kam", "aadhe se kam"] });
+// (d38 RULING-A12 X2: the way back after a TOLD follow-up card — four hearings, "haan" (the remediation), four give-ups at the follow-up card
+// until she tells it, then "haan" at its check-in: the pizza card comes back as built)
+WALKS.push({ name: "pz4-fw-give4", topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: [...FOUR.map((x) => L[x]), "haan", "pata nahi", "pata nahi", "pata nahi", "pata nahi", "haan"] });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
 // OLDER: none left. (RULING-A8 Q1 took off step-b-clar 20 stepToldEarly: the right answer at an asked step is no longer read as nothing
@@ -507,4 +510,23 @@ test("X1 (RULING-A12): remC1Before holds for the ORIGINAL question only — a re
     assert.ok(seams(rows[i]).includes("key"), norm(rows[i].text));
     assert.equal(remC1Before({ rows }, i, SCRIPT, PIZZA), true);
     assert.equal(kw(rows, i), null); }
+});
+
+test("X2 (RULING-A12): the way back after a TOLD follow-up card — a returnCard turn whose turn before was the follow-up's told answer and its check-in — passes questionFiveTimes and questionFifthOnHerOwn; each other side flags", { timeout: 180_000 }, () => {
+  const R = run();
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  const q5 = (rows, i) => [PREDICATES.questionFifthOnHerOwn({ rows }, rows[i], i, { script: SCRIPT }), PREDICATES.questionFiveTimes({ rows }, rows[i], i, { script: SCRIPT, o: { teacherTexts: rows.slice(0, i).filter((x) => x.who === "teacher").map((x) => x.text) } })];
+  const rows = R["pz4-fw-give4"], i0 = start(rows, WALKS.find((x) => x.name === "pz4-fw-give4")), told = i0 + 15, back = i0 + 17;
+  assert.ok(seams(rows[i0 + 7]).includes("remediation"), norm(rows[i0 + 7].text));
+  assert.deepEqual(seams(rows[told]), ["key", "checkin"], `the follow-up told: ${norm(rows[told].text)}`);
+  assert.equal(rows[back - 1].text, "haan");
+  assert.equal(seams(rows[back])[0], "returnCard", norm(rows[back].text));
+  assert.equal(atQuestionOf(SCRIPT, rows[back].text), PIZZA, `the pizza question as built: ${norm(rows[back].text)}`);
+  assert.deepEqual(q5(rows, back), [null, null], "the way back passes");
+  // (the same turn with no follow-up card closed in her turn before — that turn help ending on the follow-up card — flags)
+  const open = rows.map((x, k) => (k === told ? { ...x, text: "Chhote-bade tukde gin kar naam nahi rakhte. Roti ka bada tukda: aadhe se kam, aadha, ya aadhe se zyada?", seams: [{ left: "start", right: "help" }, { left: "help", right: "card" }] } : x));
+  assert.ok(q5(open, back).every((x) => /heard a \d+th time/.test(String(x))), "no follow-up closed before it: flags");
+  // (a second way back for one remediation — the same turn again after another "haan" — flags)
+  const again = [...rows.slice(0, back + 1), child("haan"), { ...rows[back] }];
+  assert.ok(q5(again, again.length - 1).every((x) => /heard a \d+th time/.test(String(x))), "a second way back flags");
 });

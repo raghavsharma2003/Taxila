@@ -261,7 +261,8 @@ export function c1ReturnAt(L, i, script, P) {
  *  fifth (or later) hearing on her own that is allowed once for each remediation. Row i (a) opens on the verdict or told answer of a
  *  remediation's follow-up card (the row's own cell is a follow-up part, `…:rem:<n>:then`, its first seam `verdict` or `key`), (b) says the
  *  back-to joint (one of the script's own joints.backTo forms), (c) ends on the question P, and (d) is the first such turn since the last
- *  remediation (a `remediation` seam) before it, which came after P was asked. This check's own reading. */
+ *  remediation (a `remediation` seam) before it, which came after P was asked. This check's own reading. RULING-A12 X2: or (a') a `returnCard`
+ *  turn whose turn before was that follow-up card's told answer with its check-in (toldWayBackShape); once a remediation, either shape. */
 const backToForms = (script) => (script?.joints?.backTo ?? []).flatMap(formsOf).map(keyOf).filter(Boolean);
 const wayBackShape = (L, i, script, P) => {
   const r = L.rows[i];
@@ -270,12 +271,23 @@ const wayBackShape = (L, i, script, P) => {
   const own = sentences(r.text).map(keyOf), forms = backToForms(script);
   return own.some((t) => forms.includes(t));
 };
+/** d38 RULING-A12 X2: the way back after a TOLD follow-up card — row i a `returnCard` turn (its first seam) at the follow-up's part, ending on P,
+ *  whose turn of hers before was that follow-up card's told answer with its check-in (a `key` seam and a `checkin` seam, the same part). */
+const toldWayBackShape = (L, i, script, P) => {
+  const r = L.rows[i], part = String(r?.cell?.part ?? "");
+  if (r?.who !== "teacher" || questionOfTurn(script, r.text) !== P || !/:rem:\d+:then$/.test(part) || String((r.seams ?? [])[0]?.right ?? "") !== "returnCard") return false;
+  let k = i - 1;
+  while (k >= 0 && L.rows[k].who !== "teacher") k--;
+  const t = L.rows[k], ts = (t?.seams ?? []).map((x) => String(x.right ?? ""));
+  return k >= 0 && String(t.cell?.part ?? "") === part && ts.includes("key") && ts.includes("checkin");
+};
+const anyWayBack = (L, i, script, P) => wayBackShape(L, i, script, P) || toldWayBackShape(L, i, script, P);
 export function wayBackAt(L, i, script, P) {
-  if (!script || !P || !wayBackShape(L, i, script, P)) return false;
+  if (!script || !P || !anyWayBack(L, i, script, P)) return false;
   for (let j = i - 1; j > 0; j--) {
     const x = L.rows[j];
     if (x.who !== "teacher") continue;
-    if (wayBackShape(L, j, script, P)) return false;
+    if (anyWayBack(L, j, script, P)) return false;
     if ((x.seams ?? []).some((y) => y.right === "remediation")) return (lastQuestion(L, j, script)?.P ?? null) === P;
   }
   return false;
