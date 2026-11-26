@@ -303,14 +303,18 @@ describe("Small: a second miss, five misses", () => {
     const f = flagged("offtopic", "c5t02", "keyAfterFive");
     assert.ok(f.has(20)); assert.ok(!f.has(18));
   });
-  test("pickHelp: a hint on a card answered wrong five times is its key, whatever the ladder still has; four times, a rung", async () => {
+  test("pickHelp: a hint on a card answered wrong five times is C1 once (055), then its key whatever the ladder still has; four times, a rung", async () => {
     const { pickHelp, KEY_AFTER_MISSES } = await import("../server/director/help.js");
     const script = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${TOPIC.c5t02}.json`), "utf8"));
     const part = `${script.skills[0].skillId}:e1:card`;
     const four = pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES - 1 });
     assert.ok(four, "the card has a ladder");
     assert.equal(four.card, "keep"); assert.ok(four.rung);
-    const five = pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES });
+    // (d38 re-pin, to-brain 055 C1 as main ruled in RULING-A2 A(i): at the fifth with a wording unsaid, the first unsaid wording once (C1, the
+    // card kept); once a C1 turn was given at the card (noC1), the key whatever the ladder still has. Was: the key at once)
+    const fiveC1 = pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES });
+    assert.equal(fiveC1.card, "keep"); assert.ok(fiveC1.c1); assert.ok(fiveC1.rung?.text); assert.equal(fiveC1.key, null);
+    const five = pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES, noC1: true });
     assert.equal(five.card, "close"); assert.equal(five.rung, null); assert.ok(five.key?.text);
     assert.equal(KEY_AFTER_MISSES, 5);
   });
