@@ -47,16 +47,24 @@ for (const [w, a] of Object.entries(AT)) for (const k of ["give", "clar"]) WALKS
 // (and the return's help — C1 at a return, after the AI line and its reply — then the right answer)
 WALKS.push({ name: "step-q1-ret", topicId: TOPIC, seek: "step", skip: 0, tail: 3, then: [...FOUR, "ai", "reply", "right"].map((x) => L[x]) });
 
+// (d38 RULING-A8 Q2: C1 reaches every path where the cap would tell with nothing offered — the c-park walk's continuation after C1's turn at
+// the step (a miss gets the told step; the right answer the confirm); and main's ruling on Q2's stop: the pure wait at four hearings, at the
+// card and the step — wait one as built, then C1's turn, then the told answer or step at the next bare yes)
+for (const [k, last] of [["miss", "miss"], ["right", "right"]]) WALKS.push({ name: `step-q2-park-${k}`, topicId: TOPIC, seek: "step", skip: 0, tail: 3, then: [...FOUR, "park", "park", "yes", last].map((x) => L[x]) });
+for (const [w, a] of Object.entries(AT)) WALKS.push({ name: `${w}-q2-wait`, topicId: TOPIC, seek: a.seek, skip: a.skip, tail: 3, then: [...FOUR, "yes", "yes", "yes"].map((x) => L[x]) });
+
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
-// OLDER: the same turn, flagged the same, on the same driven walk at ed292d10b (release 63, before the cap) — the told step at a wait whose
-// lines hold side-topics (keyWithWordingUnsaid's wait reading). (RULING-A8 Q1 took off step-b-clar 20 stepToldEarly: the right answer at an
-// asked step is no longer read as nothing after help)
-const OLDER = ["step-c-park 22 keyWithWordingUnsaid"];
+// OLDER: none left. (RULING-A8 Q1 took off step-b-clar 20 stepToldEarly: the right answer at an asked step is no longer read as nothing
+// after help; Q2 took off step-c-park 22 keyWithWordingUnsaid: that turn is C1's now)
+const OLDER = [];
+// Q4: C1's turn at a wait at the cap, which waitSecondNotReask's old ladder reads as wait two (its reask would be the fifth hearing) — main's
+// ruling on Q2's stop widens that reading (RULING-A8 Q4, the next commit)
+const Q4 = ["step-c-park 22 waitSecondNotReask", "step-q2-park-miss 22 waitSecondNotReask", "step-q2-park-right 22 waitSecondNotReask", "card-q2-wait 16 waitSecondNotReask", "step-q2-wait 20 waitSecondNotReask"];
 // STOPPED: clashes held for main's ruling — a turn as ruled that a gated predicate no ruling names flags (builder P stopped at each):
 // the told answer at the wait's second turn after C1 (waitSecondNotReask), the AI line then the told answer and its check-in
 // (aiAskAnswered). (RULING-A8 Q3 took off step-c-aireply 22 goOnJointTwice: the told step after the return turn's joint says none)
 const STOPPED = ["card-a-yes 16 waitSecondNotReask", "card-a-try 18 waitSecondNotReask", "card-c-aireply 20 aiAskAnswered"];
-const EXPECTED = new Set([...OLDER, ...STOPPED]);
+const EXPECTED = new Set([...OLDER, ...STOPPED, ...Q4]);
 
 let RUN = null;
 function run() {
@@ -213,4 +221,26 @@ test("Q1 (RULING-A8): after any help turn at an asked step the child's next line
     assert.equal(rows[i].text, "pata nahi");
     assert.ok(rows[i + 1].stepAnswer?.told, norm(rows[i + 1].text));
     assert.doesNotMatch(rows[i + 1].text, /^Nahi, yeh nahi hai/, norm(rows[i + 1].text)); }
+});
+
+test("Q2 (RULING-A8): where the cap would tell with no C1 turn given and a wording unsaid, the turn is C1's — after a park's answer-first line and a bare yes, and in a pure wait at four hearings; then the told step or answer, or the confirm", { timeout: 180_000 }, () => {
+  const R = run();
+  const at0 = (name) => start(R[name], WALKS.find((x) => x.name === name));
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  const isC1 = (r) => seams(r).includes("help") && seams(r).at(-1) === "yourTurn" && !r.stepAnswer?.told && !seams(r).includes("key");
+  for (const name of ["step-c-park", "step-q2-park-miss", "step-q2-park-right"]) {
+    const rows = R[name], i = at0(name) + 11;
+    assert.equal(rows[i - 1].text, "haan", name);
+    assert.ok(isC1(rows[i]), `${name}: C1's turn: ${norm(rows[i].text)}`);
+  }
+  { const rows = R["step-q2-park-miss"], i = at0("step-q2-park-miss") + 13;
+    assert.equal(rows[i - 1].read, "incorrect"); assert.ok(rows[i].stepAnswer?.told && seams(rows[i]).includes("stepMiss"), norm(rows[i].text)); }
+  { const rows = R["step-q2-park-right"], i = at0("step-q2-park-right") + 13;
+    assert.equal(rows[i - 1].read, "correct"); assert.ok(seams(rows[i]).includes("stepConfirm") && !rows[i].stepAnswer?.told, norm(rows[i].text)); }
+  for (const name of ["card-q2-wait", "step-q2-wait"]) {
+    const rows = R[name], i = at0(name) + 7;
+    assert.ok(!isC1(rows[i]) && !rows[i].stepAnswer?.told && !seams(rows[i]).includes("key"), `${name}: wait one as built: ${norm(rows[i].text)}`);
+    assert.ok(isC1(rows[i + 2]), `${name}: C1's turn: ${norm(rows[i + 2].text)}`);
+    assert.ok(rows[i + 4].stepAnswer?.told || seams(rows[i + 4]).includes("key"), `${name}: then told: ${norm(rows[i + 4].text)}`);
+  }
 });

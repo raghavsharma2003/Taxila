@@ -72,14 +72,18 @@ describe("C3 at a card (c4-maths-ch05-t01, its second card): a clarify after fou
   test("(what she says, for the notes)", () => { for (const t of w.her) console.log(`[055c3 card] ${t.text}`); });
 });
 
-describe("C3 and C4 at an asked step: the wait's second turn at four hearings is the cap", async () => {
-  const w = await walk("c4-maths-ch05-t01", "step", 0, ["again", "again", "again", "haan", "haan"]);
-  const [, , , a3, w1, w2] = w.her;
-  test("wait one says no question (here the invitation: her two turns before were at it); wait two, whose re-ask would be the fifth hearing, tells the step (the cap)", () => {
+describe("C3 and C4 at an asked step: the wait at four hearings is the cap's ladder — C1's turn, then the told step", async () => {
+  const w = await walk("c4-maths-ch05-t01", "step", 0, ["again", "again", "again", "haan", "haan", "haan"]);
+  const [, , , a3, w1, w2, w3t] = w.her;
+  // (re-pinned by d38 RULING-A8 Q2 and main's ruling on its stop: was "wait two, whose re-ask would be the fifth hearing, tells the step (the
+  // cap)". At four hearings the wait's ladder is two turns: where no C1 turn was given and a wording is unsaid, C1's turn (that wording as
+  // help, ending on an invitation); at the next bare yes the told step. Never told with no help offered at that question)
+  test("wait one says no question (here the invitation: her two turns before were at it); wait two, whose re-ask would be the fifth hearing, is C1's turn; the next bare yes gets the told step (the cap)", () => {
     assert.equal(atQuestionOf(w.script, a3.text), w.P, a3.text);
     assert.ok(endsOnYourTurn(w.script, w1.text), w1.text);
-    assert.ok(w2.heardCap && w2.stepAnswer?.told, w2.text); assert.notEqual(atQuestionOf(w.script, w2.text), w.P, w2.text);
-    assert.deepEqual(flagsOf(w, "questionFifthOnHerOwn"), []);
+    assert.ok(w2.seams.some((x) => x.right === "help") && endsOnYourTurn(w.script, w2.text) && !w2.stepAnswer?.told, w2.text); assert.notEqual(atQuestionOf(w.script, w2.text), w.P, w2.text);
+    assert.ok(w3t.heardCap && w3t.stepAnswer?.told, w3t.text); assert.notEqual(atQuestionOf(w.script, w3t.text), w.P, w3t.text);
+    assert.deepEqual(flagsOf(w, "questionFifthOnHerOwn"), []); assert.deepEqual(flagsOf(w, "keyWithWordingUnsaid"), []);
   });
   const w3 = await walk("c4-maths-ch05-t01", "step", 0, ["again", "again", "haan", "haan"]);
   test("with three hearings, wait two is as built (help ending on the question, the fourth hearing — its re-ask was just heard: RULING-B3), the step not told", () => {

@@ -3894,7 +3894,12 @@ function heardCap(prev, input, heard, said) {
   if (!P || P === "?short" || /teachback/.test(P) || ((heard[P] ?? 0) < 4 && !input.waitCap)) return null;
   // (to-brain 055 C4, main's ruling C of d38: the wait is outside C1 — a wait turn at the cap (wait three at four hearings, wait four) is the
   // cap as order 054 built it, whatever help is left: RULING-B5 item 2. A child who only says "haan" is not asking for another wording)
-  const waitOnly = !!(input.waitCap || input.waitHelp);
+  // (d38 RULING-A8 Q2: and only there — the one told answer with a wording unsaid and no C1 turn before is wait four of a wait that itself said
+  // help at wait three (wait four: the wait's own count, kept over a try-first — a wait three at four hearings is itself C1's turn, which
+  // sets the question's mark). A wait whose turns said no help — a wait two counted
+  // after a park's "Pehle is sawaal ka jawab do.", a wait at a question already heard four times — reaches C1 like any other path: a child
+  // is never told with no help ever offered at that question)
+  const waitOnly = !!input.waitCap;
   if (liveId && String(liveId).startsWith("script:") && !stepQ) {
     const part = cardPartOf(input.kit, { itemId: liveId });
     if (!part) return null;
