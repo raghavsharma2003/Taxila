@@ -3063,6 +3063,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const keyRaw = state.lastMove?.gave?.key != null ? String(state.lastMove.gave.key) : null;
     const whyKey = gaveA && !yesNo(gaveA) && gw && (whyNamesKey(gaveA, state.lastMove?.gave?.why) || (!!keyRaw && !yesNo(keyRaw) && whyNamesKey(keyRaw, state.lastMove?.gave?.why))) ? (() => { const w = joinable(spokenMarks(String(state.lastMove.gave.why), lang)).replace(/[.!?।]+$/, ""); return w ? `${w.charAt(0).toUpperCase()}${w.slice(1)}.` : null; })() : null;
     if (whyKey) guard.whyKey = whyKey;
+    // (d38 RULING-A8 Q6, old-pizza-four-give 12 at ed292d10b too: a yes-or-no key said as its why alone at a give-up, a clarify or a Hindi
+    // request — helpYn, the told answer — is recorded as the key, as at every other card (a key said as its why alone: seams.js keyWhy),
+    // never as a verdict: no verdict was given)
+    else if (helpYn) guard.whyKey = helpYn;
     const ynSentence = ynFact ?? helpYn ?? whyKey ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
     const gaveS = gaveA ? ynSentence ?? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|is sawaal ka|woh wala|the last|this question|that one)/i.test(x);

@@ -56,6 +56,12 @@ for (const [k, last] of [["miss", "miss"], ["right", "right"]]) WALKS.push({ nam
 WALKS.push({ name: "card-q2-b3", topicId: TOPIC, seek: "card", skip: 2, tail: 3, then: ["give", "give", "yes", "yes", "yes"].map((x) => L[x]) });
 for (const [w, a] of Object.entries(AT)) WALKS.push({ name: `${w}-q2-wait`, topicId: TOPIC, seek: a.seek, skip: a.skip, tail: 3, then: [...FOUR, "yes", "yes", "yes"].map((x) => L[x]) });
 
+// (d38 RULING-A8 Q6: the pizza card, skills[0].explain[1], a yes-or-no card (key "No"; a bare "haan" there is a wrong ANSWER): four hearings
+// then a give-up; C1 then a give-up; C1 then "No", the right answer; C1 then "haan", read as the wrong answer it is)
+const PIZZA = ".skills[0].explain[1].ask";
+for (const [k, lines] of [["four-give", [...FOUR, "give"]], ["c1-give", [...FOUR, "miss", "give"]], ["c1-right", [...FOUR, "miss", "right"]], ["c1-yes", [...FOUR, "miss", "yes"]]])
+  WALKS.push({ name: `pizza-q6-${k}`, topicId: TOPIC, seek: "card", skip: 1, tail: 3, pizza: true, then: lines.map((x) => L[x]) });
+
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
 // OLDER: none left. (RULING-A8 Q1 took off step-b-clar 20 stepToldEarly: the right answer at an asked step is no longer read as nothing
 // after help; Q2 took off step-c-park 22 keyWithWordingUnsaid: that turn is C1's now)
@@ -66,7 +72,10 @@ const OLDER = [];
 // (RULING-A8 Q4 took off card-a-yes 16 and card-a-try 18 waitSecondNotReask, and the five C1-at-a-wait rows Q2 made: the wait's ladder at
 // the cap, C1's turn where no help was said at that question, then the told answer or step)
 // (RULING-A8 Q5 took off card-c-aireply 20 aiAskAnswered: the told answer's check-in is not the AI line's own question)
-const STOPPED = [];
+// STOPPED (builder Q, held for main's ruling): at the pizza card after C1's turn, "haan" — a wrong answer, read as a misconception — gets the
+// misconception's remediation (not the told answer), and after its follow-up card answered right her return to the pizza card is the
+// verdict and the short ask "Ab phir se socho, jawab kya hoga?" (C3 at a question heard four times), which shortAskKind flags
+const STOPPED = ["pizza-q6-c1-yes 16 shortAskKind"];
 const EXPECTED = new Set([...OLDER, ...STOPPED]);
 
 let RUN = null;
@@ -87,7 +96,7 @@ function run() {
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 /** The row of the case's first line: the child's line after the fourth hearing's run began (the first "phir se bolo" after the question). */
 function start(rows, w) {
-  for (let i = 1; i < rows.length; i++) if (rows[i].who === "child" && rows[i].text === w.then[0] && atQuestionOf(SCRIPT, rows[i - 1].text) === AT[w.name.split("-")[0]].P) return i;
+  for (let i = 1; i < rows.length; i++) if (rows[i].who === "child" && rows[i].text === w.then[0] && atQuestionOf(SCRIPT, rows[i - 1].text) === (w.pizza ? PIZZA : AT[w.name.split("-")[0]].P)) return i;
   return -1;
 }
 
@@ -99,10 +108,10 @@ test("055 gate: the driven walks reach the cap as each case says", { timeout: 18
     // (the case's lines were said in order, each answered by a turn of hers)
     w.then.forEach((t, k) => { if (t !== "@key") assert.equal(rows[i0 + 2 * k]?.text, t, `${w.name}: line ${k}`); assert.equal(rows[i0 + 2 * k + 1]?.who, "teacher", `${w.name}: her turn after line ${k}`); });
     // (four hearings before the case's fourth line: the question, then three times at the child's request, each her turn at the question)
-    const P = AT[w.name.split("-")[0]].P;
+    const P = w.pizza ? PIZZA : AT[w.name.split("-")[0]].P;
     if (!w.fresh && !w.name.endsWith("-b3")) for (let k = 0; k < 3; k++) assert.equal(atQuestionOf(SCRIPT, rows[i0 + 2 * k + 1].text), P, `${w.name}: hearing ${k + 2}`);
     // (a: the fourth line is a miss and her turn is C1's — help ending on an invitation, the question not said)
-    if (w.name.split("-")[1] === "a") {
+    if (w.name.split("-")[1] === "a" || /^pizza-q6-c1/.test(w.name)) {
       const c1 = rows[i0 + 7];
       assert.ok((c1.seams ?? []).some((x) => x.right === "help") && (c1.seams ?? []).at(-1)?.right === "yourTurn", `${w.name}: C1's turn: ${norm(c1.text)}`);
     }
@@ -307,4 +316,19 @@ test("Q5 (RULING-A8): aiAskAnswered does not read the told answer's check-in aft
   const noCk = { ...rows[i], text: "Main AI hoon, meri koi pasand nahi hoti. Circle 3 barabar tukdon mein bata hai aur ab 2 mein rang hai, yaani 2/3. Tumhe Virat ke baare mein kya lagta hai?", seams: [{ left: "start", right: "aiLine" }, { left: "aiLine", right: "key" }, { left: "key", right: "aiQuestion" }], pageParts: [{ part: "aside", from: 0 }] };
   const L3 = [...rows.slice(0, i), noCk, ...rows.slice(i + 1)];
   assert.match(String(PREDICATES.aiAskAnswered({ rows: L3 }, L3[i + 2], i + 2, ctxAt(L3, i + 2))), /not answered/);
+});
+
+test("Q6 (RULING-A8): the told answer at a give-up on a yes-or-no card is recorded as the told answer (its key seam), as at every other card", { timeout: 180_000 }, () => {
+  const R = run();
+  const at0 = (name) => start(R[name], WALKS.find((x) => x.name === name));
+  const seams = (r) => (r.seams ?? []).map((x) => x.right);
+  { const rows = R["pizza-q6-c1-give"], i = at0("pizza-q6-c1-give") + 9;
+    assert.equal(rows[i - 1].text, "pata nahi");
+    assert.deepEqual(seams(rows[i]), ["key", "checkin"], norm(rows[i].text));
+    assert.ok(!/^(?:Haan|Nahi|Sahi)\b/.test(rows[i].text), "no verdict word to a give-up"); }
+  { const rows = R["pizza-q6-c1-right"], i = at0("pizza-q6-c1-right") + 8;
+    assert.equal(rows[i].read, "correct"); assert.equal(seams(rows[i + 1])[0], "verdict", norm(rows[i + 1].text)); }
+  { const rows = R["pizza-q6-c1-yes"], i = at0("pizza-q6-c1-yes") + 8;
+    assert.equal(rows[i].text, "haan"); assert.ok(["incorrect", "misconception"].includes(String(rows[i].read).split(" ")[0]), `"haan" read as ${rows[i].read}`);
+    assert.equal(seams(rows[i + 1])[0], "missVerdict", norm(rows[i + 1].text)); }
 });
