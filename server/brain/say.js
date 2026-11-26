@@ -1643,6 +1643,9 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     ynHelpKey: out.guard?.ynHelpKey ?? null,
     // (to-brain 054 A(i) D2: the turn after her reply's point turn takes no second go-on joint)
     noReplyJoint: !!state?.lastMove?.noReplyJoint,
+    // (d38 RULING-A9 R2: no back-to-work joint twice running, wherever the walk would choose one — her turn before said a go-on joint (one of
+    // the script's afterAside, afterAiLine, afterPark or afterKeyGoOn forms, read from her turn as said): her reply says none this turn)
+    goOnBefore: !!herPrev && ["afterAside", "afterAiLine", "afterPark", "afterKeyGoOn"].some((k) => (jointOf(kit, k, lang) ?? []).some((f) => { const t = String(f).replace(/\s+/g, " ").trim().toLowerCase(); return t.length > 8 && herPrev.replace(/\s+/g, " ").includes(t); })),
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out.guard?.leadJoints?.length ? { ...out, guard: { ...out.guard, jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } } : out;

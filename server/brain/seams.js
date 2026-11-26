@@ -390,7 +390,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // (to-brain 054 A(i) D2, with main's second ruling fix 3: on the turn after her reply's point turn, her line to the side-topic said there leads
     // into the card with no second go-on joint — "back to work" is never said in two turns running. The seam's left is that reply said again,
     // replyAgain: the table has no row for it, so it takes no joint)
-    if (info.noReplyJoint && ["asideReply", "aiReply", "park", "aside", "aiQuestion", "aiLine"].includes(prevKind) && i > 0) prevKind = recLeft = "replyAgain";
+    // (d38 RULING-A9 R2: and wherever her turn before said a go-on joint — never "back to work" twice running)
+    if ((info.noReplyJoint || info.goOnBefore) && ["asideReply", "aiReply", "park", "aside", "aiQuestion", "aiLine"].includes(prevKind) && i > 0) prevKind = recLeft = "replyAgain";
     // (no joint between a point and its own card, a verdict and its own why: those are not in the table)
     // (help's joint is said by help, not by this table: its seam is recorded, with its form, below)
     let j = HELP_JOINT_KINDS.has(k) ? null : seamJoint(prevKind, k);
