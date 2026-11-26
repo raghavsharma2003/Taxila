@@ -65,6 +65,9 @@ export const SEAM_TABLE = [
   // (dc-r8-director29 Brain 045 P6, c4 offtopic 46: her reply into the next skill's bridge — the joint back before it, as before a point)
   ["asideReply", "bridge", "afterAside"], ["aiLine", "bridge", "afterAiLine"], ["aiReply", "bridge", "afterAiLine"],
   ["aiReply", "point", "afterAiLine"], ["aiReply", "card", "afterAiLine"], ["aiReply", "returnCard", "backTo"], ["aiReply", "remediation", "afterAiLine"],
+  // (main's ruling A3 item 2 of d38, to-brain 055 C3 at a return: her reply or park into the told answer at a card — the key with its reason,
+  // recorded as a verdict — keeps its back-to-work joint, as into the card it would have asked)
+  ["asideReply", "verdict", "afterAside"], ["aiReply", "verdict", "afterAiLine"], ["aside", "verdict", "afterAside"], ["park", "verdict", "afterPark"],
   // (a miss verdict into its remediation)
   ["missVerdict", "remediation", "beforeRemediation"],
   // (a return to an earlier card: after a then-card's verdict in the same turn, or opening a turn after another unit)
