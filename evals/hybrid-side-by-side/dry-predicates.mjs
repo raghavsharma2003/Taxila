@@ -675,7 +675,8 @@ const skillById = (ctx, id) => (ctx.script?.skills ?? []).find((s) => s.skillId 
 const liveBeatOf = (r) => { const b = String(r.beat ?? ""); const m = /^s\d+:(?:explain:(e\d+)|worked:(worked:(?:problem|step\d+))|remediation:(rem:.+))$/.exec(b); return m ? m[1] ?? m[2] ?? m[3] : null; };
 const SAYS_CLARIFY_C = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu;
 const FIGURE = /(?<![\p{L}])(?:square|rectangle|triangle|circle|hexagon|varg|aayat|tribhuj|vritt|patti|pattiyaan|rekha|line|bar|pizza|roti|cake|board|chitra|shape|aakaar|kinaara|bhuja|bhujayein|dekho|look)(?![\p{L}])/iu;
-const remAll = (ctx) => (ctx.o.remAll ??= (ctx.script?.skills ?? []).flatMap((sk) => (sk.remediation ?? []).flatMap((m) => [m.say, m.simpler]
+// (RULING-A6 E2, round d38: a remediation's own wordings are its say, its sayAlt and its simpler — the ladder as built since director35)
+const remAll = (ctx) => (ctx.o.remAll ??= (ctx.script?.skills ?? []).flatMap((sk) => (sk.remediation ?? []).flatMap((m) => [m.say, m.sayAlt, m.simpler]
   .flatMap((v) => (typeof v === "string" ? [v] : [v?.hi, v?.en])).filter(Boolean).flatMap(sentencesOf).map(key).filter((k) => k.split(" ").length >= 5)
   .map((k) => ({ k, skill: sk.skillId, targets: m.targets })))));
 const remSentences = (ctx) => (ctx.o.rem ??= remAll(ctx).filter((x) => !nonRemText(ctx).includes(` ${x.k} `)));
