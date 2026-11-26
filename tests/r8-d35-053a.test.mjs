@@ -229,8 +229,15 @@ describe("B3 after main's R1 and R2: the cap is on her own repeats", async () =>
       { event: "turn", kit, text: "haan", cls: { confidence: 0.9, flags: {}, outcome: "no_evidence" }, now: (stepS.turn + 1) * 20_000 }).state.lastMove ?? {};
     // (d38 re-pin, to-brain 055 C3 and C4: wait two's re-ask that would be the fifth hearing is what wait three is — at four hearings the cap,
     // the step told. Was: wait two at four hearings said the re-ask, uncapped. With three hearings, wait two is the re-ask as built)
-    const w2 = at(1), w3 = at(2);
-    assert.equal(w2.heardCap, P); assert.ok(w2.stepFrom != null); assert.equal(w2.waitN, 2);
+    // (d38 re-pin again, RULING-A10 T2 — RULING-A8 Q2 as narrowed: a pure wait at four hearings with no help said at the step and a wording
+    // unsaid. Was: wait two the cap, the step told (heardCap, stepFrom), and wait three the same. Now: wait two is C1's turn — the step's
+    // unsaid wording as help ending on the invitation, the step not told — and wait three, the next bare haan, the told step)
+    const s2 = step({ ...stepS, qHeard: { [P]: 3 }, waitQ: { P, n: 1 }, recent: [...(stepS.recent ?? []), { who: "teacher", text: q }] },
+      { event: "turn", kit, text: "haan", cls: { confidence: 0.9, flags: {}, outcome: "no_evidence" }, now: (stepS.turn + 1) * 20_000 }).state;
+    const w2 = s2.lastMove ?? {};
+    assert.ok(w2.help && w2.yourTurn, JSON.stringify(w2.help)); assert.equal(w2.stepFrom, undefined); assert.equal(w2.waitN, 2);
+    const w3 = step({ ...s2, recent: [...(s2.recent ?? []), { who: "teacher", text: "Ab tum batao." }] },
+      { event: "turn", kit, text: "haan", cls: { confidence: 0.9, flags: {}, outcome: "no_evidence" }, now: (s2.turn + 1) * 20_000 }).state.lastMove ?? {};
     assert.equal(w3.heardCap, P); assert.ok(w3.stepFrom != null); assert.equal(w3.waitN, 3);
     const w2three = step({ ...stepS, qHeard: { [P]: 2 }, waitQ: { P, n: 1 }, recent: [...(stepS.recent ?? []), { who: "teacher", text: q }] },
       { event: "turn", kit, text: "haan", cls: { confidence: 0.9, flags: {}, outcome: "no_evidence" }, now: (stepS.turn + 1) * 20_000 }).state.lastMove ?? {};
