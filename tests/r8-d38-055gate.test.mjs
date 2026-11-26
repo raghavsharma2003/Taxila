@@ -65,7 +65,8 @@ const OLDER = [];
 // (aiAskAnswered). (RULING-A8 Q3 took off step-c-aireply 22 goOnJointTwice: the told step after the return turn's joint says none)
 // (RULING-A8 Q4 took off card-a-yes 16 and card-a-try 18 waitSecondNotReask, and the five C1-at-a-wait rows Q2 made: the wait's ladder at
 // the cap, C1's turn where no help was said at that question, then the told answer or step)
-const STOPPED = ["card-c-aireply 20 aiAskAnswered"];
+// (RULING-A8 Q5 took off card-c-aireply 20 aiAskAnswered: the told answer's check-in is not the AI line's own question)
+const STOPPED = [];
 const EXPECTED = new Set([...OLDER, ...STOPPED]);
 
 let RUN = null;
@@ -290,4 +291,20 @@ test("Q4 (RULING-A8, as main restated it on Q2's stop and on 054b): the wait's l
   // (054b's shape at four hearings: two give-ups helped, then the wait tells the key at wait three — keyWithWordingUnsaid reads 0)
   { const rows = R["card-q2-b3"], i = at0("card-q2-b3") + 9;
     assert.equal(kw(rows, i), null, norm(rows[i].text)); }
+});
+
+test("Q5 (RULING-A8): aiAskAnswered does not read the told answer's check-in after the AI line as the AI line's own question — an AI line that asks its own question, unanswered, still flags", { timeout: 180_000 }, () => {
+  const R = run();
+  const rows = R["card-c-aireply"], i = start(rows, WALKS.find((x) => x.name === "card-c-aireply")) + 11;
+  const ctxAt = (L, k) => ({ script: SCRIPT, prevT: L[k - 2], prevRead: L[k - 1].read, prevChild: L[k - 1].text });
+  assert.deepEqual((rows[i].seams ?? []).map((x) => x.right), ["aiLine", "key", "checkin"], norm(rows[i].text));
+  assert.equal(PREDICATES.aiAskAnswered({ rows }, rows[i + 2], i + 2, ctxAt(rows, i + 2)), null);
+  // (the other side: her AI line asking its own question, then the next point and card with no reply to the child's answer — flags)
+  const own = { ...rows[i], text: "Main AI hoon, meri koi pasand nahi hoti. Tumhe Virat ke baare mein kya lagta hai?", seams: [{ left: "start", right: "aiQuestion" }], pageParts: [{ part: "aside", from: 0 }] };
+  const L2 = [...rows.slice(0, i), own, ...rows.slice(i + 1)];
+  assert.match(String(PREDICATES.aiAskAnswered({ rows: L2 }, L2[i + 2], i + 2, ctxAt(L2, i + 2))), /not answered/);
+  // (and a key seam without the closing check-in: the question is still read as the AI line's)
+  const noCk = { ...rows[i], text: "Main AI hoon, meri koi pasand nahi hoti. Circle 3 barabar tukdon mein bata hai aur ab 2 mein rang hai, yaani 2/3. Tumhe Virat ke baare mein kya lagta hai?", seams: [{ left: "start", right: "aiLine" }, { left: "aiLine", right: "key" }, { left: "key", right: "aiQuestion" }], pageParts: [{ part: "aside", from: 0 }] };
+  const L3 = [...rows.slice(0, i), noCk, ...rows.slice(i + 1)];
+  assert.match(String(PREDICATES.aiAskAnswered({ rows: L3 }, L3[i + 2], i + 2, ctxAt(L3, i + 2))), /not answered/);
 });
