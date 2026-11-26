@@ -41,15 +41,12 @@ const WALKS = Object.entries(AT).flatMap(([w, a]) => Object.entries(CASES).map((
 
 // Expected to fail ONLY until the item that fixes each lands in this session (BRIEF-P step 1); empty at the session's last commit.
 const EXPECTED = new Set([
-  "card-a-aireply 18 replyCheckin",
   "card-a-try 18 waitSecondNotReask",
   "card-a-yes 16 waitSecondNotReask",
   "card-c-aireply 20 aiAskAnswered",
-  "step-a-aireply 22 stepToldEarly",
   "step-a-give 20 giveUpVerdict",
   "step-a-hindi 22 stepToldEarly",
   "step-a-miss 20 stepToldEarly",
-  "step-a-park 20 stepToldEarly",
   "step-a-right 20 stepToldEarly",
   "step-b-clar 20 stepToldEarly",
   "step-c-aireply 22 goOnJointTwice",
@@ -136,26 +133,40 @@ test("P2: one C1 turn a question however it came — C3's help after a clarify a
   }
 });
 
-test("P3: the told answer at a return passes replyCheckin and stepToldEarly at five hearings — and each still flags its other side", { timeout: 180_000 }, () => {
+test("P3 (as restated): the told answer or step in a turn that opens on her reply passes replyCheckin and stepToldEarly at the cap — each other side still flags", { timeout: 180_000 }, () => {
   const R = run();
-  // (replyCheckin: a said-again line, the key, its check-in — after the return turn, five hearings)
-  { const rows = R["card-c-park"], i = start(rows, WALKS.find((x) => x.name === "card-c-park")) + 13;
-    assert.deepEqual((rows[i].seams ?? []).map((x) => x.right), ["aside", "key", "checkin"], norm(rows[i].text));
-    assert.equal(PREDICATES.replyCheckin({ rows }, rows[i], i, { script: SCRIPT }), null);
+  const sc = (rows) => ({ script: SCRIPT });
+  const stepCtx = (rows, k) => ({ script: SCRIPT, prevIntent: rows[k - 1].intent ?? null, prevRead: rows[k - 1].read, prevChild: rows[k - 1].text });
+  const at0 = (name) => start(R[name], WALKS.find((x) => x.name === name));
+  // (replyCheckin passes: after the return turn (five hearings), a said-again line, the key, its check-in; and after C1 on a miss (four
+  // hearings, C1 given), the AI line's reply, the key, its check-in)
+  for (const [name, off] of [["card-c-park", 13], ["card-a-aireply", 11]]) {
+    const rows = R[name], i = at0(name) + off;
+    assert.deepEqual((rows[i].seams ?? []).map((x) => x.right).slice(-2), ["key", "checkin"], `${name}: ${norm(rows[i].text)}`);
+    assert.equal(PREDICATES.replyCheckin({ rows }, rows[i], i, sc(rows)), null, name);
     // (a reply and a check-in with nothing between still flags)
     const bare = { ...rows[i], seams: rows[i].seams.filter((x) => x.right !== "key") };
-    assert.match(String(PREDICATES.replyCheckin({ rows }, bare, i, { script: SCRIPT })), /check-in/);
-    // (and the same turn where the question was heard four times — two of the child's requests and their hearings left out — flags)
-    const j0 = start(rows, WALKS.find((x) => x.name === "card-c-park"));
-    const four = [...rows.slice(0, j0), ...rows.slice(j0 + 2)];
-    assert.match(String(PREDICATES.replyCheckin({ rows: four }, four[i - 2], i - 2, { script: SCRIPT })), /check-in/); }
-  // (stepToldEarly: the AI line, the told step — after the return turn, five hearings)
-  { const rows = R["step-c-aireply"], i = start(rows, WALKS.find((x) => x.name === "step-c-aireply")) + 11;
-    assert.ok(rows[i].stepAnswer?.told, norm(rows[i].text));
-    assert.equal(PREDICATES.stepToldEarly({ rows }, rows[i], i, { script: SCRIPT, prevIntent: rows[i - 1].intent ?? null, prevRead: rows[i - 1].read, prevChild: rows[i - 1].text }), null);
-    // (a step told at a return before four hearings still flags)
-    const j0 = start(rows, WALKS.find((x) => x.name === "step-c-aireply"));
+    assert.match(String(PREDICATES.replyCheckin({ rows }, bare, i, sc(rows))), /check-in/, name);
+  }
+  { // (three hearings: two of the child's requests and their hearings left out — still flags)
+    const rows = R["card-a-aireply"], j0 = at0("card-a-aireply"), i = j0 + 11;
     const three = [...rows.slice(0, j0), ...rows.slice(j0 + 4)];
-    const k = i - 4;
-    assert.match(String(PREDICATES.stepToldEarly({ rows: three }, three[k], k, { script: SCRIPT, prevIntent: three[k - 1].intent ?? null, prevRead: three[k - 1].read, prevChild: three[k - 1].text })), /step told/); }
+    assert.match(String(PREDICATES.replyCheckin({ rows: three }, three[i - 4], i - 4, sc(three))), /check-in/);
+    // (four hearings, a wording unsaid, no C1 turn before: her turn after the miss says only the verdict — still flags; that turn must be the
+    // return turn of RULING-A4, not a told answer)
+    const noC1 = rows.map((x, k) => (k === j0 + 7 ? { ...x, text: "7 sahi nahi hai.", seams: [{ left: "start", right: "missVerdict" }] } : x));
+    assert.match(String(PREDICATES.replyCheckin({ rows: noC1 }, noC1[i], i, sc(noC1))), /check-in/); }
+  // (stepToldEarly passes: after the return turn, the AI line and the told step; after C1 on a miss, the AI line's reply and the told step)
+  for (const [name, off] of [["step-c-aireply", 11], ["step-a-aireply", 11]]) {
+    const rows = R[name], i = at0(name) + off;
+    assert.ok(rows[i].stepAnswer?.told, `${name}: ${norm(rows[i].text)}`);
+    assert.equal(PREDICATES.stepToldEarly({ rows }, rows[i], i, stepCtx(rows, i)), null, name);
+  }
+  { const rows = R["step-a-aireply"], j0 = at0("step-a-aireply"), i = j0 + 11;
+    // (a step told at a return at three hearings still flags)
+    const three = [...rows.slice(0, j0), ...rows.slice(j0 + 4)];
+    assert.match(String(PREDICATES.stepToldEarly({ rows: three }, three[i - 4], i - 4, stepCtx(three, i - 4))), /step told/);
+    // (four hearings, the step's wordings unsaid, no C1 turn before: still flags)
+    const noC1 = rows.map((x, k) => (k === j0 + 7 ? { ...x, text: "Yeh jawab nahi hai.", seams: [{ left: "start", right: "stepMiss" }] } : x));
+    assert.match(String(PREDICATES.stepToldEarly({ rows: noC1 }, noC1[i], i, stepCtx(noC1, i))), /step told/); }
 });

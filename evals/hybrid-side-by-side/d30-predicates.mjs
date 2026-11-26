@@ -38,6 +38,7 @@ import { endsOnYourTurn, atQuestionOf } from "../../server/director/question-run
 import { otherFigureOf, sharesThing } from "../../server/brain/seams.js";
 import { ownHelpLast } from "./d31-predicates.mjs";
 import { newPointBeforeCheckin, lastReplyAt, REPLY_SEAMS } from "./d37a-predicates.mjs";
+import { capReachedAt } from "./d38a-predicates.mjs";
 import { POINT_WHOLE, FIRST_TEACH_MAX } from "../../scripts/lesson-scripts/check.mjs";
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
@@ -208,12 +209,17 @@ export function heardBefore(L, i, script) {
   for (let j = 0; j < i; j++) if (L.rows[j].who === "teacher" && atQuestionOf(script, L.rows[j].text) === P) n++;
   return { P, n };
 }
-/** d38 RULING-A7 P3: row i is her reply to a side-topic, then the told answer (a `key` seam) and its check-in and nothing else, at a question
- *  heard five times before it. */
+/** d38 RULING-A7 P3 (as restated by main): row i is her reply to a side-topic, then the told answer (a `key` seam) and its check-in and
+ *  nothing else, where the question is AT THE CAP: heard four or more times (this file's count) AND its C1 turn given before this turn or
+ *  no wording of the part unsaid (d38a's capReachedAt). Exported for d37b's stepToldEarly, which reads the same place. */
+export function capAtReturn(L, i, script, part) {
+  const h = heardBefore(L, i, script);
+  return h.n >= 4 && capReachedAt(L, i, script, part, h.P);
+}
 function keyAtReturn(L, r, i, script) {
   const k = (r.seams ?? []).map((x) => x.right), at = lastReplyAt(r);
   if (!script || at < 0 || k.slice(at + 1).join(">") !== "key>checkin") return false;
-  return heardBefore(L, i, script).n >= 5;
+  return capAtReturn(L, i, script, String(r.cell?.part ?? ""));
 }
 export const D30_PREDICATES = {
   /** d31 046 follow-up rule 1: a re-ask ends on the card's reask, its whole question, its Hindi form or a short ask — never on a proper part
@@ -406,8 +412,8 @@ export const D30_PREDICATES = {
     // (main's sixth ruling item 2: exactly D2 — her joint and ONE new point between, nothing else; and every reply seam is read: a park, a
     // return, her line to a side-topic at a check-in (seam aside) opening the turn, as well as her replies)
     if (newPointBeforeCheckin(L, r, i, REPLY_SEAMS)) return null;
-    // (d38 RULING-A7 P3: the told answer at a return — her reply, then the key (the row's own `key` seam) and its check-in, nothing else
-    // between — where the open question has been heard five times: the told answer is the new thing, as a new point is)
+    // (d38 RULING-A7 P3, as restated: the told answer at a return — her reply, then the key (the row's own `key` seam) and its check-in,
+    // nothing else between — where the open question is at the cap: the told answer is the new thing, as a new point is)
     if (keyAtReturn(L, r, i, ctx?.script)) return null;
     return lastReplyAt(r) >= 0 && sm.at(-1)?.right === "checkin" ? `her reply's turn (${sm.map((x) => x.right).join(" > ")}) ends on a check-in` : null;
   },

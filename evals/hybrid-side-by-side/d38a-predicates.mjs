@@ -198,6 +198,9 @@ export function c1InviteAt(L, i, script, atCap = () => true) {
   for (let j = 0; j < i; j++) if (String(L.rows[j].cell?.part ?? "") === part && c1InviteShape(L, j, script) && atCap(j)) return false;
   return true;
 }
+/** d38 RULING-A7 P3 as restated by main: the part's cap is reached — its C1 turn was given before row i (P4's narrow c1TurnBefore), or no
+ *  wording of the part is unsaid (this file's near-same test). The hearing count is the caller's own. */
+export const capReachedAt = (L, i, script, part, P) => !!script && !!part && !!P && (c1TurnBefore(L, i, script, part, P) || !unsaidWordings(L, i, script, part).length);
 /** d38 RULING-A7 P4: the hearings of the question her last turn ending on a question asked, rows before i (this file's count). */
 export const heardOfLast = (L, i, script) => { const q = lastQuestion(L, i, script); return q ? hearingsUpTo(L, i - 1, script)[q.P] ?? 0 : 0; };
 /** Main's ruling A4 (d38): the one fifth hearing on her own allowed — C1's one turn at a return: a turn that (a) opens on her reply to a
