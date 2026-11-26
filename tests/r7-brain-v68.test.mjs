@@ -366,11 +366,14 @@ describe("r7-brain-v68.test.mjs", () => {
     // script's own joints.yourTurn invitation forms)
     const nrm = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
     const lastSentence = (t) => nrm(t).split(/(?<=[.!?।])\s+/).at(-1) ?? "";
-    const keptCardInvite = ({ text, card, H, prevUp, saidBefore, script }) => {
-      if (!card || !H || !prevUp) return false;
+    // (RULING-A7 P5, round d38: the board up before the turn is the turn JUST before's — never carried over turns that held no board — and
+    // the kept board must be the open card's own: the board held when that card was said, `cardBoard`)
+    const keptCardInvite = ({ text, card, H, prevUp, saidBefore, script, cardBoard }) => {
+      if (!card || !H || !prevUp || !cardBoard) return false;
       const c = nrm(card), cq = lastSentence(card);
       if (!saidBefore.some((t) => nrm(t).includes(c.slice(0, 30)) || (cq && nrm(t).endsWith(cq)))) return false;
       if (H.switchTo || JSON.stringify(H.board ?? null) !== JSON.stringify(prevUp.board ?? null)) return false;
+      if (JSON.stringify(H.board ?? null) !== JSON.stringify(cardBoard)) return false;
       const forms = (script?.joints?.yourTurn ?? []).flatMap((x) => (typeof x === "string" ? [x] : [x?.hi, x?.en])).filter(Boolean).map(nrm);
       return forms.includes(lastSentence(text));
     };
@@ -380,12 +383,15 @@ describe("r7-brain-v68.test.mjs", () => {
       const card = "Ungli kone se chal ke wapas usi kone tak kul kitne cm chali?";
       const board = { template: "measured@1", params: { shape: "triangle", sides: [4, 5, 6] } };
       const text = "Abhi yeh sahi nahi hai. Kinaara matlab shape ki bahar wali line. Ab tum batao.";
-      const base = { text, card, H: { board, unit: "u:e1" }, prevUp: { board, unit: "u:e1" }, saidBefore: [`Socho. ${card}`], script };
+      const base = { text, card, H: { board, unit: "u:e1" }, prevUp: { board, unit: "u:e1" }, saidBefore: [`Socho. ${card}`], script, cardBoard: board };
       assert.equal(keptCardInvite(base), true, "the kept board under an invitation to a card said earlier reads through");
       assert.ok(heldFlags({ text, card }, null).some((x) => /unsaid card/.test(x.why)), "heldFlags itself still flags the turn");
       assert.equal(keptCardInvite({ ...base, H: { board: { template: "shape@1", params: { shape: "hexagon" } }, unit: "u:e1" } }), false, "a board drawn fresh for an unsaid card fails");
       assert.equal(keptCardInvite({ ...base, H: { board, unit: "u:e1", switchTo: { atChar: 10, unit: "u:e2" } } }), false, "a board switched in the turn fails");
       assert.equal(keptCardInvite({ ...base, prevUp: null }), false, "no board up before: a drawn board fails");
+      // (RULING-A7 P5: the board kept is another card's, not the open card's own — fails; the open card said with no board held — fails)
+      assert.equal(keptCardInvite({ ...base, cardBoard: { template: "shape@1", params: { shape: "square" } } }), false, "a kept board that is not the open card's own fails");
+      assert.equal(keptCardInvite({ ...base, cardBoard: null }), false, "an open card said with no board held: no own board to keep, fails");
       assert.equal(keptCardInvite({ ...base, saidBefore: ["Pichla sawaal alag tha."] }), false, "a card never said before fails");
       assert.equal(keptCardInvite({ ...base, text: "Abhi yeh sahi nahi hai. Kinaara matlab shape ki bahar wali line." }), false, "a turn not ending on an invitation fails");
     });
@@ -400,6 +406,10 @@ describe("r7-brain-v68.test.mjs", () => {
           const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
           let up = null;
           const saidBefore = []; // (RULING-A5 item 1: her earlier teacher turns of this walk)
+          // (RULING-A7 P5: the board held on the turn just before — null after a turn that held none — and each card's own board, the board
+          // held on the turn that said it)
+          let lastUp = null;
+          const cardBoards = new Map();
           for (const pl of plans) {
             const n = pl.row - 1; if (!rows[n]) continue;
             replyDeps.chat = async () => ({ text: rows[n].text });
@@ -410,11 +420,11 @@ describe("r7-brain-v68.test.mjs", () => {
               const a = whiteboardIntentOf({ lessonId: "L", turn: n, beat: { id: "visual", type: "explain" }, next, kit, item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null,
                 line: { text: out.reply, ...(out.guard?.parts ? { parts: out.guard.parts } : {}) } });
               const H = a.intent.held;
-              if (!H) { saidBefore.push(out.reply); continue; }
+              if (!H) { saidBefore.push(out.reply); lastUp = null; continue; }
               held++; if (H.switchTo) switched++;
               if (a.intent.segments) errs.push(`${persona} ${topic} ${n}: a held turn paged`);
-              const prevUp = up;
-              up = heldUpOf(H);
+              const prevUp = lastUp;
+              up = heldUpOf(H); lastUp = up;
               // (H5 on the walk: no card pinned unsaid; every spoken part on its held unit)
               // (the held predicates above already hold every spoken part to its unit; here: no card on screen that is not said)
               const text = out.reply.replace(/\s+/g, " ").trim();
@@ -425,7 +435,8 @@ describe("r7-brain-v68.test.mjs", () => {
               let f = heldFlags({ text, card, ...(out.guard?.cardQuestionOnly || out.guard?.cardHeldForTry ? { cardQ: true } : {}) }, null); // (as turn.js: A4 drops ui.ask)
               // (RULING-A5 item 1: a card said in an earlier teacher turn of the walk and still open, its board KEPT in this turn, under a
               // turn that ends on an invitation to answer it, is not an unsaid card — 049 B4's invitation-ending help, and C1's)
-              if (f.some((x) => /unsaid card/.test(x.why)) && keptCardInvite({ text, card, H, prevUp, saidBefore, script: sc })) { f = f.filter((x) => !/unsaid card/.test(x.why)); keptInvites.push(`${data} ${persona} ${topic} ${n}`); }
+              if (card && nrm(text).includes(nrm(card).slice(0, 30)) && !cardBoards.has(nrm(card).slice(0, 30))) cardBoards.set(nrm(card).slice(0, 30), H.board ?? null);
+              if (f.some((x) => /unsaid card/.test(x.why)) && keptCardInvite({ text, card, H, prevUp, saidBefore, script: sc, cardBoard: card ? cardBoards.get(nrm(card).slice(0, 30)) ?? null : null })) { f = f.filter((x) => !/unsaid card/.test(x.why)); keptInvites.push(`${data} ${persona} ${topic} ${n}`); }
               if (f.length) h5.push(`${persona} ${topic} ${n}: ${f.map((x) => x.why).join("; ")}`);
               saidBefore.push(out.reply);
             } catch (e) { errs.push(`${persona} ${topic} ${n}: ${e.message.slice(0, 160)}`); }
