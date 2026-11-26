@@ -25,6 +25,7 @@ import { D30_PREDICATES, capAtReturn } from "./d30-predicates.mjs";
 import { D35A_PREDICATES } from "./d35a-predicates.mjs";
 import { helpPart, ladderOf, sentencesOf as helpSentences, normSentence } from "../../server/director/help.js";
 import { saidIn } from "../../server/director/script.js";
+import { c1InviteAt, helpSaidAt, unsaidWordings } from "./d38a-predicates.mjs";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 /** d38 RULING-A7 P3: the seams her turn opens on when it answers a side-topic. */
@@ -49,6 +50,21 @@ function tryPassed(L, k, script) {
 const ENDS = new Set(["key", "workedStep"]);
 const seamsOf = (r) => (r?.seams ?? []).map((x) => x.right);
 const prevTeacher = (L, i) => { for (let j = i - 1; j >= 0; j--) if (L.rows[j].who === "teacher") return j; return -1; };
+/** d38 RULING-A8 Q4 (main's rulings on Q2's stop and on 054b): the wait's ladder at the cap — where the wait's question P has been heard
+ *  four or more times (this file's count: her turns before row i at P, atQuestionOf), exactly: (a) C1's turn — help in a wording not said
+ *  before in the lesson ending on an invitation, the first such turn at that question (d38a's c1InviteAt), where no help turn was said at
+ *  that question before it (d38a's helpSaidAt); (b) the told answer or told step (the row's key or told-step seam) where a help turn was
+ *  said at that question before it (C1's included) or no wording of the part is unsaid (keyWithWordingUnsaid's own near-same test).
+ *  → whether row i is one of them. */
+const heardAt = (L, i, script, P) => { let n = 0; for (let j = 0; j < i; j++) if (L.rows[j].who === "teacher" && atQuestionOf(script, L.rows[j].text) === P) n++; return n; };
+export function capLadderAt(L, i, script, P) {
+  const r = L.rows[i];
+  if (!script || !P || r?.who !== "teacher" || heardAt(L, i, script, P) < 4) return false;
+  const part = String(r.cell?.part ?? "");
+  if (c1InviteAt(L, i, script, (j) => heardAt(L, j, script, P) >= 4) && !helpSaidAt(L, i, script, P, part)) return true;
+  const told = (r.seams ?? []).some((x) => x.right === "key") || !!r.stepAnswer?.told;
+  return told && (helpSaidAt(L, i, script, P, part) || !unsaidWordings(L, i, script, part).length);
+}
 /** Whether a teacher text stands for a question without saying it (a short ask, an invitation, a pointed invitation). */
 const standsFor = (script, t) => atQuestionOf(script, t) === "?short" || endsOnYourTurn(script, t) || endsOnAnswerFirst(script, t);
 
@@ -272,6 +288,9 @@ export const D37B_PREDICATES = {
     if (helpTurn(r) && atQuestionOf(ctx.script, r.text) === w.P && reaskHeardBefore(L, w.turns[0], ctx.script, w.P)) return null;
     // (RULING-C2 item 1: or where the re-ask was heard in that wait's park — a side-topic's park between its turns that ended on the reask)
     if (helpTurn(r) && atQuestionOf(ctx.script, r.text) === w.P) { for (let k = prevTeacher(L, i); k > w.turns[0]; k = prevTeacher(L, k)) if (parkReaskAt(L, k, ctx.script)) return null; }
+    // (d38 RULING-A8 Q4, main's rulings on Q2's stop and on 054b: at four or more hearings the re-ask is the fifth on her own — the wait's
+    // ladder at the cap is C1's turn where no help was said at that question, then the told answer or step: capLadderAt)
+    if (capLadderAt(L, i, ctx.script, w.P)) return null;
     return endsOnReask(ctx.script, w.P, r.text, lang) ? null : `the wait's second turn at ${w.P} does not end on its reask: "${sentencesOf(r.text).at(-1) ?? ""}"`;
   },
   /** B.4 (main's ruling on question 3): 049 B4's count with the wait's re-ask exempt — the re-ask overrides the third-turn invitation, so it

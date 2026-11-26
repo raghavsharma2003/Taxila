@@ -60,14 +60,13 @@ for (const [w, a] of Object.entries(AT)) WALKS.push({ name: `${w}-q2-wait`, topi
 // OLDER: none left. (RULING-A8 Q1 took off step-b-clar 20 stepToldEarly: the right answer at an asked step is no longer read as nothing
 // after help; Q2 took off step-c-park 22 keyWithWordingUnsaid: that turn is C1's now)
 const OLDER = [];
-// Q4: C1's turn at a wait at the cap, which waitSecondNotReask's old ladder reads as wait two (its reask would be the fifth hearing) — main's
-// ruling on Q2's stop widens that reading (RULING-A8 Q4, the next commit)
-const Q4 = ["step-c-park 22 waitSecondNotReask", "step-q2-park-miss 22 waitSecondNotReask", "step-q2-park-right 22 waitSecondNotReask", "card-q2-wait 16 waitSecondNotReask", "step-q2-wait 20 waitSecondNotReask"];
 // STOPPED: clashes held for main's ruling — a turn as ruled that a gated predicate no ruling names flags (builder P stopped at each):
 // the told answer at the wait's second turn after C1 (waitSecondNotReask), the AI line then the told answer and its check-in
 // (aiAskAnswered). (RULING-A8 Q3 took off step-c-aireply 22 goOnJointTwice: the told step after the return turn's joint says none)
-const STOPPED = ["card-a-yes 16 waitSecondNotReask", "card-a-try 18 waitSecondNotReask", "card-c-aireply 20 aiAskAnswered"];
-const EXPECTED = new Set([...OLDER, ...STOPPED, ...Q4]);
+// (RULING-A8 Q4 took off card-a-yes 16 and card-a-try 18 waitSecondNotReask, and the five C1-at-a-wait rows Q2 made: the wait's ladder at
+// the cap, C1's turn where no help was said at that question, then the told answer or step)
+const STOPPED = ["card-c-aireply 20 aiAskAnswered"];
+const EXPECTED = new Set([...OLDER, ...STOPPED]);
 
 let RUN = null;
 function run() {
@@ -250,4 +249,45 @@ test("Q2 (RULING-A8): where the cap would tell with no C1 turn given and a wordi
     assert.ok(seams(rows[i]).includes("key"), `card-q2-b3: the key at wait three: ${norm(rows[i].text)}`);
     assert.ok(rows.slice(0, i).filter((x) => x.who === "teacher" && atQuestionOf(SCRIPT, x.text) === AT.card.P).length >= 4, "card-q2-b3: four hearings before it");
     for (const k of [i0 + 5, i0 + 7]) assert.ok(!isC1(rows[k]), `card-q2-b3: no C1 turn in the wait: ${norm(rows[k].text)}`); }
+});
+
+test("Q4 (RULING-A8, as main restated it on Q2's stop and on 054b): the wait's ladder at the cap — waitSecondNotReask and keyWithWordingUnsaid, each side", { timeout: 180_000 }, async () => {
+  const { unsaidWordings } = await import("../evals/hybrid-side-by-side/d38a-predicates.mjs");
+  const R = run();
+  const at0 = (name) => start(R[name], WALKS.find((x) => x.name === name));
+  const ws = (rows, i) => PREDICATES.waitSecondNotReask({ rows }, rows[i], i, { script: SCRIPT });
+  const kw = (rows, i) => PREDICATES.keyWithWordingUnsaid({ rows }, rows[i], i, { script: SCRIPT });
+  // (b) the told answer after C1's turn at four hearings: passes (card-a-yes 16, card-a-try 18)
+  for (const [name, off] of [["card-a-yes", 9], ["card-a-try", 11]]) {
+    const rows = R[name], i = at0(name) + off;
+    assert.ok((rows[i].seams ?? []).some((x) => x.right === "key"), `${name}: ${norm(rows[i].text)}`);
+    assert.equal(ws(rows, i), null, name);
+    // (three hearings: two of the child's requests and their hearings left out — flags as before)
+    const j0 = at0(name), three = [...rows.slice(0, j0), ...rows.slice(j0 + 4)];
+    assert.match(String(ws(three, i - 4)), /reask/, `${name}: three hearings`);
+    // (two C1 turns at one question: wait two another new wording as help ending on the invitation — flags)
+    const part = String(rows[i].cell?.part ?? ""), path = unsaidWordings({ rows }, i - 1, SCRIPT, part)[0];
+    assert.ok(path, `${name}: a wording still unsaid`);
+    const text = path.split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], SCRIPT);
+    const two = rows.map((x, k) => (k === i ? { ...x, text: `${text.hi ?? text} Ab tum batao.`, seams: [{ left: "start", right: "help" }, { left: "help", right: "yourTurn" }] } : x));
+    assert.match(String(ws(two, i)), /reask/, `${name}: a second C1 turn`);
+  }
+  // (a) then (b) in a pure wait at four hearings: C1's turn at wait two, the told answer or step at wait three — each passes
+  for (const name of ["card-q2-wait", "step-q2-wait"]) {
+    const rows = R[name], i0 = at0(name), c1 = i0 + 9;
+    assert.equal(ws(rows, c1), null, `${name}: C1 at wait two`); assert.equal(kw(rows, c1 + 2), null, `${name}: the told turn after C1`);
+    // (three hearings: the same C1 turn at wait two flags)
+    const three = [...rows.slice(0, i0), ...rows.slice(i0 + 4)];
+    assert.match(String(ws(three, c1 - 4)), /reask/, `${name}: three hearings`);
+    // (four hearings, no help said at the question: the told answer or step as wait two, a wording unsaid — both checks flag)
+    const told = [...rows.slice(0, c1), ...rows.slice(c1 + 2)];
+    assert.ok(told[c1].stepAnswer?.told || (told[c1].seams ?? []).some((x) => x.right === "key"), `${name}: ${norm(told[c1].text)}`);
+    // (waitSecondNotReask reads the card's told answer, which ends on its check-in; a told step ends on the next question, which its waitAt
+    // never reads as the wait's — as before)
+    if (name.startsWith("card")) assert.match(String(ws(told, c1)), /reask/, `${name}: told with no help said`);
+    assert.match(String(kw(told, c1)), /never said/, `${name}: keyWithWordingUnsaid, told with no help said`);
+  }
+  // (054b's shape at four hearings: two give-ups helped, then the wait tells the key at wait three — keyWithWordingUnsaid reads 0)
+  { const rows = R["card-q2-b3"], i = at0("card-q2-b3") + 9;
+    assert.equal(kw(rows, i), null, norm(rows[i].text)); }
 });

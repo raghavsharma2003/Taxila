@@ -136,7 +136,7 @@ const lastQuestion = (L, i, script) => { for (let k = i - 1; k >= 0; k--) { cons
  *  sentence of it heard in that turn, near-same reading above) and does not end on P. */
 // (d38 RULING-A7 P4: only a turn that said a wording of the part not said before it in the lesson AND ended on an invitation, or the one
 // return turn — a turn that repeats a wording already said, or ends otherwise, is no C1 turn)
-const c1TurnBefore = (L, i, script, part, P) => {
+export const c1TurnBefore = (L, i, script, part, P) => {
   const list = (wordingsOf(script, part) ?? []).map((p) => hiOf(at(script, p))).filter((t) => t && t.trim());
   if (!P || !list.length) return false;
   for (let j = i - 1; j >= 0; j--) {
@@ -148,6 +148,25 @@ const c1TurnBefore = (L, i, script, part, P) => {
   }
   return false;
 };
+/** d38 RULING-A8 Q4 (main's ruling on 054b): a help turn said at question P before row i — a turn of hers with a help, caption or
+ *  remediation seam (the row's own record), or one that says a sentence of a wording of the part (this file's near-same test), read back
+ *  from row i to P's first hearing while her turns end on P or on no question of the script (a turn that ends on another question leaves
+ *  P). This check's own reading. */
+const HELP_SEAMS = new Set(["help", "caption", "remediation"]);
+export function helpSaidAt(L, i, script, P, part = null) {
+  const words = part ? (wordingsOf(script, part) ?? []).map((p) => hiOf(at(script, p))).filter((t) => t && t.trim()).flatMap(sentences) : [];
+  if (!script || !P) return false;
+  for (let j = i - 1; j >= 0; j--) {
+    const x = L.rows[j];
+    if (x.who !== "teacher") continue;
+    const q = questionOfTurn(script, x.text);
+    if (q && q !== P) return false;
+    if ((x.seams ?? []).some((y) => HELP_SEAMS.has(String(y.right ?? "")))) return true;
+    if (words.length) { const own = new Set(sentences(x.text).map(keyOf)); if (words.some((t) => heardNear(t, own))) return true; }
+    if (q === P && !(hearingsUpTo(L, j - 1, script)[P] ?? 0)) return false;
+  }
+  return false;
+}
 /** Main's ruling C: what a wait is made of, as said — a bare yes, or nothing the walk reads (no words, a filler). This check's own list. */
 const BARE_SAID = /^(?:haan|haa|ha|han|haan ji|ji|ji haan|hmm+|hm+|umm*|achha|accha|acha|achcha|theek hai|thik hai|theek|ok|okay|okk|yes|yeah|yep|sure|hmm achha|hmm haan|haan achha|haan theek hai)?$/;
 const bare = (r) => r?.who === "child" && BARE_SAID.test(keyOf(r.text));
@@ -232,7 +251,9 @@ export const D38A_PREDICATES = {
     if (!left.length) return null;
     // (ruling A(i): C1 is one turn a question — the told answer after a C1 turn at that question passes, whatever is still unsaid; ruling C:
     // the wait is outside C1 — the told answer that is the wait's last turn passes)
-    if (c1TurnBefore(L, i, ctx?.script, part, q?.P) || waitTold(L, i, q)) return null;
+    // (d38 RULING-A8 Q4, main's ruling on 054b: the wait's told answer passes only where a help turn was said at that question before it —
+    // a child told with no help ever said at the question is told with a wording unsaid)
+    if (c1TurnBefore(L, i, ctx?.script, part, q?.P) || (waitTold(L, i, q) && helpSaidAt(L, i, ctx?.script, q?.P, part))) return null;
     return `a told ${key ? "answer" : "step"} while ${left.join(", ")} was never said`;
   },
   questionFifthOnHerOwn(L, r, i, ctx) {
