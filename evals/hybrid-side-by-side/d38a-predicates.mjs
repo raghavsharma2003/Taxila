@@ -132,6 +132,23 @@ function hearingsUpTo(L, i, script) {
 const keySeam = (r) => (r.seams ?? []).some((x) => x.right === "key");
 /** The last turn of hers before row i that ends on a question → { P, j } | null. */
 const lastQuestion = (L, i, script) => { for (let k = i - 1; k >= 0; k--) { const x = L.rows[k]; if (x.who !== "teacher") continue; const p = questionOfTurn(script, x.text); if (p) return { P: p, j: k }; } return null; };
+/** d38 RULING-A10 T1: a remediation of a question's named mistake started at four or more hearings of that question is that question's C1
+ *  turn. Before row i: a turn of hers with a remediation seam answering a child's line read as a misconception, the question her last turn
+ *  before it ended on (P0) heard four times or more before it, and P either P0 or the follow-up card that remediation posed (the question
+ *  it ends on); every turn of hers between it and row i ends on P0, on P or on no question. This check's own reading. */
+function remC1Before(L, i, script, P) {
+  for (let j = i - 1; j > 0; j--) {
+    const x = L.rows[j];
+    if (x.who !== "teacher") continue;
+    const q = questionOfTurn(script, x.text);
+    if ((x.seams ?? []).some((y) => y.right === "remediation") && /^misconception/.test(String(L.rows[j - 1]?.read ?? ""))) {
+      const q0 = lastQuestion(L, j, script);
+      return !!q0 && (hearingsUpTo(L, j - 1, script)[q0.P] ?? 0) >= 4 && (P === q0.P || (!!q && q === P));
+    }
+    if (q && q !== P) return false;
+  }
+  return false;
+}
 /** Main's ruling A(i): a C1 turn at question P before row i — a turn of hers after P's fourth hearing that says a wording of the part (a
  *  sentence of it heard in that turn, near-same reading above) and does not end on P. */
 // (d38 RULING-A7 P4: only a turn that said a wording of the part not said before it in the lesson AND ended on an invitation, or the one
@@ -139,6 +156,7 @@ const lastQuestion = (L, i, script) => { for (let k = i - 1; k >= 0; k--) { cons
 export const c1TurnBefore = (L, i, script, part, P) => {
   const list = (wordingsOf(script, part) ?? []).map((p) => hiOf(at(script, p))).filter((t) => t && t.trim());
   if (!P || !list.length) return false;
+  if (remC1Before(L, i, script, P)) return true;
   for (let j = i - 1; j >= 0; j--) {
     const x = L.rows[j];
     // (main's ruling A4: C1's one turn at a return — ending on the question because it answers a side-topic — is that question's C1 turn)

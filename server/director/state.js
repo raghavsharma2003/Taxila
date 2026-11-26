@@ -692,6 +692,17 @@ function walkNextV2(s, input, prefix, sk) {
   {
     const done = (id) => s.itemsDone.includes(id) || s.skipped.includes(id);
     const rp = (s.reposeQ ?? []).find((r) => done(r.after) && s.activeItemId !== r.after);
+    // (d38 RULING-A10 T1: a remediation of the card's named mistake started at four or more hearings of its question was that question's C1
+    // turn — walkRemedy marks it atCap. Once its follow-up card is closed the question is not said again in any form: her turn is the
+    // follow-up's verdict, then the card's told answer with its reason and its check-in — the card let go with its key in code)
+    if (rp?.atCap) {
+      s.reposeQ = (s.reposeQ ?? []).filter((r) => r !== rp);
+      if (!s.skipped.includes(rp.id)) s.skipped.push(rp.id);
+      s.activeItemId = undefined; s.scriptCard = undefined; s.hintLevel = 0;
+      const beat = cardBeatRef(s, kit, rp.item);
+      return plan("reteach", SH.reposeMissed(), { skillId: rp.item.skillId, stayCheckin: true, capRepose: rp.atCap,
+        gave: { answer: keyInLang(rp.item, s.ctx.lang), why: gaveWhyOf(kit, rp.item, s.ctx.lang) ?? "", ...keyAsWritten(rp.item, s.ctx.lang) }, ...(beat ? { scriptBeat: beat } : {}) });
+    }
     if (rp) {
       s.reposeQ = (s.reposeQ ?? []).filter((r) => r !== rp);
       s.skipped = s.skipped.filter((x) => x !== rp.id);
@@ -1317,7 +1328,11 @@ function walkRemedy(s, input, item) {
   // v6.4 K1 (main, director12: misconception routes left the card without its key — c4 ×7, c6 steady never heard 30 cm / 20 cm):
   // the card the remediation took over is posed again, once, after its follow-up card is closed
   // (a replay of a recorded run walks what that run walked — tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
-  if (!scriptFor(kit)?.script?.recordedRun) s.reposeQ = [...(s.reposeQ ?? []).filter((r) => r.id !== item.id), { id: item.id, after: `script:${item.skillId}:then:${targets}`, item }];
+  // (d38 RULING-A10 T1: a remediation started at four or more hearings of the card's question is that question's C1 turn — one a question,
+  // RULING-A7 P2: c1At — and its return is the told answer, never the question again: atCap, the question's path)
+  const capP = (() => { const P = openQuestionOf(s, scriptFor(kit)?.script ?? null); return P && s.lastUi?.ask?.itemId === item.id && (s.qHeard?.[P] ?? 0) >= 4 ? P : null; })();
+  if (capP) { const part = cardPartOf(kit, { itemId: item.id }); if (part) s.c1At = { ...(s.c1At ?? {}), [part]: true }; }
+  if (!scriptFor(kit)?.script?.recordedRun) s.reposeQ = [...(s.reposeQ ?? []).filter((r) => r.id !== item.id), { id: item.id, after: `script:${item.skillId}:then:${targets}`, item, ...(capP ? { atCap: capP } : {}) }];
   s.activeItemId = undefined; s.hintLevel = 0;
   friendOf = s.ctx.firstName ?? "";
   const then = friendly(scriptThenItem(item.skillId, r));
@@ -5158,6 +5173,8 @@ function step0(prev, input) {
   // v6.1 R7/R8: the beat's or card's AUTHORED simpler (format 2.3), said instead of anything model-written
   if (p.simpler) move.simpler = String(p.simpler);
   if (p.stayCheckin) { move.checkinOk = true; move.stayCheckin = true; }
+  // (d38 RULING-A10 T1: the told answer at the return from a follow-up card at the cap — brain/say.js records its key)
+  if (p.capRepose) move.capRepose = p.capRepose;
   // (Brain 044 T1: the greeting's simpler wording said on its own turn; the hook comes next)
   if (p.greetHelp) move.greetHelp = true;
   if (p.greetAsk) move.greetAsk = String(p.greetAsk);
