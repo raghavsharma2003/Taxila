@@ -117,8 +117,13 @@ describe("main's ruling A4: C1 at a return — her reply, its joint, the first u
   });
   const w2 = await walk("c4-maths-ch05-t01", "step", 0, ["again", "again", "again", "ai", "reply", "ai"]);
   test("a further side-topic at that question (the AI question asked again, whose honest line goes on into the step): her line and the told step — never a sixth hearing on her own", () => {
-    const last = w2.her.at(-1);
-    assert.deepEqual(seamOf(last).slice(0, 2), ["start>aiLine", "aiLine>workedStep:afterAiLine"], last.text);
+    const last = w2.her.at(-1), before = w2.her.at(-2);
+    // (d38 RULING-A8 Q3, re-pinned: was "aiLine>workedStep:afterAiLine" — its joint. Her turn before, the return turn, said its back-to-work
+    // joint, so the told step says none: never "back to work" twice running, the gated goOnJointTwice. Where her turn before said no go-on
+    // joint the told step's joint is said: the two walks above, after C1's turn on a give-up)
+    assert.ok(seamOf(before).includes("aiReply>help:afterAiLine"), before.text);
+    assert.deepEqual(seamOf(last).slice(0, 2), ["start>aiLine", "replyAgain>workedStep"], last.text);
+    assert.ok(!last.seams.some((x) => x.joint), last.text);
     assert.ok(last.stepAnswer?.told, last.text);
     assert.deepEqual(flagsOf(w2, "questionFifthOnHerOwn"), []); assert.deepEqual(flagsOf(w2, "keyWithWordingUnsaid"), []);
   });

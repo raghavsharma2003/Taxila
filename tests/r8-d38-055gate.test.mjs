@@ -54,8 +54,8 @@ WALKS.push({ name: "step-q1-ret", topicId: TOPIC, seek: "step", skip: 0, tail: 3
 const OLDER = ["step-c-park 22 keyWithWordingUnsaid"];
 // STOPPED: clashes held for main's ruling — a turn as ruled that a gated predicate no ruling names flags (builder P stopped at each):
 // the told answer at the wait's second turn after C1 (waitSecondNotReask), the AI line then the told answer and its check-in
-// (aiAskAnswered), and the told step's back-to-work joint straight after the return turn's (goOnJointTwice).
-const STOPPED = ["card-a-yes 16 waitSecondNotReask", "card-a-try 18 waitSecondNotReask", "card-c-aireply 20 aiAskAnswered", "step-c-aireply 22 goOnJointTwice"];
+// (aiAskAnswered). (RULING-A8 Q3 took off step-c-aireply 22 goOnJointTwice: the told step after the return turn's joint says none)
+const STOPPED = ["card-a-yes 16 waitSecondNotReask", "card-a-try 18 waitSecondNotReask", "card-c-aireply 20 aiAskAnswered"];
 const EXPECTED = new Set([...OLDER, ...STOPPED]);
 
 let RUN = null;

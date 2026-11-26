@@ -3847,13 +3847,25 @@ function returnFifthOf(prev, input, heard, said) {
   // question to know what she is asked (the gated inviteAfterPark). C1's one turn at the question; yourTurnPass reads `capReask`)
   return cap ? { cap, input: give, built, prev: base } : null;
 }
+/** d38 RULING-A8 Q3: whether her turn before said a back-to-work joint — one of the script's afterAside, afterAiLine, afterPark or
+ *  afterKeyGoOn forms, in the lesson's language. */
+function goOnSaidBefore(prev, kit) {
+  const her = String((prev?.recent ?? []).filter((t) => t.who === "teacher").at(-1)?.text ?? "").replace(/\s+/g, " ").toLowerCase();
+  if (!her || !kit) return false;
+  const lang = prev.ctx?.lang === "english" ? "english" : "hinglish";
+  return ["afterAside", "afterAiLine", "afterPark", "afterKeyGoOn"].some((k) => (jointOf(kit, k, lang) ?? []).some((x) => { const t = String(x).replace(/\s+/g, " ").trim().toLowerCase(); return t.length > 8 && her.includes(t); }));
+}
 /** Main's ruling A3 item 2 of d38: the cap's turn at a return keeps what the return turn as built said of the side-topic — her reply (the
  *  move's asideAck and returnReply, the state's returnAnswer), a park (the state's `later`), a parked topic served (`returned`). */
-function graftReturn(prev, built, out) {
+function graftReturn(prev, built, out, kit = null) {
   const b = built.state, lmB = b.lastMove ?? {};
   const f = Object.fromEntries(["asideAck", "returnReply", "returned", "tasteAsked", "asideAgain"].filter((k) => lmB[k] != null).map((k) => [k, lmB[k]]));
   // (d38 RULING-A7 P1: the cap's turn at a return is said after her line about the side-topic — brain/say.js reads capReturn)
   f.capReturn = true;
+  // (d38 RULING-A8 Q3: no back-to-work joint twice running — where her turn before said a go-on joint (the return turn's reply into C1's help,
+  // say), the told answer or told step here takes none: her line to the side-topic, then the cap's part, as the told answer at a card after the
+  // AI line already is. Read from her turn before as said, against the script's own go-on forms; brain/seams.js noReplyJoint)
+  if (goOnSaidBefore(prev, kit)) f.noReplyJoint = true;
   if (b.tasteAsked && b.tasteAsked !== prev.tasteAsked) out.state.tasteAsked = b.tasteAsked;
   if (out.state.lastMove) out.state.lastMove = { ...out.state.lastMove, ...f };
   if (out.move) out.move = { ...out.move, ...f };
@@ -4462,7 +4474,7 @@ export function step(prev, input) {
   const pre = cap?.skipHelp ? null : cap?.pre ?? helpBefore(prev, inputC, said);
   let out = tryAgain ?? (pre?.stay ? helpStay(prev, inputC, pre.decision) : pre?.held ? helpHeld(prev, inputC, pre.decision) : stepCells(prev, pre?.input ?? inputC));
   if (!tryAgain && !pre?.stay && !pre?.held) out = helpAfter(prev, inputC, out, pre);
-  if (ret5 && out?.state) graftReturn(prevB, ret5.built, out);
+  if (ret5 && out?.state) graftReturn(prevB, ret5.built, out, input.kit);
   if (heard && out?.state) out.state.qHeard = heard;
   if (cap?.P && !cap.noCap && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, heardCap: cap.P }; if (out.move) out.move = { ...out.move, heardCap: cap.P }; }
   // (to-brain 055 C1: the cap's help in a wording still unsaid ends on an invitation — yourTurnPass, below)
