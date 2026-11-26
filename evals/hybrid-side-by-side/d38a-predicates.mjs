@@ -113,7 +113,7 @@ const HEAR_AGAIN_SAID = /(?<![\p{L}])(?:phir\s+se\s+(?:bolo|bataiye|batao|boliye
 const HINDI_SAID = /(?<![\p{L}])(?:hindi\s+(?:mein|me|main)|in\s+hindi)(?![\p{L}])/iu;
 const hasHindiForm = (script, path) => { const o = at(script, path); return !!(o && formsOf(o.hindi).length); };
 /** The child's line before row i asks for the question at `path` (to hear it again, or in Hindi where it has a Hindi form). */
-const ownRequest = (L, i, script, path) => {
+export const ownRequest = (L, i, script, path) => {
   const c = L.rows[i - 1];
   if (c?.who !== "child") return false;
   return HEAR_AGAIN_SAID.test(String(c.text ?? "")) || (HINDI_SAID.test(String(c.text ?? "")) && hasHindiForm(script, path));

@@ -113,6 +113,21 @@ describe("yourTurnNotThird read to main's ruling A(ii) (RULING-A2): the go-ahead
   });
 });
 
+describe("questionFiveTimes tightened by name to C3 (d35a): every column counts but the child's own request", () => {
+  const Q = "Do aur do kitne hote hain?", R = "Toh do jama do kya hua?", P = "t-s1:e1:card";
+  const at = (t, column) => T(t, { cell: { part: P, column } });
+  const four = [at(Q, "right"), C("5"), at(`Nahi. ${R}`, "wrong"), C("6"), at(`Nahi. ${Q}`, "wrong"), C("7"), at(R, "wrong")];
+  const fl = (rows) => rows.map((r, i) => PREDICATES.questionFiveTimes({ rows }, r, i, { script: SCRIPT, o: {} })).map((x, i) => (x ? i : -1)).filter((i) => i >= 0);
+  test("a fifth hearing after her reply to a side-topic, after a bare yes, after a clarify flags (was: passed by its column)", () => {
+    assert.deepEqual(fl([...four, C("chauka"), at(`Achha, toh tumhe chauka pasand hai! ${Q}`, "aside_reply")]), [8]);
+    assert.deepEqual(fl([...four, C("haan"), at(Q, "yes")]), [8]);
+    assert.deepEqual(fl([...four, C("samajh nahi aaya"), at(`Ungliyon par gino. ${Q}`, "clarify")]), [8]);
+  });
+  test("the child's own request for the question is honoured: \"phir se bolo\" passes, whatever the column", () => {
+    assert.deepEqual(fl([...four, C("phir se bolo"), at(Q, "repeat")]), []);
+  });
+});
+
 describe("questionFifthOnHerOwn (C3), made rows", () => {
   const Q = "Do aur do kitne hote hain?", R = "Toh do jama do kya hua?";
   const four = [T(Q), C("5"), T(`Nahi. Ungliyon par gino. ${R}`), C("aapko cricket pasand hai?"), T(`Main AI hoon. Ab wapas aate hain. ${Q}`), C("6"), T(`Nahi. Point ki doosri baat. ${R}`), C("pata nahi")];

@@ -15,6 +15,7 @@ import { saidIn } from "../../server/director/script.js";
 import { sameBoardRef } from "../../server/director/state.js";
 import { drawnPagesOf } from "./drawn-pages.mjs";
 import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst } from "../../server/director/question-run.js";
+import { ownRequest } from "./d38a-predicates.mjs";
 
 const key = (t) => String(t ?? "").toLowerCase().replace(/\{\w+\}/g, " ").replace(/[^\p{L}\p{N}\s]+/gu, " ").replace(/\s+/g, " ").trim();
 /** Whether a row says one of the script's joints.noPicture forms (or records the noPicture joint). */
@@ -155,10 +156,11 @@ export const D35A_PREDICATES = {
     // (main's R2: a short ask says no question — it is no hearing; questionsAt reads it as the question pending, for B2's predicates)
     if (atQuestionOf(ctx.script, r.text) === "?short") return null;
     const n = qa.slice(0, i + 1).filter((x, k) => x === P && atQuestionOf(ctx.script, L.rows[k].text) !== "?short").length;
-    // (main's R1: the cap is on what she says on her own — after a miss, a give-up or no answer; a child's request for the question, a picture
-    // request, a yes, a try-first or an aside is answered as before whatever the count)
-    const col = String(r.cell?.column ?? "");
-    if (col && !["wrong", "misconception", "give_up", "other"].includes(col)) return null;
+    // (main's R1: the cap is on what she says on her own. to-brain 055 C3, tightened by name (d38): no fifth hearing on her own in ANY form —
+    // after a yes (the wait), a try-first, a side-topic or her reply to one, a picture request, a clarify — only the child's OWN request for
+    // the question ("phir se bolo", a Hindi request where the question has a Hindi form) is honoured whatever the count. Was: every column
+    // but a miss, a give-up and "other" passed. The child's request is read from the child's words by d38a's own list, not by the column)
+    if (ownRequest(L, i, ctx.script, P)) return null;
     return n >= 5 ? `the question ${P} heard a ${n}th time` : null;
   },
   /** B4: a right answer whose close cannot share its turn with the next card ends on the go-on line, never a check-in (director34 c4

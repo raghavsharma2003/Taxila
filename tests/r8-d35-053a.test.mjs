@@ -108,10 +108,12 @@ describe("B: three paths in the walk", () => {
     assert.equal(all.length, 20, all.join("\n"));
   });
   // (main's R1/R2: a short ask is no hearing, and only a fifth hearing on her own — after a miss, a give-up or no answer — is read: 11 rows → 3)
-  test("questionFiveTimes, after R1/R2, reads c5-t02 steering (a follow-up card from row 18), c5-t01 and c6 steering 18", () => {
+  test("questionFiveTimes, after R1/R2 and 055 C3, reads c5-t02 steering (a follow-up card from row 18), c5-t01 and c6 steering 18 and 20, c5-t03 steering 20, offtopic c4-ch01-t02 22 and 30", () => {
     const all = flaggedAll("questionFiveTimes");
-    // (offtopic c4-ch01-t02's seven turns at one step held Hindi requests, picture requests and short asks: no fifth hearing of her own)
-    assert.deepEqual(all, ["steering c5-maths-ch02-t01 18", "steering c5-maths-ch02-t02 18", "steering c6-maths-ch06-t01 18"], all.join("\n"));
+    // (d38 re-pin, to-brain 055 C3 — questionFiveTimes tightened by name: every fifth hearing on her own counts, in any form, after a yes, a
+    // side-topic, a picture request or a clarify too; only the child's own request is honoured. Was the three rows at 18; now also offtopic
+    // c4-ch01-t02 22 and 30 (its seven turns at one step) and the four steering rows at 20)
+    assert.deepEqual(all, ["offtopic c4-maths-ch01-t02 22", "offtopic c4-maths-ch01-t02 30", "steering c5-maths-ch02-t01 18", "steering c5-maths-ch02-t01 20", "steering c5-maths-ch02-t02 18", "steering c5-maths-ch02-t02 20", "steering c5-maths-ch02-t03 20", "steering c6-maths-ch06-t01 18", "steering c6-maths-ch06-t01 20"], all.join("\n"));
   });
   test("the 75-word predicate reads B6's turn (c5-t02 steady 42: an aside reply, the back-to line, a bridge, a point and a card, 84 words)", () => {
     assert.deepEqual(flagged("steady", "c5-maths-ch02-t02", "longTwoPart"), [42]);
@@ -216,7 +218,7 @@ describe("B3 after main's R1 and R2: the cap is on her own repeats", async () =>
   });
   // (re-pinned for to-brain 054 B.4, main's ruling on question 3: a bare haan that starts a wait waits — the short ask, the step not told;
   // at a wait's third turn or later the fifth hearing is the cap as built, and the step is told on that turn only)
-  test("at an asked step: Hindi and repeat requests are honoured, a bare haan waits; the step is told only by the cap at a wait's third turn or later", () => {
+  test("at an asked step: Hindi and repeat requests are honoured, a bare haan waits; the step is told only by the cap — at a wait's third turn or later, or its second where the re-ask would be the fifth hearing (055 C3)", () => {
     for (const cue of [HINDI, REPEAT, HAAN]) {
       const { lm } = fifth(stepS, ...cue);
       assert.equal(lm.heardCap, undefined, cue[0]); assert.ok(!lm.stepFrom, cue[0]); assert.ok(lm.stepAsk?.prompt, cue[0]);
@@ -225,9 +227,14 @@ describe("B3 after main's R1 and R2: the cap is on her own repeats", async () =>
     const q = stepS.lastMove.stepAsk.prompt, P = atQuestionOf(script, q);
     const at = (n) => step({ ...stepS, qHeard: { [P]: 3 }, waitQ: { P, n }, recent: [...(stepS.recent ?? []), { who: "teacher", text: q }] },
       { event: "turn", kit, text: "haan", cls: { confidence: 0.9, flags: {}, outcome: "no_evidence" }, now: (stepS.turn + 1) * 20_000 }).state.lastMove ?? {};
+    // (d38 re-pin, to-brain 055 C3 and C4: wait two's re-ask that would be the fifth hearing is what wait three is — at four hearings the cap,
+    // the step told. Was: wait two at four hearings said the re-ask, uncapped. With three hearings, wait two is the re-ask as built)
     const w2 = at(1), w3 = at(2);
-    assert.equal(w2.heardCap, undefined); assert.ok(!w2.stepFrom); assert.equal(w2.waitN, 2);
+    assert.equal(w2.heardCap, P); assert.ok(w2.stepFrom != null); assert.equal(w2.waitN, 2);
     assert.equal(w3.heardCap, P); assert.ok(w3.stepFrom != null); assert.equal(w3.waitN, 3);
+    const w2three = step({ ...stepS, qHeard: { [P]: 2 }, waitQ: { P, n: 1 }, recent: [...(stepS.recent ?? []), { who: "teacher", text: q }] },
+      { event: "turn", kit, text: "haan", cls: { confidence: 0.9, flags: {}, outcome: "no_evidence" }, now: (stepS.turn + 1) * 20_000 }).state.lastMove ?? {};
+    assert.equal(w2three.heardCap, undefined); assert.ok(!w2three.stepFrom); assert.equal(w2three.waitN, 2); assert.ok(w2three.waitReask);
   });
   // (d38 re-pin, as above: the step's simpler unsaid at the cap — C1 first, the step told at the next miss or give-up. Was: told at the first)
   test("at an asked step: after a miss, or a give-up, the fifth hearing is C1 (the step's unsaid wording, the invitation); the next tells the step", () => {

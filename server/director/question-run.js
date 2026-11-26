@@ -309,11 +309,22 @@ export function yourTurnPass(prev, out, script, childText = "", { capInvite = nu
   // "… Aise kone ginkar batao? Ab tum batao.", stuck c4-ch01-t02 8)
   if (lm.hindiForm) return out;
   if (HEAR_Q.test(String(childText ?? "")) || lm.stayCheckin || lm.greetAsk || ["wrap", "safeguard", "break", "done"].includes(String(lm.kind ?? ""))) return out;
+  // (to-brain 055 C2 and C3: the question's hearings before this turn — state.js step's qHeard, her turn before counted; a short ask and an
+  // invitation are none — and the question this turn would come back to)
+  const capQ = (() => {
+    const t = lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null;
+    const a = t && lm.kind !== "teachback" ? atQuestionOf(script, t) : null;
+    return a && a !== "?short" && !/teachback/.test(a) ? a : null;
+  })();
+  const heardQ = capQ ? s.qHeard?.[capQ] ?? 0 : 0;
   // (to-brain 052 B4, ruling: on the third turn running at one question or later, a turn that parks an aside or replies to one does not say the
   // question again and does not end on the bare "Ab tum batao.": it ends on an invitation that points at the question still open —
   // joints.answerFirst, else code's forms, rotated. The question comes back when the child answers it, asks for it, or asks for help.
   // Staged offtopic c4-ch01-t02 rows 10 to 18, before the merge: one question five turns running while asides were parked and answered)
   if (asideTurnOf(prev, out, lm)) {
+    // (to-brain 055 C2 — the short ask from the question's second hearing — and C3 at a turn that parks a side-topic or replies to one are NOT
+    // built: the short ask here is flagged by the gated shortAskNoAnswer, shortAskKind and goOnNoTeach, the invitation by inviteAfterPark, and
+    // the pointed invitation "Pehle is sawaal ka jawab do." is read as a key by helpLadder — d38 builder A2's report, for main to rule)
     const qText = tbQ ?? (lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null);
     const a1 = qText ? atQuestionOf(script, qText) : null, p1 = a1 && a1 !== "?short" ? a1 : null;
     const her1 = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
@@ -333,6 +344,18 @@ export function yourTurnPass(prev, out, script, childText = "", { capInvite = nu
       if (tbQ) { if (forms.length) tbSet(forms[n % forms.length], "answerFirst"); }
       else set({ answerFirst: forms[n % forms.length] });
     }
+    return out;
+  }
+  // (to-brain 055 C3: no fifth hearing on her own, in any form — a turn that would say the question a fifth time takes the form that does not:
+  // with help in it, the help and the invitation in the question's place; with none, the short ask. A child's own request for it is honoured
+  // above: HEAR_Q, the Hindi form)
+  if (capQ && heardQ >= 4 && !tbQ && !saidInv) {
+    const forms = yourTurnForms(script, s.ctx?.lang === "english" ? "english" : "hinglish");
+    if (helpIn(lm) && forms.length) {
+      const her = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
+      const lastQ = [...her].reverse().find((t) => atQuestionOf(script, t) === capQ);
+      set({ yourTurn: forms[(s.yourTurnN ?? 0) % forms.length], yourTurnAfter: closingQuestion(lastQ ?? "") ?? closingQuestion(out.ui?.ask?.text ?? lm.stepAsk?.prompt ?? "") });
+    } else set({ waitShort: true });
     return out;
   }
   if (!helpIn(lm)) return out;

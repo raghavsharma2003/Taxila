@@ -4303,7 +4303,10 @@ export function step(prev, input) {
   // told step or the key with its reason; the question is never said again in its place: a child who has said "haan" four times is not
   // about to answer, and the same re-ask twice in three turns is the nagging B.7 warns of. Gated stepToldEarly allows that told step)
   const wait = waitOf(prev, input);
-  if (wait && (wait.n >= 3 || wait.reaskHeard)) {
+  // (to-brain 055 C3 and C4: wait two's re-ask that would be the question's fifth hearing is what wait three is — read as a give-up; at four
+  // hearings that is the cap as built: the key with its reason, or the told step)
+  if (wait && wait.n === 2 && !wait.reaskHeard && (heard?.[wait.P] ?? 0) >= 4) wait.fifth = true;
+  if (wait && (wait.n >= 3 || wait.reaskHeard || wait.fifth)) {
     // (main's sixth ruling on cause B, item 2: the rewrite chooses what she says, nothing else — the child's own words and cue are kept)
     childOwn = { text: input0.text, cls: input0.cls };
     const { request: _rq, ...restW } = input.cls ?? {};
@@ -4631,7 +4634,7 @@ export function step(prev, input) {
     const strip = (m) => { if (!m || typeof m !== "object" || !("waitN" in m || "waitP" in m)) return m; const { waitN: _n, waitP: _p, waitGive: _g, ...o } = m; return o; };
     out.state.lastMove = strip(out.state.lastMove);
     if (out.move) out.move = strip(out.move);
-    const wg = wait?.reaskHeard ? { waitGive: true } : {};
+    const wg = wait?.reaskHeard || wait?.fifth ? { waitGive: true } : {};
     if (wait && out.state.lastMove) { out.state.lastMove = { ...out.state.lastMove, waitN: wait.n, waitP: wait.P, ...wg }; if (out.move) out.move = { ...out.move, waitN: wait.n, waitP: wait.P, ...wg }; }
   }
   if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "", { capInvite: capInviteP });
