@@ -51,6 +51,9 @@ WALKS.push({ name: "step-q1-ret", topicId: TOPIC, seek: "step", skip: 0, tail: 3
 // the step (a miss gets the told step; the right answer the confirm); and main's ruling on Q2's stop: the pure wait at four hearings, at the
 // card and the step — wait one as built, then C1's turn, then the told answer or step at the next bare yes)
 for (const [k, last] of [["miss", "miss"], ["right", "right"]]) WALKS.push({ name: `step-q2-park-${k}`, topicId: TOPIC, seek: "step", skip: 0, tail: 3, then: [...FOUR, "park", "park", "yes", last].map((x) => L[x]) });
+// (main's ruling on 054b: C1 at a wait only where no help turn was said at that question — order 054b's shape at four hearings, two give-ups
+// each helped, then a bare yes three times: the wait tells as built, the key at wait three, no C1)
+WALKS.push({ name: "card-q2-b3", topicId: TOPIC, seek: "card", skip: 2, tail: 3, then: ["give", "give", "yes", "yes", "yes"].map((x) => L[x]) });
 for (const [w, a] of Object.entries(AT)) WALKS.push({ name: `${w}-q2-wait`, topicId: TOPIC, seek: a.seek, skip: a.skip, tail: 3, then: [...FOUR, "yes", "yes", "yes"].map((x) => L[x]) });
 
 // Rows a gated predicate flags that this pass does not fix, each named in builder P's report:
@@ -97,7 +100,7 @@ test("055 gate: the driven walks reach the cap as each case says", { timeout: 18
     w.then.forEach((t, k) => { if (t !== "@key") assert.equal(rows[i0 + 2 * k]?.text, t, `${w.name}: line ${k}`); assert.equal(rows[i0 + 2 * k + 1]?.who, "teacher", `${w.name}: her turn after line ${k}`); });
     // (four hearings before the case's fourth line: the question, then three times at the child's request, each her turn at the question)
     const P = AT[w.name.split("-")[0]].P;
-    if (!w.fresh) for (let k = 0; k < 3; k++) assert.equal(atQuestionOf(SCRIPT, rows[i0 + 2 * k + 1].text), P, `${w.name}: hearing ${k + 2}`);
+    if (!w.fresh && !w.name.endsWith("-b3")) for (let k = 0; k < 3; k++) assert.equal(atQuestionOf(SCRIPT, rows[i0 + 2 * k + 1].text), P, `${w.name}: hearing ${k + 2}`);
     // (a: the fourth line is a miss and her turn is C1's — help ending on an invitation, the question not said)
     if (w.name.split("-")[1] === "a") {
       const c1 = rows[i0 + 7];
@@ -243,4 +246,8 @@ test("Q2 (RULING-A8): where the cap would tell with no C1 turn given and a wordi
     assert.ok(isC1(rows[i + 2]), `${name}: C1's turn: ${norm(rows[i + 2].text)}`);
     assert.ok(rows[i + 4].stepAnswer?.told || seams(rows[i + 4]).includes("key"), `${name}: then told: ${norm(rows[i + 4].text)}`);
   }
+  { const rows = R["card-q2-b3"], i0 = at0("card-q2-b3"), i = i0 + 9;
+    assert.ok(seams(rows[i]).includes("key"), `card-q2-b3: the key at wait three: ${norm(rows[i].text)}`);
+    assert.ok(rows.slice(0, i).filter((x) => x.who === "teacher" && atQuestionOf(SCRIPT, x.text) === AT.card.P).length >= 4, "card-q2-b3: four hearings before it");
+    for (const k of [i0 + 5, i0 + 7]) assert.ok(!isC1(rows[k]), `card-q2-b3: no C1 turn in the wait: ${norm(rows[k].text)}`); }
 });

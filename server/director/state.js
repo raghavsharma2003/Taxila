@@ -3709,6 +3709,15 @@ function helpPartOf(prev, input) {
   const p0 = a?.part ? String(a.part).replace(/:quick$/, ":checkin").replace(/(:worked:step\d+):ask$/, "$1") : null;
   return p0 && !/:(?:greet|hook)$/.test(p0) ? { part: p0, keyed: false } : null;
 }
+/** d38 RULING-A8 Q2: the question open at the state — the live script card's, or the asked step's — by its path (atQuestionOf), or null. */
+function openQuestionOf(prev, script) {
+  if (!script || !prev) return null;
+  const liveId = prev.lastUi?.ask?.itemId ?? null;
+  const stepQ = prev.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose ? prev.lastMove.stepAsk.prompt : null;
+  const qText = liveId && String(liveId).startsWith("script:") ? prev.lastUi.ask.text : stepQ;
+  const P = qText ? atQuestionOf(script, qText) : null;
+  return P && P !== "?short" && !/teachback/.test(P) ? P : null;
+}
 /** to-brain 053 B3: how many of her turns heard each question of the script (a card's or an asked step's, by its path — question-run.js
  *  atQuestionOf: every form, whole, re-ask, Hindi; a short ask is the question last said), her turn before counted → { [path]: n, "?last": path }.
  *  Kept on the state turn by turn (s.qHeard). */
@@ -3894,12 +3903,11 @@ function heardCap(prev, input, heard, said) {
   if (!P || P === "?short" || /teachback/.test(P) || ((heard[P] ?? 0) < 4 && !input.waitCap)) return null;
   // (to-brain 055 C4, main's ruling C of d38: the wait is outside C1 — a wait turn at the cap (wait three at four hearings, wait four) is the
   // cap as order 054 built it, whatever help is left: RULING-B5 item 2. A child who only says "haan" is not asking for another wording)
-  // (d38 RULING-A8 Q2: and only there — the one told answer with a wording unsaid and no C1 turn before is wait four of a wait that itself said
-  // help at wait three (wait four: the wait's own count, kept over a try-first — a wait three at four hearings is itself C1's turn, which
-  // sets the question's mark). A wait whose turns said no help — a wait two counted
-  // after a park's "Pehle is sawaal ka jawab do.", a wait at a question already heard four times — reaches C1 like any other path: a child
-  // is never told with no help ever offered at that question)
-  const waitOnly = !!input.waitCap;
+  // (d38 RULING-A8 Q2, as main narrowed it on 054b: and only where a help turn has been said at that question since it was posed — the
+  // state's helpedAt. Where none was (a wait two counted after a park's "Pehle is sawaal ka jawab do.", a pure wait at a question heard
+  // four times on the child's own requests) the wait at the cap reaches C1 like any other path: never told with no help ever offered at
+  // that question. Where one was, the wait tells as order 054 built it, whatever is still unsaid; below four hearings nothing changes)
+  const waitOnly = !!(input.waitCap || input.waitHelp) && (!!prev?.helpedAt?.[P] || (heard[P] ?? 0) < 4);
   if (liveId && String(liveId).startsWith("script:") && !stepQ) {
     const part = cardPartOf(input.kit, { itemId: liveId });
     if (!part) return null;
@@ -4397,6 +4405,8 @@ export function step(prev, input) {
   const input0 = input;
   // (to-brain 053 B3: the count of hearings is kept on every path — her turn before counted here, before any path clones the state)
   const heard = input?.event === "turn" && scriptOn() && !recordedNow ? heardOf(prev, scriptFor(input.kit)?.script ?? null) : null;
+  // (d38 RULING-A8 Q2, main's ruling on 054b: the question open before this turn — a help turn said now is help said at it, helpedAt below)
+  const openP0 = heard ? openQuestionOf(prev, scriptFor(input.kit)?.script ?? null) : null;
   if (heard) prev = { ...prev, qHeard: heard };
   // (to-brain 054 B3: wait three and after at one question is a turn with no answer — help as for a give-up, ending on the question, a
   // hearing; where the question has been heard four times it is the cap as built (heardCap: the key with its reason, or the step told).
@@ -4759,6 +4769,13 @@ export function step(prev, input) {
       const P2 = t2 ? atQuestionOf(scriptFor(input.kit)?.script ?? null, t2) : null;
       if (P2 && P2 !== "?short" && (out.state.qHeard?.[P2] ?? 0) >= 4) out.state.c1At = { ...(out.state.c1At ?? {}), [lm2.help.part]: true };
     } }
+  // (d38 RULING-A8 Q2, main's ruling on 054b: the questions at which a help turn has been said since they were posed — a give-up's, a
+  // clarify's, a picture's, a miss's help, the wait's own help, C1's, C3's, a return's; heardCap's wait reading)
+  if (out?.state) {
+    const lm3 = out.state.lastMove ?? {};
+    const helped = input?.event === "turn" && openP0 && lm3.help && !["safeguard", "wrap", "break"].includes(String(lm3.kind ?? ""));
+    if (helped || prev?.helpedAt) out.state.helpedAt = { ...(prev?.helpedAt ?? {}), ...(out.state.helpedAt ?? {}), ...(helped ? { [openP0]: true } : {}) };
+  }
   if (out?.state && prev?.answerAt && !out.state.answerAt) out.state.answerAt = prev.answerAt;
   // (RULING-G item 4: the held card asked in its Hindi form — brain/say.js keeps the switch line as the turn's lead part, so the card's
   // board comes in at the card's first word, never under the switch line)
